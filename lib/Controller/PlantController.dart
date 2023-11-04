@@ -1,4 +1,4 @@
- // To parse this JSON data, do
+// To parse this JSON data, do
 //
 //     final dataPlant = dataPlantFromJson(jsonString);
 
@@ -9,8 +9,8 @@ DataPlant dataPlantFromJson(String str) => DataPlant.fromJson(json.decode(str));
 String dataPlantToJson(DataPlant data) => json.encode(data.toJson());
 
 class DataPlant {
-    int? cropId;
-    String? cropName;
+    int? plantId;
+    String? plantName;
     String? description;
     DateTime? plantingDate;
     DateTime? harvestingDate;
@@ -18,7 +18,7 @@ class DataPlant {
     String? image;
     int? gardenId;
     String? gardenName;
-    String? varietyName;
+    String? cropVarietyName;
     DateTime? createdDate;
     DateTime? updateDate;
     int? quantityPlanted;
@@ -26,8 +26,8 @@ class DataPlant {
     String? md5Hash;
 
     DataPlant({
-        this.cropId,
-        this.cropName,
+        this.plantId,
+        this.plantName,
         this.description,
         this.plantingDate,
         this.harvestingDate,
@@ -35,7 +35,7 @@ class DataPlant {
         this.image,
         this.gardenId,
         this.gardenName,
-        this.varietyName,
+        this.cropVarietyName,
         this.createdDate,
         this.updateDate,
         this.quantityPlanted,
@@ -44,8 +44,8 @@ class DataPlant {
     });
 
     factory DataPlant.fromJson(Map<String, dynamic> json) => DataPlant(
-        cropId: json["cropId"],
-        cropName: json["cropName"],
+        plantId: json["plantId"],
+        plantName: json["plantName"],
         description: json["description"],
         plantingDate: json["plantingDate"] == null ? null : DateTime.parse(json["plantingDate"]),
         harvestingDate: json["harvestingDate"] == null ? null : DateTime.parse(json["harvestingDate"]),
@@ -53,7 +53,7 @@ class DataPlant {
         image: json["image"],
         gardenId: json["gardenId"],
         gardenName: json["gardenName"],
-        varietyName: json["varietyName"],
+        cropVarietyName: json["cropVarietyName"],
         createdDate: json["createdDate"] == null ? null : DateTime.parse(json["createdDate"]),
         updateDate: json["updateDate"] == null ? null : DateTime.parse(json["updateDate"]),
         quantityPlanted: json["quantityPlanted"],
@@ -62,8 +62,8 @@ class DataPlant {
     );
 
     Map<String, dynamic> toJson() => {
-        "cropId": cropId,
-        "cropName": cropName,
+        "plantId": plantId,
+        "plantName": plantName,
         "description": description,
         "plantingDate": plantingDate?.toIso8601String(),
         "harvestingDate": harvestingDate?.toIso8601String(),
@@ -71,7 +71,7 @@ class DataPlant {
         "image": image,
         "gardenId": gardenId,
         "gardenName": gardenName,
-        "varietyName": varietyName,
+        "cropVarietyName": cropVarietyName,
         "createdDate": createdDate?.toIso8601String(),
         "updateDate": updateDate?.toIso8601String(),
         "quantityPlanted": quantityPlanted,

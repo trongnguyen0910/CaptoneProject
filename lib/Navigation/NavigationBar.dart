@@ -89,7 +89,7 @@ class _NavigationState extends State<Navigation> {
   };
     final List<Widget> _widgetOptions = <Widget>[
     Home(),
-    QRViewExample(),
+    QRScannerScreen(),
     Create(),
     NotificationClass(),
     Personal(),

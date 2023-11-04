@@ -6,6 +6,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:myapp/utils.dart';
@@ -26,7 +27,93 @@ class _CreateGardenState extends State<CreateGarden> {
 
   File? image;
 
-  _creategarden() async {
+  // _creategarden() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   final accountID = prefs.getInt('accountID');
+  //   final accessToken = prefs.getString('accessToken');
+  //   print('acc: $accountID');
+  //   var gardenname = _gardennameController.text;
+  //   var description = _descriptionController.text;
+  //   var region = _regionController.text;
+
+  //   String imageURL = image != null ? image!.path : "";
+
+  //   if (imageURL.isEmpty) {
+  //     print('No image selected');
+  //     return;
+  //   }
+
+  //   var request = http.Request(
+  //     'POST',
+  //     Uri.parse('http://fruitseasonapi-001-site1.atempurl.com/api/gardens'),
+  //   );
+  //   request.headers['Content-Type'] = 'application/json; charset=UTF-8';
+  //   request.headers['Authorization'] = 'Bearer $accessToken';
+
+  //   var data = {
+  //     "gardenName": gardenname,
+  //     "description": description,
+  //     "region": region,
+  //     "userId": accountID,
+  //     "image": imageURL,
+  //   };
+  //   request.body = jsonEncode(data);
+
+  //   try {
+  //     var response = await request.send();
+  //     var statusCode = response.statusCode;
+  //     print('Status code: $statusCode');
+
+  //     if (response.statusCode == 200) {
+  //       print('ok');
+  //       final snackBar = SnackBar(
+  //         elevation: 0,
+  //         behavior: SnackBarBehavior.floating,
+  //         backgroundColor: Colors.green, // Màu nền màu xanh
+  //         content: AwesomeSnackbarContent(
+  //           title: 'Success', // Tiêu đề thành công
+  //           message: 'Operation was successful', // Tin nhắn thành công
+  //           contentType: ContentType.success, // Loại snackbar thành công
+  //         ),
+  //       );
+
+  //       ScaffoldMessenger.of(context)
+  //         ..hideCurrentSnackBar()
+  //         ..showSnackBar(snackBar);
+  //       Future.delayed(Duration(seconds: 2), () {
+  //         Navigator.push(
+  //           context,
+  //           MaterialPageRoute(builder: (context) => Create()),
+  //         );
+  //       });
+  //     } else if (response.statusCode != 200) {
+  //       var responseString = await response.stream.bytesToString();
+  //       var responseBody = json.decode(responseString);
+  //       var errorMessage = responseBody['errors']['errorMessage'];
+  //       final snackBar = SnackBar(
+  //         elevation: 0,
+  //         behavior: SnackBarBehavior.floating,
+  //         backgroundColor: Colors.transparent,
+  //         content: AwesomeSnackbarContent(
+  //           title: 'Error',
+  //           message: errorMessage,
+  //           contentType: ContentType.failure,
+  //         ),
+  //       );
+
+  //       ScaffoldMessenger.of(context)
+  //         ..hideCurrentSnackBar()
+  //         ..showSnackBar(snackBar);
+  //       print('Response body: $responseString');
+  //       print('Error 400: $errorMessage');
+  //     } else {
+  //       print('Error: ${response.statusCode}');
+  //     }
+  //   } catch (e) {
+  //     print('Exception: $e');
+  //   }
+  // }
+_creategarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accountID = prefs.getInt('accountID');
     final accessToken = prefs.getString('accessToken');
@@ -34,29 +121,31 @@ class _CreateGardenState extends State<CreateGarden> {
     var gardenname = _gardennameController.text;
     var description = _descriptionController.text;
     var region = _regionController.text;
+    
 
-    String imageURL = image != null ? image!.path : "";
-
-    if (imageURL.isEmpty) {
-      print('No image selected');
-      return;
-    }
-
-    var request = http.Request(
+   var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://fruitseasonapi-001-site1.atempurl.com/api/gardens'),
+      Uri.parse(
+          'https://fruitseasonapims-001-site1.btempurl.com/api/gardens'),
     );
-    request.headers['Content-Type'] = 'application/json; charset=UTF-8';
+    request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';
+    request.fields['GardenName'] = gardenname;
+    request.fields['Description'] = description;
+    request.fields['Region'] = region;
+    request.fields['UserId'] = accountID.toString();
+    var imageFile = File(image!.path);
+    var imageStream = http.ByteStream(imageFile.openRead());
+    var imageLength = await imageFile.length();
 
-    var data = {
-      "gardenName": gardenname,
-      "description": description,
-      "region": region,
-      "userId": accountID,
-      "image": imageURL,
-    };
-    request.body = jsonEncode(data);
+    var multipartFile = http.MultipartFile(
+      'UploadFile',
+      imageStream,
+      imageLength,
+      filename: imageFile.path,
+      contentType: MediaType('image', 'png'),
+    );
+    request.files.add(multipartFile);
 
     try {
       var response = await request.send();
@@ -79,32 +168,33 @@ class _CreateGardenState extends State<CreateGarden> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(snackBar);
-           Future.delayed(Duration(seconds: 2), () {
-     Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Create()),
-                        );
-  });
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Create()),
+          );
+        });
       } else if (response.statusCode != 200) {
-         var responseString = await response.stream.bytesToString();
-        var responseBody = json.decode(responseString);
-        var errorMessage = responseBody['errors']['errorMessage'];
-        final snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Error',
-            message: errorMessage,
-            contentType: ContentType.failure,
-          ),
-        );
+        var responseString = await response.stream.bytesToString();
+          var responseBody = json.decode(responseString);
+          var errorMessage = responseBody['errors'];
+          String errorContent = errorMessage.toString(); 
+          final snackBar = SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: 'Error',
+              message: errorContent,
+              contentType: ContentType.failure,
+            ),
+          );
 
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
-        print('Response body: $responseString');
-        print('Error 400: $errorMessage');
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(snackBar);
+          print('Response body: $responseString');
+          print('Error 400: $errorMessage');
       } else {
         print('Error: ${response.statusCode}');
       }
@@ -112,6 +202,7 @@ class _CreateGardenState extends State<CreateGarden> {
       print('Exception: $e');
     }
   }
+
 
   String imageToBase64(File imageFile) {
     List<int> imageBytes = imageFile.readAsBytesSync();

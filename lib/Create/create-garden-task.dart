@@ -5,13 +5,19 @@ import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Controller/GardenController.dart';
+import '../Controller/PlantController.dart';
+import '../GetX/GardenGetX.dart';
 import 'create.dart';
 
 class CreateGardenTask extends StatefulWidget {
@@ -22,18 +28,75 @@ class CreateGardenTask extends StatefulWidget {
 class _CreateGardenTaskState extends State<CreateGardenTask> {
   final _tasknameController = TextEditingController();
   final _taskdescriptionController = TextEditingController();
-  final _gardenController = TextEditingController();
   final TextEditingController _date = TextEditingController();
-   File? image;
+   @override
+  void initState() {
+    super.initState();
+    getGarden();
+  }
+  
+  File? image;
+   List<DataGarden> datagarden = [];
+   List<DataPlant> dataplant = [];
+    int? selectedGardenId;
+     int? selectedPlantId;
+   Future<void> getGarden() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'http://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Garden: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          datagarden =
+              responseTrans.map((item) => DataGarden.fromJson(item)).toList();
+        });
+        Get.find<GardenController>().updateGardenList(datagarden);
+      }
+    }
+  }
+   Future<void> getPlant(int selectedGardenId) async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    print('id: $selectedGardenId');
+    final url =
+        'http://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=$selectedGardenId';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Plant: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          dataplant =
+              responseTrans.map((item) => DataPlant.fromJson(item)).toList();
+        });
+         Get.find<GardenController>().updatePlantList(dataplant);
+      }
+    }
+  }
 
-    _createtaskgarden() async {
+  _createtaskgarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accountID = prefs.getInt('accountID');
     final accessToken = prefs.getString('accessToken');
     print('acc: $accountID');
     var taskname = _tasknameController.text;
     var taskdescription = _taskdescriptionController.text;
-    var garden = _gardenController.text;
+    var date = _date.text;
+    
 
     String imageURL = image != null ? image!.path : "";
 
@@ -42,21 +105,40 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       return;
     }
 
-    var request = http.Request(
+   var request = http.MultipartRequest(
       'POST',
-      Uri.parse('http://fruitseasonapi-001-site1.atempurl.com/api/gardens'),
+      Uri.parse(
+          'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks'),
     );
-    request.headers['Content-Type'] = 'application/json; charset=UTF-8';
+    request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';
+    request.fields['GardenTaskName'] = taskname;
+    request.fields['Description'] = taskdescription;
+    request.fields['GardenTaskDate'] = date;
+    request.fields['GardenId'] = selectedGardenId.toString();
+    request.fields['PlantId'] = selectedPlantId.toString();
 
-    var data = {
-      "taskName": taskname,
-      "description": taskdescription,
-      "region": garden,
-      "userId": accountID,
-      "image": imageURL,
-    };
-    request.body = jsonEncode(data);
+    // var data = {
+    //   "taskName": taskname,
+    //   "description": taskdescription,
+    //   "region": garden,
+    //   "userId": accountID,
+    //   "image": imageURL,
+    // };
+    // request.body = jsonEncode(data);
+
+    var imageFile = File(image!.path);
+    var imageStream = http.ByteStream(imageFile.openRead());
+    var imageLength = await imageFile.length();
+
+    var multipartFile = http.MultipartFile(
+      'UploadFile',
+      imageStream,
+      imageLength,
+      filename: imageFile.path,
+      contentType: MediaType('image', 'png'),
+    );
+    request.files.add(multipartFile);
 
     try {
       var response = await request.send();
@@ -79,32 +161,33 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(snackBar);
-           Future.delayed(Duration(seconds: 2), () {
-     Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Create()),
-                        );
-  });
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Create()),
+          );
+        });
       } else if (response.statusCode != 200) {
-         var responseString = await response.stream.bytesToString();
-        var responseBody = json.decode(responseString);
-        var errorMessage = responseBody['errors']['errorMessage'];
-        final snackBar = SnackBar(
-          elevation: 0,
-          behavior: SnackBarBehavior.floating,
-          backgroundColor: Colors.transparent,
-          content: AwesomeSnackbarContent(
-            title: 'Error',
-            message: errorMessage,
-            contentType: ContentType.failure,
-          ),
-        );
+        var responseString = await response.stream.bytesToString();
+          var responseBody = json.decode(responseString);
+          var errorMessage = responseBody['errors'];
+          String errorContent = errorMessage.toString(); 
+          final snackBar = SnackBar(
+            elevation: 0,
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: Colors.transparent,
+            content: AwesomeSnackbarContent(
+              title: 'Error',
+              message: errorContent,
+              contentType: ContentType.failure,
+            ),
+          );
 
-        ScaffoldMessenger.of(context)
-          ..hideCurrentSnackBar()
-          ..showSnackBar(snackBar);
-        print('Response body: $responseString');
-        print('Error 400: $errorMessage');
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(snackBar);
+          print('Response body: $responseString');
+          print('Error 400: $errorMessage');
       } else {
         print('Error: ${response.statusCode}');
       }
@@ -112,8 +195,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       print('Exception: $e');
     }
   }
-  
-   Future pickImage() async {
+
+  Future pickImage() async {
     try {
       final imagePicker = ImagePicker();
       final pickedImage =
@@ -131,6 +214,17 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       print('Failed to pick image: $e');
     }
   }
+
+  var gardenList = Get.find<GardenController>().gardenList;
+  var plantList = Get.find<GardenController>().plantList;
+  String? selectedGardenName;
+  String? selectedPlantName;
+
+  void callGetPlant() {
+  if (selectedGardenId != null) {
+    getPlant(selectedGardenId!);
+  }
+}
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -141,7 +235,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       child: Container(
         // creategardentask5rx (3154:3128)
         width: double.infinity,
-        height: 926 * fem,
+        height: 996 * fem,
         decoration: BoxDecoration(
           color: Color(0xfff4f5f9),
         ),
@@ -150,17 +244,17 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
             Positioned(
               // bodyCRn (3154:3130)
               left: 18 * fem,
-              top: 308 * fem,
+              top: 318 * fem,
               child: Container(
                 width: 392.88 * fem,
-                height: 612.71 * fem,
+                height: 752.71 * fem,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       // detailVfn (3154:3132)
                       margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0.88 * fem, 80.7 * fem),
+                          0 * fem, 0 * fem, 0.88 * fem, 30.7 * fem),
                       width: 392 * fem,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(5 * fem),
@@ -171,7 +265,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                           Container(
                             // namezMe (3154:3143)
                             padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 18 * fem),
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: Color(0xffffffff),
@@ -183,7 +277,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                 Container(
                                   // autogroupdmqlhG4 (LtKoAgTTv81Bq2o4bfDmQL)
                                   margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 14 * fem),
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
                                   width: double.infinity,
                                   child: Row(
                                     crossAxisAlignment:
@@ -223,7 +317,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                           Container(
                             // descriptionFD2 (3154:3138)
                             padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 14 * fem),
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: Color(0xffffffff),
@@ -235,7 +329,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                 Container(
                                   // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
                                   margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 14 * fem),
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
                                   width: double.infinity,
                                   child: Row(
                                     crossAxisAlignment:
@@ -260,7 +354,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                               letterSpacing: 0.45 * fem,
                                             ),
                                           ),
-                                          controller: _taskdescriptionController,
+                                          controller:
+                                              _taskdescriptionController,
                                         ),
                                       ),
                                     ],
@@ -281,30 +376,70 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                               color: Color(0xffffffff),
                               borderRadius: BorderRadius.circular(5 * fem),
                             ),
-                            child: Row(
+                            child: Column(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(
-                                  child: TextField(
-                                    decoration: InputDecoration(
-                                      labelText: 'Garden',
-                                      labelStyle: TextStyle(
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: 0.45 * fem,
-                                      ),
-                                      suffixText: '*',
-                                      suffixStyle: TextStyle(
-                                        color: Color(0xffe74c3c),
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        letterSpacing: 0.45 * fem,
-                                      ),
-                                    ),
-                                    controller: _gardenController,
-                                  ),
-                                ),
+                                DropdownButtonFormField<int>(
+                                  value: selectedGardenId,
+                                   decoration: InputDecoration(
+                                            labelText: 'Garden Name',
+                                            labelStyle:
+                                                TextStyle(color: Colors.black,fontSize: 15),
+                                            
+                                          ),
+                                  items: gardenList.map((DataGarden garden) {
+                                    return DropdownMenuItem<int>(
+                                      value: garden.gardenId,
+                                      child: Text(garden.gardenName ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? gardenId) {
+                                    setState(() {
+                                      selectedGardenId = gardenId;
+                                      print('selectedGardenId: $selectedGardenId');
+                                      callGetPlant();
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // startXrg (3154:3260)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                DropdownButtonFormField<int>(
+                                  value: selectedPlantId,
+                                   decoration: InputDecoration(
+                                            labelText: 'Plant Name',
+                                            labelStyle:
+                                                TextStyle(color: Colors.black,fontSize: 15),
+                                            
+                                          ),
+                                  items: plantList.map((DataPlant plant) {
+                                    return DropdownMenuItem<int>(
+                                      value: plant.plantId,
+                                      child: Text(plant.plantName ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? plantId) {
+                                    setState(() {
+                                      selectedPlantId = plantId;
+                                      print('selectedPlantId: $selectedPlantId');
+                                    });
+                                  },
+                                )
                               ],
                             ),
                           ),
@@ -314,7 +449,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                           Container(
                             // startdAx (3154:3256)
                             padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 15 * fem, 0 * fem),
+                                15 * fem, 15 * fem, 15 * fem, 25 * fem),
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: Color(0xffffffff),
@@ -325,40 +460,39 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                               children: [
                                 Expanded(
                                   child: TextFormField(
-                                        onTap: () async {
-                                          DateTime? pickeddate =
-                                              await showDatePicker(
-                                                  context: context,
-                                                  initialDate: DateTime.now(),
-                                                  firstDate: DateTime(1000),
-                                                  lastDate: DateTime(2101));
-                                          if (pickeddate != null) {
-                                            setState(() {
-                                              _date.text =
-                                                  DateFormat('yyyy-MM-dd')
-                                                      .format(pickeddate);
-                                            });
-                                          }
-                                        },
-                                        // controller: _date,
-                                        decoration: InputDecoration(
-                                          labelText: 'Start Date',
-                                          labelStyle: TextStyle(
-                                            fontFamily: 'Satoshi',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.2575 * ffem / fem,
-                                            color: Color.fromARGB(255, 0, 0, 0),
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value?.isEmpty == true) {
-                                            return 'Please enter your date';
-                                          } else {
-                                            return null;
-                                          }
-                                        },
+                                    onTap: () async {
+                                      DateTime? pickeddate =
+                                          await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(1000),
+                                              lastDate: DateTime(2101));
+                                      if (pickeddate != null) {
+                                        setState(() {
+                                          _date.text = DateFormat('yyyy-MM-dd')
+                                              .format(pickeddate);
+                                        });
+                                      }
+                                    },
+                                    controller: _date,
+                                    decoration: InputDecoration(
+                                      labelText: 'Start Date',
+                                      labelStyle: TextStyle(
+                                        fontFamily: 'Satoshi',
+                                        fontSize: 15 * ffem,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2575 * ffem / fem,
+                                        color: Color.fromARGB(255, 0, 0, 0),
                                       ),
+                                    ),
+                                    validator: (value) {
+                                      if (value?.isEmpty == true) {
+                                        return 'Please enter your date';
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
                                 ),
                               ],
                             ),
@@ -366,37 +500,43 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                         ],
                       ),
                     ),
-                    Container(
-                      // primarybuttonoNG (3154:3131)
-                      margin: EdgeInsets.fromLTRB(
-                          0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
-                      width: double.infinity,
-                      height: 62.01 * fem,
-                      decoration: BoxDecoration(
-                        color: Color(0xff6cc51d),
-                        borderRadius: BorderRadius.circular(5 * fem),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Color(0x3f6cc51d),
-                            offset: Offset(0 * fem, 10 * fem),
-                            blurRadius: 4.5 * fem,
-                          ),
-                        ],
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Save change',
-                          textAlign: TextAlign.center,
-                          style: SafeGoogleFont(
-                            'Poppins',
-                            fontSize: 15 * ffem,
-                            fontWeight: FontWeight.w600,
-                            height: 1.5 * ffem / fem,
-                            color: Color(0xffffffff),
+                    
+                     GestureDetector(
+                      onTap: () {
+                        _createtaskgarden();
+                      },
+                      child: Container(
+                        // primarybuttonoyi (3152:2964)
+                        margin: EdgeInsets.fromLTRB(
+                            0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
+                        width: double.infinity,
+                        height: 62.01 * fem,
+                        decoration: BoxDecoration(
+                          color: Color(0xff6cc51d),
+                          borderRadius: BorderRadius.circular(5 * fem),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x3f6cc51d),
+                              offset: Offset(0 * fem, 10 * fem),
+                              blurRadius: 4.5 * fem,
+                            ),
+                          ],
+                        ),
+                        child: Center(
+                          child: Text(
+                            'Save change',
+                            textAlign: TextAlign.center,
+                            style: SafeGoogleFont(
+                              'Poppins',
+                              fontSize: 15 * ffem,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5 * ffem / fem,
+                              color: Color(0xffffffff),
+                            ),
                           ),
                         ),
                       ),
-                    ),
+                    )
                   ],
                 ),
               ),

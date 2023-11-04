@@ -10,10 +10,10 @@ import '../model/PlantModel.dart';
 
 class PlantObject extends StatelessWidget {
   final VoidCallback press;
-  String? cropName;
+  String? plantName;
   String? image;
   PlantObject({
-    required this.cropName,
+    required this.plantName,
     required this.image,
     required this.press,
   });
@@ -58,7 +58,7 @@ class PlantObject extends StatelessWidget {
                   child: Container(
                   width: double.infinity,
                   child: StrokeText(
-                    text: '$cropName',
+                    text: '$plantName',
                     textStyle: TextStyle(
                       fontSize: 20 * ffem,
                       fontWeight: FontWeight.w700,

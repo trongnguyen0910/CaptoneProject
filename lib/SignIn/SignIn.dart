@@ -29,7 +29,7 @@ void login(String email, password) async {
       var request = http.Request(
         'POST',
         Uri.parse(
-            'http://fruitseasonapi-001-site1.atempurl.com/api/auths/login'),
+            'http://fruitseasonapims-001-site1.btempurl.com/api/auths/login'),
       );
        request.headers['Content-Type'] = 'application/json; charset=UTF-8';
       request.body = json.encode({

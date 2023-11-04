@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 import '../Controller/PlantController.dart';
 import '../Garden/garden-detail-task.dart';
@@ -10,6 +11,7 @@ import '../QR/QrCode.dart';
 
 class PlantDetail extends StatelessWidget {
   final DataPlant dataPlant;
+   WebViewController controller = WebViewController();
   PlantDetail({Key? key, required this.dataPlant}) : super(key: key);
   @override
   Widget build(BuildContext context) {
@@ -23,14 +25,13 @@ class PlantDetail extends StatelessWidget {
           centerTitle: true,
           leading: IconButton(
             icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        GardenDetailTask(id: dataPlant.gardenId!)),
-              );
-            },
+            onPressed: () async {
+            if (await controller.canGoBack()) {
+              await controller.goBack();
+            } else {
+              Navigator.of(context).pop();
+            }
+          },
           ),
         ),
         body: SingleChildScrollView(
@@ -82,7 +83,7 @@ class PlantDetail extends StatelessWidget {
                             width: 224 * fem,
                             height: 90 * fem,
                             child: Text(
-                              'Plant date: ${dataPlant.plantingDate}\nEstimated harvest: ${dataPlant.harvestingDate}\nGarden: ${dataPlant.gardenName}',
+                              'Plant date: ${dataPlant.plantingDate}\nHarvesting Date: ${dataPlant.harvestingDate}\nGarden: ${dataPlant.gardenName}',
                               style: SafeGoogleFont(
                                 'Poppins',
                                 fontSize: 13 * ffem,
@@ -103,7 +104,7 @@ class PlantDetail extends StatelessWidget {
                             width: 125 * fem,
                             height: 23 * fem,
                             child: Text(
-                              '${dataPlant.cropName}',
+                              '${dataPlant.plantName}',
                               style: SafeGoogleFont(
                                 'Poppins',
                                 fontSize: 15 * ffem,

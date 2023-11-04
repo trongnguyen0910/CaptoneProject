@@ -1,942 +1,761 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http_parser/http_parser.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:myapp/utils.dart';
-
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import '../Controller/GardenController.dart';
+import '../Controller/PlantController.dart';
+import '../Controller/VarietyController.dart';
+import '../GetX/GardenGetX.dart';
 import 'create.dart';
 
-class CreatePlant extends StatelessWidget {
+class CreatePlant extends StatefulWidget {
+  @override
+  State<CreatePlant> createState() => _CreatePlantState();
+}
+
+class _CreatePlantState extends State<CreatePlant> {
+  final _plantnameController = TextEditingController();
+  final _plantdescriptionController = TextEditingController();
+  final _estimatedHarvestQuantityController = TextEditingController();
+  final TextEditingController _harvestingDate = TextEditingController();
+  final TextEditingController _plantingDate = TextEditingController();
+  @override
+  void initState() {
+    super.initState();
+    getGarden();
+    getVariety();
+  }
+
+  File? image;
+  List<DataGarden> datagarden = [];
+  List<DataVariety> datavariety = [];
+  int? selectedGardenId;
+  int? selectedVarietyId;
+  String? _selectedValue;
+
+  Future<void> getGarden() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'http://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Garden: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          datagarden =
+              responseTrans.map((item) => DataGarden.fromJson(item)).toList();
+        });
+        Get.find<GardenController>().updateGardenList(datagarden);
+      }
+    }
+  }
+
+  Future<void> getVariety() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-varieties?activeOnly=true';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Variety: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          datavariety =
+              responseTrans.map((item) => DataVariety.fromJson(item)).toList();
+        });
+        Get.find<GardenController>().updateVarietyList(datavariety);
+      }
+    }
+  }
+
+  _createtaskgarden() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accountID = prefs.getInt('accountID');
+    final accessToken = prefs.getString('accessToken');
+    print('acc: $accountID');
+    var plantname = _plantnameController.text;
+    var plantdescription = _plantdescriptionController.text;
+    var harvestingDate = _harvestingDate.text;
+    var plantingDate = _plantingDate.text;
+    var estimatedHarvestQuantity = _estimatedHarvestQuantityController.text;
+    var status = _selectedValue;
+
+    String imageURL = image != null ? image!.path : "";
+
+    if (imageURL.isEmpty) {
+      print('No image selected');
+      return;
+    }
+
+    var request = http.MultipartRequest(
+      'POST',
+      Uri.parse(
+          'https://fruitseasonapims-001-site1.btempurl.com/api/plants'),
+    );
+    request.headers['accept'] = 'multipart/form-data';
+    request.headers['Authorization'] = 'Bearer $accessToken';
+    request.fields['PlantName'] = plantname;
+    request.fields['Description'] = plantdescription;
+    request.fields['PlantingDate'] = plantingDate;
+    request.fields['HarvestingDate'] = harvestingDate;
+    request.fields['GardenId'] = selectedGardenId.toString();
+    request.fields['CropVarietyId'] = selectedVarietyId.toString();
+    request.fields['Status'] = status.toString();
+    request.fields['EstimatedHarvestQuantity'] = estimatedHarvestQuantity;
+  
+    
+
+    // var data = {
+    //   "taskName": taskname,
+    //   "description": taskdescription,
+    //   "region": garden,
+    //   "userId": accountID,
+    //   "image": imageURL,
+    // };
+    // request.body = jsonEncode(data);
+
+    var imageFile = File(image!.path);
+    var imageStream = http.ByteStream(imageFile.openRead());
+    var imageLength = await imageFile.length();
+
+    var multipartFile = http.MultipartFile(
+      'UploadFile',
+      imageStream,
+      imageLength,
+      filename: imageFile.path,
+      contentType: MediaType('image', 'png'),
+    );
+    request.files.add(multipartFile);
+
+    try {
+      var response = await request.send();
+      var statusCode = response.statusCode;
+      print('Status code: $statusCode');
+
+      if (response.statusCode == 200) {
+        print('ok');
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.green, // Màu nền màu xanh
+          content: AwesomeSnackbarContent(
+            title: 'Success', // Tiêu đề thành công
+            message: 'Operation was successful', // Tin nhắn thành công
+            contentType: ContentType.success, // Loại snackbar thành công
+          ),
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+        Future.delayed(Duration(seconds: 2), () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Create()),
+          );
+        });
+      } else if (response.statusCode != 200) {
+        var responseString = await response.stream.bytesToString();
+        var responseBody = json.decode(responseString);
+        var errorMessage = responseBody['errors'];
+        String errorContent = errorMessage.toString();
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'Error',
+            message: errorContent,
+            contentType: ContentType.failure,
+          ),
+        );
+
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+        print('Response body: $responseString');
+        print('Error 400: $errorMessage');
+      } else {
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+    }
+  }
+
+  Future pickImage() async {
+    try {
+      final imagePicker = ImagePicker();
+      final pickedImage =
+          await imagePicker.pickImage(source: ImageSource.gallery);
+
+      if (pickedImage != null) {
+        final imageFile = File(pickedImage.path);
+        setState(() {
+          image = imageFile;
+        });
+      } else {
+        print('No image selected');
+      }
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
+    }
+  }
+
+  var gardenList = Get.find<GardenController>().gardenList;
+  var varietyList = Get.find<GardenController>().varietyList;
+  String? selectedGardenName;
+  String? selectedvarietyName;
+
+  
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-    return SingleChildScrollView(
+    return Scaffold(
+        body: SingleChildScrollView(
       child: Container(
-        // createplantpv4 (3154:3169)
+        // creategardentask5rx (3154:3128)
         width: double.infinity,
-        height: 1056 * fem,
+        height: 1406 * fem,
         decoration: BoxDecoration(
           color: Color(0xfff4f5f9),
         ),
         child: Stack(
           children: [
             Positioned(
-              // primarybuttonYr4 (3154:3172)
-              left: 18.0338134766 * fem,
-              top: 988.6962890625 * fem,
-              child: Container(
-                width: 392.85 * fem,
-                height: 62.01 * fem,
-                decoration: BoxDecoration(
-                  color: Color(0xff6cc51d),
-                  borderRadius: BorderRadius.circular(5 * fem),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Color(0x3f6cc51d),
-                      offset: Offset(0 * fem, 10 * fem),
-                      blurRadius: 4.5 * fem,
-                    ),
-                  ],
-                ),
-                child: Center(
-                  child: Text(
-                    'Save change',
-                    textAlign: TextAlign.center,
-                    style: SafeGoogleFont(
-                      'Poppins',
-                      fontSize: 15 * ffem,
-                      fontWeight: FontWeight.w600,
-                      height: 1.5 * ffem / fem,
-                      color: Color(0xffffffff),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            Positioned(
-              // frame170mTv (3160:1162)
+              // bodyCRn (3154:3130)
               left: 18 * fem,
-              top: 147 * fem,
+              top: 318 * fem,
               child: Container(
-                width: 392 * fem,
-                height: 866 * fem,
-                child: Container(
-                  // bodyWAc (3154:3171)
-                  width: double.infinity,
-                  height: 847 * fem,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        // imageenc (3160:1169)
-                        margin: EdgeInsets.fromLTRB(
-                            0 * fem, 0 * fem, 177 * fem, 25 * fem),
-                        width: double.infinity,
-                        height: 106 * fem,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Container(
-                              // autogroupxenuMwv (LtKnQxDKwD1oLHXGvzxENU)
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 12 * fem, 0 * fem),
-                              width: 103 * fem,
-                              height: double.infinity,
-                              child: Stack(
-                                children: [
-                                  Positioned(
-                                    // image3tS4 (3160:1168)
-                                    left: 0 * fem,
-                                    top: 6 * fem,
-                                    child: Align(
-                                      child: SizedBox(
-                                        width: 100 * fem,
-                                        height: 100 * fem,
-                                        child: Image.asset(
-                                          'assets/mobile/images/plant.png',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  Positioned(
-                                    // ellipse35Che (3160:1170)
-                                    left: 93 * fem,
-                                    top: 0 * fem,
-                                    child: Align(
-                                      child: SizedBox(
-                                        width: 10 * fem,
-                                        height: 10 * fem,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5 * fem),
-                                            image: DecorationImage(
-                                              fit: BoxFit.cover,
-                                              image: AssetImage(
-                                                'assets/mobile/images/ellipse-35-bg.png',
-                                              ),
+                width: 392.88 * fem,
+                height: 1152.71 * fem,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      // detailVfn (3154:3132)
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0.88 * fem, 30.7 * fem),
+                      width: 392 * fem,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(5 * fem),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            // namezMe (3154:3143)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  // autogroupdmqlhG4 (LtKoAgTTv81Bq2o4bfDmQL)
+                                  margin: EdgeInsets.fromLTRB(
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                  width: double.infinity,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                            labelText: 'Plant name',
+                                            labelStyle: TextStyle(
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
+                                            ),
+                                            suffixText: '*',
+                                            suffixStyle: TextStyle(
+                                              color: Color(0xffe74c3c),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
                                             ),
                                           ),
+                                          controller: _plantnameController,
                                         ),
                                       ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              // group2465mS (3154:3266)
-                              width: 100 * fem,
-                              height: 100 * fem,
-                              decoration: BoxDecoration(
-                                border: Border.all(color: Color(0xff000000)),
-                                color: Color(0xffffffff),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  'Add image',
-                                  textAlign: TextAlign.center,
-                                  style: SafeGoogleFont(
-                                    'Poppins',
-                                    fontSize: 10 * ffem,
-                                    fontWeight: FontWeight.w500,
-                                    height: 1.5 * ffem / fem,
-                                    letterSpacing: 0.3 * fem,
-                                    color: Color(0xff000000),
+                                    ],
                                   ),
                                 ),
-                              ),
+                              ],
                             ),
-                          ],
-                        ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // descriptionFD2 (3154:3138)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                  margin: EdgeInsets.fromLTRB(
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                  width: double.infinity,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                            labelText: 'Description',
+                                            labelStyle: TextStyle(
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
+                                            ),
+                                            suffixText: '*',
+                                            suffixStyle: TextStyle(
+                                              color: Color(0xffe74c3c),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
+                                            ),
+                                          ),
+                                          controller:
+                                              _plantdescriptionController,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // descriptionFD2 (3154:3138)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                  margin: EdgeInsets.fromLTRB(
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                  width: double.infinity,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: DropdownButtonFormField<String>(
+                                          isExpanded: true,
+                                          value: _selectedValue,
+                                          decoration: InputDecoration(
+                                            labelText: 'Status',
+                                            labelStyle: TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 15),
+                                          ),
+                                          items: [
+                                            'Healthy',
+                                            'Growing',
+                                            'Harvestable',
+                                            'Diseased',
+                                            'Dead',
+                                          ].map((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            // Set the new selected value
+                                            setState(() {
+                                              _selectedValue = newValue;
+                                            });
+                                          },
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // descriptionFD2 (3154:3138)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                  margin: EdgeInsets.fromLTRB(
+                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                  width: double.infinity,
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: TextField(
+                                          decoration: InputDecoration(
+                                            labelText:
+                                                'Estimated Harvest Quantity',
+                                            labelStyle: TextStyle(
+                                              color:
+                                                  Color.fromARGB(255, 0, 0, 0),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
+                                            ),
+                                            suffixText: '*',
+                                            suffixStyle: TextStyle(
+                                              color: Color(0xffe74c3c),
+                                              fontSize: 15 * ffem,
+                                              fontWeight: FontWeight.w500,
+                                              letterSpacing: 0.45 * fem,
+                                            ),
+                                          ),
+                                          keyboardType: TextInputType.number,
+                                          controller:
+                                              _estimatedHarvestQuantityController
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // startXrg (3154:3260)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                DropdownButtonFormField<int>(
+                                  value: selectedGardenId,
+                                  decoration: InputDecoration(
+                                    labelText: 'Garden Name',
+                                    labelStyle: TextStyle(
+                                        color: Colors.black, fontSize: 15),
+                                  ),
+                                  items: gardenList.map((DataGarden garden) {
+                                    return DropdownMenuItem<int>(
+                                      value: garden.gardenId,
+                                      child: Text(garden.gardenName ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? gardenId) {
+                                    setState(() {
+                                      selectedGardenId = gardenId;
+                                      print(
+                                          'selectedGardenId: $selectedGardenId');
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // startXrg (3154:3260)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                DropdownButtonFormField<int>(
+                                  value: selectedVarietyId,
+                                  decoration: InputDecoration(
+                                    labelText: 'Crop Variety Name',
+                                    labelStyle: TextStyle(
+                                        color: Colors.black, fontSize: 15),
+                                  ),
+                                  items: varietyList.map((DataVariety variety) {
+                                    return DropdownMenuItem<int>(
+                                      value: variety.cropVarietyId,
+                                      child: Text(variety.cropVarietyName ?? ''),
+                                    );
+                                  }).toList(),
+                                  onChanged: (int? varietyId) {
+                                    setState(() {
+                                      selectedVarietyId = varietyId;
+                                      print(
+                                          'selectedvarietyId: $selectedVarietyId');
+                                    });
+                                  },
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // startdAx (3154:3256)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 15 * fem, 25 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    onTap: () async {
+                                      DateTime? pickeddate =
+                                          await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(1000),
+                                              lastDate: DateTime(2101));
+                                      if (pickeddate != null) {
+                                        setState(() {
+                                          _plantingDate.text = DateFormat('yyyy-MM-dd')
+                                              .format(pickeddate);
+                                        });
+                                      }
+                                    },
+                                    controller: _plantingDate,
+                                    decoration: InputDecoration(
+                                      labelText: 'Planting Date',
+                                      labelStyle: TextStyle(
+                                        fontFamily: 'Satoshi',
+                                        fontSize: 15 * ffem,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2575 * ffem / fem,
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value?.isEmpty == true) {
+                                        return 'Please enter your date';
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 25 * fem,
+                          ),
+                          Container(
+                            // startdAx (3154:3256)
+                            padding: EdgeInsets.fromLTRB(
+                                15 * fem, 15 * fem, 15 * fem, 25 * fem),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Color(0xffffffff),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                            ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    onTap: () async {
+                                      DateTime? pickeddate =
+                                          await showDatePicker(
+                                              context: context,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(1000),
+                                              lastDate: DateTime(2101));
+                                      if (pickeddate != null) {
+                                        setState(() {
+                                          _harvestingDate.text = DateFormat('yyyy-MM-dd')
+                                              .format(pickeddate);
+                                        });
+                                      }
+                                    },
+                                    controller: _harvestingDate,
+                                    decoration: InputDecoration(
+                                      labelText: 'Harvesting Date',
+                                      labelStyle: TextStyle(
+                                        fontFamily: 'Satoshi',
+                                        fontSize: 15 * ffem,
+                                        fontWeight: FontWeight.w500,
+                                        height: 1.2575 * ffem / fem,
+                                        color: Color.fromARGB(255, 0, 0, 0),
+                                      ),
+                                    ),
+                                    validator: (value) {
+                                      if (value?.isEmpty == true) {
+                                        return 'Please enter your date';
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        // detailmPN (3154:3173)
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        _createtaskgarden();
+                      },
+                      child: Container(
+                        // primarybuttonoyi (3152:2964)
+                        margin: EdgeInsets.fromLTRB(
+                            0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
                         width: double.infinity,
+                        height: 62.01 * fem,
                         decoration: BoxDecoration(
+                          color: Color(0xff6cc51d),
                           borderRadius: BorderRadius.circular(5 * fem),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              // inforWLx (3160:1159)
-                              margin: EdgeInsets.fromLTRB(
-                                  0 * fem, 0 * fem, 0 * fem, 25 * fem),
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5 * fem),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    // basicinformation2q6 (3160:1160)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 15 * fem),
-                                    child: Text(
-                                      'Basic information',
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.45 * fem,
-                                        color: Color(0xff000000),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    // name2Cp (3154:3184)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 14 * fem, 18 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          // autogroupr84y5wn (LtKnGNdHhweVDmAAqxR84Y)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 0 * fem, 14 * fem),
-                                          width: double.infinity,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                // plantnameD2Q (3154:3186)
-                                                margin: EdgeInsets.fromLTRB(
-                                                    0 * fem,
-                                                    0 * fem,
-                                                    216 * fem,
-                                                    0 * fem),
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: SafeGoogleFont(
-                                                      'Poppins',
-                                                      fontSize: 15 * ffem,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      height: 1.5 * ffem / fem,
-                                                      letterSpacing: 0.45 * fem,
-                                                      color: Color(0xff868889),
-                                                    ),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Plant name',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xff000000),
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '*',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xffe74c3c),
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: ' ',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                // oep (3154:3188)
-                                                '12/50',
-                                                textAlign: TextAlign.right,
-                                                style: SafeGoogleFont(
-                                                  'Poppins',
-                                                  fontSize: 15 * ffem,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 1.5 * ffem / fem,
-                                                  letterSpacing: 0.45 * fem,
-                                                  color: Color(0xff868889),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Text(
-                                          // gardenwithnameka4 (3154:3187)
-                                          'Garden with name ',
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.39 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // descriptionHZz (3154:3179)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 11 * fem, 14 * fem, 18 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // autogroup4rfvaZ6 (LtKn6dQXWFfcoTZVqJ4Rfv)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 0 * fem, 14 * fem),
-                                          width: double.infinity,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                // descriptioni9W (3154:3181)
-                                                margin: EdgeInsets.fromLTRB(
-                                                    0 * fem,
-                                                    0 * fem,
-                                                    192 * fem,
-                                                    0 * fem),
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: SafeGoogleFont(
-                                                      'Poppins',
-                                                      fontSize: 15 * ffem,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      height: 1.5 * ffem / fem,
-                                                      letterSpacing: 0.45 * fem,
-                                                      color: Color(0xff868889),
-                                                    ),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Description',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xff000000),
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '*',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xffe74c3c),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                // c8Q (3154:3183)
-                                                '234/1000',
-                                                textAlign: TextAlign.right,
-                                                style: SafeGoogleFont(
-                                                  'Poppins',
-                                                  fontSize: 15 * ffem,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 1.5 * ffem / fem,
-                                                  letterSpacing: 0.45 * fem,
-                                                  color: Color(0xff868889),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Container(
-                                          // inmostregionsthesoilisnotwarme (3154:3182)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 4 * fem, 0 * fem),
-                                          constraints: BoxConstraints(
-                                            maxWidth: 359 * fem,
-                                          ),
-                                          child: Text(
-                                            'In most regions, the soil is not warm enough to plant tomatoes outdoors until late spring and early summer, except in zone 10, where they are a fall and winter crop.',
-                                            style: SafeGoogleFont(
-                                              'Poppins',
-                                              fontSize: 13 * ffem,
-                                              fontWeight: FontWeight.w400,
-                                              height: 1.5 * ffem / fem,
-                                              color: Color(0xff000000),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // varietymfW (3154:3174)
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 14 * fem, 18 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Container(
-                                          // autogroup48b2UZv (LtKmwPAw1KNqwddnMu48B2)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 0 * fem, 14 * fem),
-                                          width: double.infinity,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                // varietynameos6 (3154:3177)
-                                                margin: EdgeInsets.fromLTRB(
-                                                    0 * fem,
-                                                    0 * fem,
-                                                    200 * fem,
-                                                    0 * fem),
-                                                child: RichText(
-                                                  text: TextSpan(
-                                                    style: SafeGoogleFont(
-                                                      'Poppins',
-                                                      fontSize: 15 * ffem,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                      height: 1.5 * ffem / fem,
-                                                      letterSpacing: 0.45 * fem,
-                                                      color: Color(0xff868889),
-                                                    ),
-                                                    children: [
-                                                      TextSpan(
-                                                        text: 'Variety name',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xff000000),
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: '*',
-                                                        style: SafeGoogleFont(
-                                                          'Poppins',
-                                                          fontSize: 15 * ffem,
-                                                          fontWeight:
-                                                              FontWeight.w500,
-                                                          height:
-                                                              1.5 * ffem / fem,
-                                                          letterSpacing:
-                                                              0.45 * fem,
-                                                          color:
-                                                              Color(0xffe74c3c),
-                                                        ),
-                                                      ),
-                                                      TextSpan(
-                                                        text: ' ',
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                              Text(
-                                                // uYk (3154:3176)
-                                                '12/50',
-                                                textAlign: TextAlign.right,
-                                                style: SafeGoogleFont(
-                                                  'Poppins',
-                                                  fontSize: 15 * ffem,
-                                                  fontWeight: FontWeight.w500,
-                                                  height: 1.5 * ffem / fem,
-                                                  letterSpacing: 0.45 * fem,
-                                                  color: Color(0xff868889),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Text(
-                                          // gardenwithnamepvc (3154:3178)
-                                          'Garden with name ',
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 13 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.39 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              // plantMvY (3160:1158)
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(5 * fem),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    // seasoninformation6NL (3160:1161)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 15 * fem),
-                                    child: Text(
-                                      'Season information',
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.45 * fem,
-                                        color: Color(0xff000000),
-                                      ),
-                                    ),
-                                  ),
-                                  Container(
-                                    // gardenbpt (3160:1146)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // gardenHBv (3160:1148)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 208 * fem, 0 * fem),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: SafeGoogleFont(
-                                                'Poppins',
-                                                fontSize: 15 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.5 * ffem / fem,
-                                                letterSpacing: 0.45 * fem,
-                                                color: Color(0xff868889),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Garden',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '*',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xffe74c3c),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          // oZa (3160:1149)
-                                          '01/01/2024',
-                                          textAlign: TextAlign.right,
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.45 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // startwvg (3160:1138)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // startdate4Ec (3160:1140)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 187 * fem, 0 * fem),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: SafeGoogleFont(
-                                                'Poppins',
-                                                fontSize: 15 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.5 * ffem / fem,
-                                                letterSpacing: 0.45 * fem,
-                                                color: Color(0xff868889),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Start Date',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '*',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xffe74c3c),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          // n48 (3160:1141)
-                                          '01/01/2024',
-                                          textAlign: TextAlign.right,
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.45 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // havestingXXW (3160:1142)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // harvestingdateD9S (3160:1144)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 140 * fem, 0 * fem),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: SafeGoogleFont(
-                                                'Poppins',
-                                                fontSize: 15 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.5 * ffem / fem,
-                                                letterSpacing: 0.45 * fem,
-                                                color: Color(0xff868889),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Harvesting Date',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '*',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xffe74c3c),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          // KLt (3160:1145)
-                                          '01/01/2024',
-                                          textAlign: TextAlign.right,
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.45 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // quantityplantf9r (3160:1150)
-                                    margin: EdgeInsets.fromLTRB(
-                                        0 * fem, 0 * fem, 0 * fem, 10 * fem),
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                                    width: double.infinity,
-                                    height: 50 * fem,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // quantityplanted9qi (3160:1152)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 184 * fem, 0 * fem),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: SafeGoogleFont(
-                                                'Poppins',
-                                                fontSize: 15 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.5 * ffem / fem,
-                                                letterSpacing: 0.45 * fem,
-                                                color: Color(0xff868889),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Quantity planted',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '*',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xffe74c3c),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          // 3Jp (3160:1153)
-                                          '1000',
-                                          textAlign: TextAlign.right,
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.45 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  Container(
-                                    // havestingquantityb5S (3160:1154)
-                                    padding: EdgeInsets.fromLTRB(
-                                        15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                                    width: double.infinity,
-                                    height: 50 * fem,
-                                    decoration: BoxDecoration(
-                                      color: Color(0xffffffff),
-                                      borderRadius:
-                                          BorderRadius.circular(5 * fem),
-                                    ),
-                                    child: Row(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          // estimatedquantityh8U (3160:1156)
-                                          margin: EdgeInsets.fromLTRB(0 * fem,
-                                              0 * fem, 179 * fem, 0 * fem),
-                                          child: RichText(
-                                            text: TextSpan(
-                                              style: SafeGoogleFont(
-                                                'Poppins',
-                                                fontSize: 15 * ffem,
-                                                fontWeight: FontWeight.w500,
-                                                height: 1.5 * ffem / fem,
-                                                letterSpacing: 0.45 * fem,
-                                                color: Color(0xff868889),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: 'Estimated quantity',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xff000000),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text: '*',
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.45 * fem,
-                                                    color: Color(0xffe74c3c),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                        Text(
-                                          // np8 (3160:1157)
-                                          '123',
-                                          textAlign: TextAlign.right,
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 15 * ffem,
-                                            fontWeight: FontWeight.w500,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.45 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x3f6cc51d),
+                              offset: Offset(0 * fem, 10 * fem),
+                              blurRadius: 4.5 * fem,
                             ),
                           ],
                         ),
+                        child: Center(
+                          child: Text(
+                            'Save change',
+                            textAlign: TextAlign.center,
+                            style: SafeGoogleFont(
+                              'Poppins',
+                              fontSize: 15 * ffem,
+                              fontWeight: FontWeight.w600,
+                              height: 1.5 * ffem / fem,
+                              color: Color(0xffffffff),
+                            ),
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
+                    )
+                  ],
                 ),
               ),
             ),
             Positioned(
-              // titlebarv9e (3154:3190)
+              // rectangle60edn (3154:3168)
+              left: 0 * fem,
+              top: 122 * fem,
+              child: GestureDetector(
+                onTap: () {
+                  // Add your onTap functionality here
+                  pickImage(); // For example, call the pickImage function when tapped
+                },
+                child: Align(
+                  child: image != null
+                      ? Image.file(
+                          image!,
+                          width: 128,
+                          height: 128,
+                          fit: BoxFit.cover,
+                        )
+                      : SizedBox(
+                          width: 428 * fem,
+                          height: 200 * fem,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(5 * fem),
+                            child: Image.asset(
+                              'assets/mobile/images/add-image.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                ),
+              ),
+            ),
+            Positioned(
+              // titlebarMHJ (3154:3149)
               left: 0 * fem,
               top: 0 * fem,
               child: Container(
                 padding: EdgeInsets.fromLTRB(
-                    16.77 * fem, 65.11 * fem, 153.06 * fem, 29.84 * fem),
+                    16.77 * fem, 65.11 * fem, 156.06 * fem, 29.84 * fem),
                 width: 428 * fem,
                 height: 121.95 * fem,
                 decoration: BoxDecoration(
@@ -966,7 +785,7 @@ class CreatePlant extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      // createplantv3A (3154:3192)
+                      // createtaskLQ8 (3154:3151)
                       'Create Plant',
                       textAlign: TextAlign.center,
                       style: SafeGoogleFont(
@@ -982,11 +801,9 @@ class CreatePlant extends StatelessWidget {
                 ),
               ),
             ),
-            
           ],
         ),
       ),
-      
-    );
+    ));
   }
 }

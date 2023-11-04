@@ -1,8 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
+import '../GetX/GardenGetX.dart';
 import '../Plant/PlantDetail.dart';
 import '../Plant/PlantObject.dart';
 import '../Task/TaskDetail.dart';
@@ -20,6 +24,7 @@ class GardenDetailTask extends StatefulWidget {
 }
 
 class _GardenDetailTaskState extends State<GardenDetailTask> {
+   List<DataGarden> datagarden = [];
   int _currentTabIndex = 0;
   String taskSearchText = "";
   String plantSearchText = "";
@@ -28,6 +33,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
   void initState() {
     super.initState();
     getPlant(widget.id);
+    
   }
 
   Future<void> getPlant(int id) async {
@@ -35,7 +41,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
     final accessToken = prefs.getString('accessToken');
     print('id: $id');
     final url =
-        'http://fruitseasonapi-001-site1.atempurl.com/api/plants/plants?activeOnly=true&gardenId=$id';
+        'https://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=$id';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -50,6 +56,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
           dataplant =
               responseTrans.map((item) => DataPlant.fromJson(item)).toList();
         });
+         Get.find<GardenController>().updatePlantList(dataplant);
       }
     }
   }
@@ -57,7 +64,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
   @override
   Widget build(BuildContext context) {
     List<DataPlant> filteredTrans = dataplant.where((item) {
-      return item.cropName!
+      return item.plantName!
           .toLowerCase()
           .contains(plantSearchText.toLowerCase());
     }).toList();
@@ -169,7 +176,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                             );
                           },
                           child: PlantObject(
-                              cropName: filteredTrans[index].cropName,
+                              plantName: filteredTrans[index].plantName,
                               image: filteredTrans[index].image,
                               press: () {}),
                         );
@@ -181,4 +188,6 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       ),
     );
   }
+  
+
 }

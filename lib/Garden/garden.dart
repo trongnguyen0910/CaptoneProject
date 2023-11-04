@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Controller/GardenController.dart';
+import '../GetX/GardenGetX.dart';
 import '../HomeScreen/Home.dart';
 import '../model/GardenModel.dart';
 import 'GardenObject.dart';
@@ -33,7 +36,7 @@ class _GardenState extends State<Garden> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'http://fruitseasonapi-001-site1.atempurl.com/api/gardens?activeOnly=true';
+        'http://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -48,6 +51,7 @@ class _GardenState extends State<Garden> {
           datagarden =
               responseTrans.map((item) => DataGarden.fromJson(item)).toList();
         });
+        Get.find<GardenController>().updateGardenList(datagarden);
       }
     }
   }
@@ -64,17 +68,17 @@ class _GardenState extends State<Garden> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Garden List', style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Home()),
-              );
-            },
-          ),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => Home()),
+            );
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(Icons.clear),
@@ -103,14 +107,15 @@ class _GardenState extends State<Garden> {
           ),
           Expanded(
             child: ListView.builder(
-               itemCount: filteredTrans.length,
+              itemCount: filteredTrans.length,
               itemBuilder: (BuildContext context, int index) {
                 return GestureDetector(
                   onTap: () {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => GardenDetailTask(id: datagarden[index].gardenId!),
+                        builder: (context) =>
+                            GardenDetailTask(id: datagarden[index].gardenId!),
                       ),
                     );
                   },

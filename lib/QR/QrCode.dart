@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:crypto/crypto.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -26,37 +27,56 @@ class QrCode extends StatelessWidget {
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
-
-    String originalString = '${dataPlant.md5Hash}';
-    String md5Hash = generateMd5(originalString);
-
-    String qrData = md5Hash;
-    var qrImage = QrImage(
-      data: qrData,
-      version: QrVersions.auto,
-      size: 200,
-    );
-
-    void saveQrImage() async {
-  RenderRepaintBoundary boundary =
-      globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-  ui.Image image = await boundary.toImage();
-  ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-
-  if (byteData != null) {
-    Uint8List pngBytes = byteData.buffer.asUint8List();
-
-    final result = await ImageGallerySaver.saveImage(pngBytes);
-
-    if (result != null) {
-      print('Hình ảnh đã được lưu vào: $result');
-    } else {
-      print('Lưu hình ảnh thất bại.');
-    }
-  } else {
-    print('Chụp hình ảnh thất bại.');
-  }
+    
+    // String originalString = '${dataPlant.md5Hash}';
+    // String md5Hash = generateMd5(originalString);
+    // print('md5Hash: ${dataPlant.md5Hash}');
+    // String qrData = md5Hash;
+    // var qrImage = QrImage(
+    //   data: qrData,
+    //   version: QrVersions.auto,
+    //   size: 200,
+    // );
+    String generateQRString(DataPlant dataPlant) {
+  return '${dataPlant.plantName}, ${dataPlant.description}, ${dataPlant.image}, ${dataPlant.gardenName}, ${dataPlant.plantingDate}, ${dataPlant.harvestingDate}';
 }
+
+// Sử dụng hàm này để tạo chuỗi mới cho việc tạo mã QR
+String qrString = generateQRString(dataPlant);
+
+// Tạo mã QR từ chuỗi mới
+var qrImage = QrImage(
+  data: qrString,
+  version: QrVersions.auto,
+  size: 200,
+);
+
+    Future<void> saveQrImage() async {
+    try {
+      // Tạo RenderRepaintBoundary để chụp phần tử widget
+      RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
+
+      // Chụp ảnh của widget bằng toImage
+      ui.Image image = await boundary.toImage(pixelRatio: 3.0); // pixelRatio có thể điều chỉnh tùy theo nhu cầu
+
+      // Chuyển đổi định dạng Image thành ByteData (Uint8List)
+      ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+      Uint8List pngBytes = byteData!.buffer.asUint8List();
+
+      // Lưu ảnh vào thư viện của thiết bị
+      final result = await ImageGallerySaver.saveImage(Uint8List.fromList(pngBytes));
+      if (result['isSuccess']) {
+        Fluttertoast.showToast(msg: 'Image saved to gallery');
+      } else {
+        Fluttertoast.showToast(msg: 'Failed to save image');
+      }
+    } catch (e) {
+      print("Error saving image: $e");
+      Fluttertoast.showToast(msg: 'Failed to save image');
+    }
+  }
+
+
 
 
     return Scaffold(
@@ -67,14 +87,13 @@ class QrCode extends StatelessWidget {
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => PlantDetail(dataPlant: dataPlant)),
-            );
+            Navigator.of(context).pop();
           },
         ),
       ),
-      body: Container(
+      body: RepaintBoundary(
+        key: globalKey,
+      child: Container(
         padding: EdgeInsets.fromLTRB(0 * fem, 20 * fem, 0 * fem, 35 * fem),
         width: double.infinity,
         decoration: BoxDecoration(
@@ -98,8 +117,8 @@ class QrCode extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: RepaintBoundary(
-                key: globalKey,
+
+                // key: globalKey,
                 child: Container(
                   margin: EdgeInsets.fromLTRB(50 * fem, 0 * fem, 0 * fem, 22.15 * fem),
                   width: 300 * fem,
@@ -107,11 +126,11 @@ class QrCode extends StatelessWidget {
                   child: qrImage,
                 ),
               ),
-            ),
+            
             Container(
               margin: EdgeInsets.fromLTRB(4 * fem, 0 * fem, 0 * fem, 1.13 * fem),
               child: Text(
-                '${dataPlant.cropName}',
+                '${dataPlant.plantName}',
                 style: TextStyle(
                   fontSize: 18 * ffem,
                   fontWeight: FontWeight.w600,
@@ -191,6 +210,8 @@ class QrCode extends StatelessWidget {
           ],
         ),
       ),
+      )
     );
+    
   }
 }
