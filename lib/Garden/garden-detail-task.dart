@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:myapp/Controller/GardenTaskController.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
@@ -29,11 +30,12 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
   String taskSearchText = "";
   String plantSearchText = "";
   List<DataPlant> dataplant = [];
+  List<DataGardenTask> datagardentask = [];
   @override
   void initState() {
     super.initState();
     getPlant(widget.id);
-    
+    getTask(widget.id);
   }
 
   Future<void> getPlant(int id) async {
@@ -60,6 +62,29 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       }
     }
   }
+  Future<void> getTask(int id) async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    print('id: $id');
+    final url =
+        'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks?activeOnly=false&gardenId=$id&plantId=0';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Plant: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          datagardentask =
+              responseTrans.map((item) => DataGardenTask.fromJson(item)).toList();
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +92,11 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       return item.plantName!
           .toLowerCase()
           .contains(plantSearchText.toLowerCase());
+    }).toList();
+    List<DataGardenTask> filteredTask= datagardentask.where((item) {
+      return item.gardenTaskName!
+          .toLowerCase()
+          .contains(taskSearchText.toLowerCase());
     }).toList();
     return DefaultTabController(
       length: 2,
@@ -116,21 +146,21 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: TaskModel.taskModel.length,
+                      itemCount: filteredTask.length,
                       itemBuilder: (BuildContext context, int index) {
-                        // Filter your task items based on 'taskSearchText'
-                        // Example: if (TaskModel.taskModel[index].contains(taskSearchText))
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TaskDetail(),
+                                builder: (context) => TaskDetail(datagardentask:datagardentask[index]),
                               ),
                             );
                           },
                           child: TaskObject(
-                            index: index,
+                              gardenTaskName: filteredTask[index].gardenTaskName,
+                              gardenTaskDate: filteredTask[index].gardenTaskDate,
+                              status: filteredTask[index].status,
                             press: () {},
                           ),
                         );

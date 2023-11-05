@@ -8,6 +8,7 @@ import 'package:webview_flutter/webview_flutter.dart';
 import '../Controller/PlantController.dart';
 import '../Garden/garden-detail-task.dart';
 import '../QR/QrCode.dart';
+import '../Task/TaskPlant.dart';
 
 class PlantDetail extends StatelessWidget {
   final DataPlant dataPlant;
@@ -172,6 +173,60 @@ class PlantDetail extends StatelessWidget {
                           child: Center(
                             child: Text(
                               'Show QR Code',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 15 * ffem,
+                                fontWeight: FontWeight.w600,
+                                height: 1.5 * ffem / fem,
+                                color: Color(0xffffffff),
+                              ),
+                            ),
+                          ),
+                        )),
+                  ),
+                ),
+                 SizedBox(
+                            height: 25 * fem,
+                          ),
+                Container(
+                  // primarybuttonM7P (3014:1114)
+                  margin:
+                      EdgeInsets.fromLTRB(17 * fem, 0 * fem, 17 * fem, 0 * fem),
+                  child: TextButton(
+                    onPressed: () {},
+                    style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                    ),
+                    child: Container(
+                        width: double.infinity,
+                        height: 60 * fem,
+                        decoration: BoxDecoration(
+                          color: Color(0xff6cc51d),
+                          borderRadius: BorderRadius.circular(5 * fem),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Color(0x3f6cc51d),
+                              offset: Offset(0 * fem, 10 * fem),
+                              blurRadius: 4.5 * fem,
+                            ),
+                          ],
+                        ),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            primary: Color(0xff6cc51d),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TaskPlant(id: dataPlant.plantId!),
+                              ),
+                            );
+                          },
+                          child: Center(
+                            child: Text(
+                              'Show Task',
                               textAlign: TextAlign.center,
                               style: TextStyle(
                                 fontFamily: 'Poppins',

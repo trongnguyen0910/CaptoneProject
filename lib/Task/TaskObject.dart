@@ -4,11 +4,15 @@ import '../model/GardenModel.dart';
 import '../model/TaskModel.dart';
 
 class TaskObject extends StatelessWidget {
-  final int index;
   final VoidCallback press;
+  String? gardenTaskName;
+  DateTime? gardenTaskDate;
+  String? status;
   TaskObject({
-    required this.index,
     required this.press,
+    required this.gardenTaskName,
+    required this.gardenTaskDate,
+    required this.status,
   });
   @override
   Widget build(BuildContext context) {
@@ -31,11 +35,9 @@ class TaskObject extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Container(
-                  margin:
-                      EdgeInsets.fromLTRB(0 * fem, 0 * fem, 239 * fem, 0 * fem),
+                Expanded(
                   child: Text(
-                    TaskModel.taskModel[index].name,
+                    '$gardenTaskName',
                     style: TextStyle(
                       fontFamily: 'Poppins',
                       fontSize: 15 * ffem,
@@ -43,17 +45,19 @@ class TaskObject extends StatelessWidget {
                       height: 1.5 * ffem / fem,
                       color: Color(0xff000000),
                     ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
                 Text(
-                  TaskModel.taskModel[index].status,
+                  '$status',
                   textAlign: TextAlign.right,
                   style: TextStyle(
                     fontFamily: 'Poppins',
                     fontSize: 15 * ffem,
                     fontWeight: FontWeight.w600,
                     height: 1.5 * ffem / fem,
-                    color: TaskModel.taskModel[index].status == "Done"
+                    color: '$status' == "Completed"
                         ? Color.fromARGB(
                             255, 1, 124, 5) // Màu xanh cho trạng thái "done"
                         : Colors.red, // Màu đỏ cho trạng thái khác
@@ -68,7 +72,7 @@ class TaskObject extends StatelessWidget {
               maxWidth: 251 * fem,
             ),
             child: Text(
-              TaskModel.taskModel[index].time,
+              '$gardenTaskDate',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 13 * ffem,

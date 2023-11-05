@@ -384,7 +384,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                    decoration: InputDecoration(
                                             labelText: 'Garden Name',
                                             labelStyle:
-                                                TextStyle(color: Colors.black,fontSize: 15),
+                                                TextStyle(color: Colors.black,fontSize: 15*ffem, fontWeight: FontWeight.w500,),
                                             
                                           ),
                                   items: gardenList.map((DataGarden garden) {
@@ -424,7 +424,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                    decoration: InputDecoration(
                                             labelText: 'Plant Name',
                                             labelStyle:
-                                                TextStyle(color: Colors.black,fontSize: 15),
+                                                TextStyle(color: Colors.black,fontSize: 15*ffem, fontWeight: FontWeight.w500,),
                                             
                                           ),
                                   items: plantList.map((DataPlant plant) {
