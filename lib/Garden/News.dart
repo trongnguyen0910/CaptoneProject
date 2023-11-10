@@ -33,11 +33,15 @@ class _NewsWebViewState extends State<NewsWebView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color.fromARGB(255, 54, 135, 54),
-        actions: [
+      
+       appBar: AppBar(
+          title: Text('Trang tin tức',
+              style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+           actions: [
           IconButton(
-          icon: Icon(Icons.arrow_forward),
+          icon: Icon(Icons.arrow_forward,color: Colors.black),
           onPressed: () async {
             if (await controller.canGoForward()) {
               await controller.goForward();
@@ -46,7 +50,7 @@ class _NewsWebViewState extends State<NewsWebView> {
         ),
         ],
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: Icon(Icons.arrow_back,color: Colors.black),
           onPressed: () async {
             if (await controller.canGoBack()) {
               await controller.goBack();
@@ -55,8 +59,7 @@ class _NewsWebViewState extends State<NewsWebView> {
             }
           },
         ),
-        title: Text("  Tin tức nông sản Việt Nam"),
-      ),
+        ),
       body: WebViewWidget(controller: controller),
     );
   }

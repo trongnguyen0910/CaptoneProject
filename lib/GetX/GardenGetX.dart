@@ -1,18 +1,22 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:myapp/Controller/CategoryFruit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
 import 'package:http/http.dart' as http;
 
 import '../Controller/VarietyController.dart';
+import '../Controller/VarietyStageController.dart';
 
 
 class GardenController extends GetxController {
   var gardenList = <DataGarden>[].obs;
    var plantList = <DataPlant>[].obs;
    var varietyList = <DataVariety>[].obs;
+   var cropStageList = <DataVarietyStage>[].obs;
+   var categoryList = <CategoryFruit>[].obs;
    var datagarden = [].obs; 
    
   void updateGardenList(List<DataGarden> newList) {
@@ -24,6 +28,13 @@ class GardenController extends GetxController {
   void updateVarietyList(List<DataVariety> newList) {
     varietyList.value = newList;
   }
+  void updateVarietyStageList(List<DataVarietyStage> newList) {
+    cropStageList.value = newList;
+  }
+  void updateCategoryList(List<CategoryFruit> newList) {
+    categoryList.value = newList;
+  }
+    
   Future<void> fetchData() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');

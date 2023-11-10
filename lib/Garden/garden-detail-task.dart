@@ -85,19 +85,44 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       }
     }
   }
+   List<DataGardenTask> sortTasksByStatus(List<DataGardenTask> tasks) {
+    tasks.sort((a, b) {
+      // Xác định ưu tiên sắp xếp dựa trên trạng thái của nhiệm vụ
+      Map<String, int> statusOrder = {
+        'Pending': 0,
+        'InProgress': 1,
+        'Completed': 2,
+        'Cancelled': 3,
+      };
+
+     int aStatus = statusOrder[a.status!]!;
+     int bStatus = statusOrder[b.status!]!;
+
+      // Sắp xếp theo thứ tự ưu tiên
+      return aStatus.compareTo(bStatus);
+    });
+    return tasks;
+  }
 
   @override
   Widget build(BuildContext context) {
+     List<DataGardenTask> sortedTasks = sortTasksByStatus(datagardentask);
+
+    List<DataGardenTask> filteredAndSortedTasks = sortedTasks.where((item) {
+      return item.gardenTaskName!
+          .toLowerCase()
+          .contains(taskSearchText.toLowerCase());
+    }).toList();
     List<DataPlant> filteredTrans = dataplant.where((item) {
       return item.plantName!
           .toLowerCase()
           .contains(plantSearchText.toLowerCase());
     }).toList();
-    List<DataGardenTask> filteredTask= datagardentask.where((item) {
-      return item.gardenTaskName!
-          .toLowerCase()
-          .contains(taskSearchText.toLowerCase());
-    }).toList();
+    // List<DataGardenTask> filteredTask= datagardentask.where((item) {
+    //   return item.gardenTaskName!
+    //       .toLowerCase()
+    //       .contains(taskSearchText.toLowerCase());
+    // }).toList();
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -146,7 +171,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                   ),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: filteredTask.length,
+                      itemCount: filteredAndSortedTasks.length,
                       itemBuilder: (BuildContext context, int index) {
                         return GestureDetector(
                           onTap: () {
@@ -158,9 +183,10 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                             );
                           },
                           child: TaskObject(
-                              gardenTaskName: filteredTask[index].gardenTaskName,
-                              gardenTaskDate: filteredTask[index].gardenTaskDate,
-                              status: filteredTask[index].status,
+                              // datagardentask:datagardentask[index],
+                              gardenTaskName: filteredAndSortedTasks[index].gardenTaskName,
+                              gardenTaskDate: filteredAndSortedTasks[index].gardenTaskDate,
+                              status: filteredAndSortedTasks[index].status,
                             press: () {},
                           ),
                         );

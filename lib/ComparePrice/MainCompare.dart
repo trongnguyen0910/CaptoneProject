@@ -20,26 +20,37 @@ class CompareScreen extends StatefulWidget {
 
 class _CompareScreenState extends State<CompareScreen> {
   List<DataCompare> trans = [];
+  List<DataCompare> allTrans = [];
+  final scrollController = ScrollController();
   String searchText = '';
+  int page = 1;
+  int pageSize = 20;
+  bool isLoading = false;
 
   @override
   void initState() {
     super.initState();
+    scrollController.addListener(_scrollListener);
     getTrans();
   }
 
   Future<void> getTrans() async {
-    final url = 'http://fruitseasonapi-001-site1.atempurl.com/api/fruit-histories';
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+
+    final url = 'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-histories?page=$page&pageSize=$pageSize&userId=0';
     Map<String, String> headers = {
       'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
     };
     final response = await http.get(Uri.parse(url), headers: headers);
     final responseTrans = json.decode(response.body)['data'];
-
+    print('responseTrans: $responseTrans');
     if (responseTrans != null) {
       if (responseTrans is List) {
         setState(() {
           trans = responseTrans.map((item) => DataCompare.fromJson(item)).toList();
+          allTrans = List.from(allTrans)..addAll(trans);
         });
       }
     }
@@ -47,25 +58,23 @@ class _CompareScreenState extends State<CompareScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<DataCompare> filteredTrans = trans.where((item) {
+    List<DataCompare> filteredTrans = allTrans.where((item) {
       return item.fruitName!.toLowerCase().contains(searchText.toLowerCase());
     }).toList();
 
     return Scaffold(
-      appBar: AppBar(
-       backgroundColor: Color.fromARGB(255, 54, 135, 54),
-        title: Text('Compare Price'),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.clear),
-            onPressed: () {
-              setState(() {
-                searchText = '';
-              });
+       appBar: AppBar(
+          title: Text('So sánh giá',
+              style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
             },
           ),
-        ],
-      ),
+        ),
       body: Column(
         children: [
           Padding(
@@ -83,17 +92,25 @@ class _CompareScreenState extends State<CompareScreen> {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: filteredTrans.length,
+              controller: scrollController,
+              itemCount: filteredTrans.length + (isLoading ? 1 : 0),
               itemBuilder: (BuildContext context, int index) {
-                return ListComparePrice(
-                  historyId: filteredTrans[index].historyId,
-                  fruitName: filteredTrans[index].fruitName,
-                  price: filteredTrans[index].price,
-                  location: filteredTrans[index].location,
-                  status: filteredTrans[index].status,
-                  createdDate: filteredTrans[index].createdDate,
-                  updateDate: filteredTrans[index].updateDate,
-                );
+                if (index == filteredTrans.length) {
+                  if (isLoading) {
+                    return Center(child: CircularProgressIndicator());
+                  } else {
+                    return Container();
+                  }
+                } else {
+                  return ListComparePrice(
+                    historyId: filteredTrans[index].historyId,
+                    fruitName: filteredTrans[index].fruitName,
+                    price: filteredTrans[index].price,
+                    location: filteredTrans[index].location,
+                    status: filteredTrans[index].status,
+                    createdDate: filteredTrans[index].createdDate,
+                  );
+                }
               },
             ),
           ),
@@ -101,7 +118,24 @@ class _CompareScreenState extends State<CompareScreen> {
       ),
     );
   }
+
+  void _scrollListener() {
+    if (scrollController.position.pixels == scrollController.position.maxScrollExtent) {
+      if (!isLoading) {
+        setState(() {
+          isLoading = true;
+        });
+        page = page + 1;
+        getTrans().then((_) {
+          setState(() {
+            isLoading = false;
+          });
+        });
+      }
+    }
+  }
 }
+
 
 
 

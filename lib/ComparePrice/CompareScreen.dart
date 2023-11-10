@@ -9,7 +9,7 @@ class ListComparePrice extends StatelessWidget {
   String? location;
   String? status;
   DateTime? createdDate;
-  dynamic updateDate;
+
 
   ListComparePrice({
     required this.historyId,
@@ -18,7 +18,7 @@ class ListComparePrice extends StatelessWidget {
     required this.location,
     required this.status,
     required this.createdDate,
-    required this.updateDate,
+
     Key? key,
   }) : super(key: key);
 

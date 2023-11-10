@@ -59,6 +59,8 @@ dependencies:
   barcode_scan2: ^4.2.4
   barcode_scanner: ^3.6.2
   qr_code_tools: ^0.0.7
+  table_calendar: ^3.0.0
+  comment_box: ^0.0.18
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -319,6 +321,7 @@ flutter:
     - assets/mobile/images/ellipse-35-bg.png
     - assets/mobile/images/add-image.png
     - assets/mobile/images/success.json
+    - assets/mobile/images/avartarcomment.png
     
 
 

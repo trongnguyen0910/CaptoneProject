@@ -42,13 +42,15 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
         if (scannedData != null) {
           List<String> dataParts = scannedData!.split(', ');
 
-          if (dataParts.length >= 6) {
+          if (dataParts.length >= 7) {
             String cropName = dataParts[0];
             String description = dataParts[1];
             String imageUrl = dataParts[2];
             String gardenName = dataParts[3];
             String plantingDate = dataParts[4];
             String harvestingDate = dataParts[5];
+            String plantIdString = dataParts[6];
+            int plantId = int.parse(plantIdString);
             DateTime plantingDateTime = DateTime.parse(plantingDate);
             DateTime harvestingDateTime = DateTime.parse(harvestingDate);
 
@@ -57,6 +59,7 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
               description: description,
               image: imageUrl,
               gardenName: gardenName,
+              plantId: plantId,
               plantingDate: plantingDateTime,
               harvestingDate: harvestingDateTime,
             );
@@ -125,7 +128,8 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
             ElevatedButton(
               onPressed: scanQRFromImage,
               style: ElevatedButton.styleFrom(
-                primary: Color.fromARGB(255, 50, 167, 58), // Change the background color here
+                primary: Color.fromARGB(
+                    255, 50, 167, 58), // Change the background color here
               ),
               child: Text('Choose Image from Gallery'),
             ),

@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/utils.dart';
 
 import 'Garden/garden.dart';
@@ -61,11 +62,12 @@ import 'SignIn/SignIn.dart';
 // import 'package:myapp/page-1/setting.dart';
 // import 'package:myapp/page-1/quit.dart';
 
-void main()  {
+void main() async  {
 
 
   Get.put(GardenController());
-
+ WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('vi_VN', null);
   runApp(MyApp());
 }
 

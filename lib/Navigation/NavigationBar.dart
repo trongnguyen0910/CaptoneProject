@@ -81,13 +81,14 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   int _selectedIndex = 0;
   Map<int, GlobalKey<NavigatorState>> navigatorKeys = {
-     0: GlobalKey<NavigatorState>(),
-     1: GlobalKey<NavigatorState>(),
-     2: GlobalKey<NavigatorState>(),
-     3: GlobalKey<NavigatorState>(),
-     4: GlobalKey<NavigatorState>(),
+    0: GlobalKey<NavigatorState>(),
+    1: GlobalKey<NavigatorState>(),
+    2: GlobalKey<NavigatorState>(),
+    3: GlobalKey<NavigatorState>(),
+    4: GlobalKey<NavigatorState>(),
   };
-    final List<Widget> _widgetOptions = <Widget>[
+
+  final List<Widget> _widgetOptions = <Widget>[
     Home(),
     QRScannerScreen(),
     Create(),
@@ -96,17 +97,21 @@ class _NavigationState extends State<Navigation> {
   ];
 
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index == _selectedIndex) {
+      navigatorKeys[_selectedIndex]?.currentState!.popUntil((route) => route.isFirst);
+    } else {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       bottomNavigationBar: BottomNavigationBar(
-         items: const <BottomNavigationBarItem>[
-           BottomNavigationBarItem(
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
             icon: Icon(Icons.home, color: Colors.green),
             label: 'Home',
           ),
@@ -126,20 +131,22 @@ class _NavigationState extends State<Navigation> {
             icon: Icon(Icons.person, color: Colors.green),
             label: 'Profile',
           ),
-         ],
-         currentIndex: _selectedIndex,
-         onTap: _onItemTapped,
-       ),
-      body:  buildNavigator(),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+      ),
+      body: buildNavigator(),
     );
   }
 
-   buildNavigator() {
-     return Navigator(
-       key: navigatorKeys[_selectedIndex],
-       onGenerateRoute: (RouteSettings settings){
-         return MaterialPageRoute(builder: (_) => _widgetOptions.elementAt(_selectedIndex));
-       },
-     );
+  buildNavigator() {
+    return Navigator(
+      key: navigatorKeys[_selectedIndex],
+      onGenerateRoute: (RouteSettings settings) {
+        return MaterialPageRoute(
+          builder: (_) => _widgetOptions.elementAt(_selectedIndex),
+        );
+      },
+    );
   }
 }

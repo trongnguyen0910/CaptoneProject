@@ -26,6 +26,28 @@ class _TaskPlantState extends State<TaskPlant> {
   }
 
   List<DataGardenTask> datagardentask = [];
+  String taskSearchText = "";
+
+  List<DataGardenTask> sortTasksByStatus(List<DataGardenTask> tasks) {
+    tasks.sort((a, b) {
+      // Xác định ưu tiên sắp xếp dựa trên trạng thái của nhiệm vụ
+      Map<String, int> statusOrder = {
+        'Pending': 0,
+        'InProgress': 1,
+        'Completed': 2,
+        'Cancelled': 3,
+      };
+
+     int aStatus = statusOrder[a.status!]!;
+     int bStatus = statusOrder[b.status!]!;
+
+      // Sắp xếp theo thứ tự ưu tiên
+      return aStatus.compareTo(bStatus);
+    });
+    return tasks;
+  }
+
+
   Future<void> getTask(int id) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
@@ -53,108 +75,126 @@ class _TaskPlantState extends State<TaskPlant> {
 
   @override
   Widget build(BuildContext context) {
+    List<DataGardenTask> sortedTasks = sortTasksByStatus(datagardentask);
+
+    List<DataGardenTask> filteredAndSortedTasks = sortedTasks.where((item) {
+      return item.gardenTaskName!
+          .toLowerCase()
+          .contains(taskSearchText.toLowerCase());
+    }).toList();
+
     final double fem = 1.0; // Define your fem value here
     final double ffem = 1.0; // Define your ffem value here
 
     return Scaffold(
-        appBar: AppBar(
-          title: Text('Task', style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () async {
-              Navigator.of(context).pop();
-            },
-          ),
+      appBar: AppBar(
+        title: Text('Task', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
         ),
-        body: Container(
-            padding:
-                EdgeInsets.fromLTRB(15 * fem, 10 * fem, 15 * fem, 10 * fem),
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(color: Color(0xffebebeb)),
-              color: Color(0xffffffff),
-              borderRadius: BorderRadius.circular(10 * fem),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(15 * fem),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    taskSearchText = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search Tasks...',
+                ),
+              ),
             ),
-            child: ListView.builder(
-              itemCount: datagardentask.length,
-              itemBuilder: (context, index) {
-                DataGardenTask task = datagardentask[index];
-                return GestureDetector(
-                  onTap: () {
-                    // Navigate to detail page when an item is tapped
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TaskDetail(
-                            datagardentask: task,), // Pass the task to the detail page
+            Expanded(
+              child: ListView.builder(
+                itemCount: filteredAndSortedTasks.length,
+                itemBuilder: (context, index) {
+                  DataGardenTask task = filteredAndSortedTasks[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskDetail(datagardentask: task),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(bottom: 18 * fem),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey),
+                        borderRadius: BorderRadius.circular(10 * fem),
                       ),
-                    );
-                  },
-                  child: Container(
-                    margin: EdgeInsets.fromLTRB(
-                        0 * fem, 0 * fem, 0 * fem, 18 * fem),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey), // Adding borders
-                      borderRadius: BorderRadius.circular(10 * fem),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  task.gardenTaskName ?? '',
+                      child: Padding(
+                        padding: EdgeInsets.all(10 * fem),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    task.gardenTaskName ?? '',
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 15 * ffem,
+                                      fontWeight: FontWeight.w600,
+                                      height: 1.5 * ffem,
+                                      color: Color(0xff000000),
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 1,
+                                  ),
+                                ),
+                                Text(
+                                  task.status ?? '',
+                                  textAlign: TextAlign.right,
                                   style: TextStyle(
                                     fontFamily: 'Poppins',
                                     fontSize: 15 * ffem,
                                     fontWeight: FontWeight.w600,
-                                    height: 1.5 * ffem / fem,
-                                    color: Color(0xff000000),
+                                    height: 1.5 * ffem,
+                                    color: task.status == "Completed"
+                                        ? Color.fromARGB(255, 1, 124, 5)
+                                        : Colors.red,
                                   ),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
                                 ),
-                              ),
-                              Text(
-                                task.status ?? '',
-                                textAlign: TextAlign.right,
-                                style: TextStyle(
-                                  fontFamily: 'Poppins',
-                                  fontSize: 15 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.5 * ffem / fem,
-                                  color: task.status == "Completed"
-                                      ? Color.fromARGB(255, 1, 124, 5)
-                                      : Colors.red,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Text(
-                            task.gardenTaskDate != null
-                                ? DateFormat('yyyy-MM-dd')
-                                    .format(task.gardenTaskDate!)
-                                : '',
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 13 * ffem,
-                              fontWeight: FontWeight.w400,
-                              height: 1.5 * ffem / fem,
-                              color: Color(0xff000000),
+                              ],
                             ),
-                          ),
-                        ],
+                            Text(
+                              task.gardenTaskDate != null
+                                  ? DateFormat('yyyy-MM-dd').format(task.gardenTaskDate!)
+                                  : '',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontSize: 13 * ffem,
+                                fontWeight: FontWeight.w400,
+                                height: 1.5 * ffem,
+                                color: Color(0xff000000),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
-            )));
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

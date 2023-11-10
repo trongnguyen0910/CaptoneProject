@@ -1,14 +1,24 @@
+import 'dart:convert';
+
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:table_calendar/table_calendar.dart';
 
 import '../ComparePrice/CompareScreen.dart';
 import '../ComparePrice/MainCompare.dart';
+import '../Controller/GardenTaskController.dart';
+import '../Expert/ViewPostExpert.dart';
+import '../Fruit/ViewFruit.dart';
 import '../Garden/News.dart';
 import '../Garden/garden.dart';
+import 'package:http/http.dart' as http;
+
+import '../Task/TaskDetail.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,6 +26,98 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  List<DataGardenTask> datagardentask = [];
+  Map<DateTime, List> _markedDateMap = {};
+
+  DateTime parseAPIDate(String dateStr) {
+    return DateTime.parse(dateStr);
+  }
+
+  // void _markDatesOnCalendar() {
+  //   for (var task in datagardentask) {
+  //     if (task.gardenTaskDate != null) {
+  //       DateTime parsedDate = parseAPIDate(task.gardenTaskDate.toString());
+  //       parsedDate =
+  //           DateTime(parsedDate.year, parsedDate.month, parsedDate.day);
+  //       print('Parsed date: $parsedDate');
+
+  //       if (_markedDateMap[parsedDate] == null) {
+  //         _markedDateMap[parsedDate] = [task];
+  //       } else {
+  //         _markedDateMap[parsedDate]!.add(task);
+  //       }
+  //     }
+  //   }
+
+  //   print('Marked Dates: $_markedDateMap');
+  // }
+  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+    List<DataGardenTask> tasksForSelectedDay = datagardentask.where((task) {
+      if (task.gardenTaskDate != null) {
+        return task.gardenTaskDate?.year == selectedDay.year &&
+            task.gardenTaskDate?.month == selectedDay.month &&
+            task.gardenTaskDate?.day == selectedDay.day;
+      }
+      return false;
+    }).toList();
+
+    if (tasksForSelectedDay.isNotEmpty) {
+      DataGardenTask selectedTask = tasksForSelectedDay.first;
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TaskDetail(datagardentask: selectedTask),
+        ),
+      );
+    }
+  }
+
+  bool hasTaskOnDay(DateTime day, List<DataGardenTask> tasks) {
+    final formattedDay = DateTime(day.year, day.month, day.day);
+    return tasks.any((task) {
+      final taskDate = DateTime(task.gardenTaskDate!.year,
+          task.gardenTaskDate!.month, task.gardenTaskDate!.day);
+      // Kiểm tra nếu công việc không ở trạng thái "complete" thì mới đánh dấu
+      if (formattedDay.isAtSameMomentAs(taskDate) &&
+          task.status != "Completed") {
+        return true;
+      }
+      return false;
+    });
+  }
+
+  Future<void> getTask() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks?activeOnly=false&gardenId=0&plantId=0';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Plant: $statusCode');
+    print('responseTrans Plant: $responseTrans');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          datagardentask = responseTrans
+              .map((item) => DataGardenTask.fromJson(item))
+              .toList();
+          // _markDatesOnCalendar();
+        });
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getTask();
+  }
+
   final List<String> imageList = [
     "https://images.unsplash.com/photo-1464297162577-f5295c892194?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
     "https://images.unsplash.com/photo-1536657464919-892534f60d6e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
@@ -32,21 +134,24 @@ class _HomeState extends State<Home> {
     "https://vtv1.mediacdn.vn/thumb_w/640/2023/1/13/nong-san-xuat-trung-quoc-1-1673584638583165452091.jpg",
     "https://ngkt.mofa.gov.vn/wp-content/uploads/2020/03/4-1.jpg",
   ];
-    final List<String> comparePrice = [
+  final List<String> comparePrice = [
     "https://images.unsplash.com/photo-1695199481826-b7e467746bff?auto=format&fit=crop&q=80&w=1932&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     "https://images.unsplash.com/photo-1695892909756-f10b2ca3a093?auto=format&fit=crop&q=80&w=1932&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
   ];
   @override
   Widget build(BuildContext context) {
+    CalendarFormat _calendarFormat = CalendarFormat.month;
+    DateTime _focusedDay = DateTime.now();
+    DateTime? _selectedDay;
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
+        body: SingleChildScrollView(
+      child: Container(
         // homefm3 (2985:1182)
         width: double.infinity,
-        height: 942 * fem,
+        height: 1242 * fem,
         decoration: BoxDecoration(
           color: Color(0xffffffff),
         ),
@@ -55,12 +160,12 @@ class _HomeState extends State<Home> {
             Positioned(
               // autogroupuk89BDb (MwWtE1NdpnWSDzNBeCUk89)
               left: 0 * fem,
-              top: 293 * fem,
+              top: 350 * fem,
               child: Container(
                 padding: EdgeInsets.fromLTRB(
                     20 * fem, 30 * fem, 19 * fem, 177 * fem),
                 width: 428 * fem,
-                height: 949 * fem,
+                height: 1099 * fem,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -98,7 +203,6 @@ class _HomeState extends State<Home> {
                             enlargeCenterPage: true,
                             enableInfiniteScroll: false,
                             autoPlay: true,
-                            
                           ),
                           items: imageList
                               .map((e) => ClipRRect(
@@ -120,6 +224,60 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                      Text(
+                      "Thông tin chuyên gia",
+                      style: TextStyle(
+                        fontSize: 20, // Điều chỉnh kích thước tiêu đề tùy ý
+                        fontWeight:
+                            FontWeight.bold, // Điều chỉnh kiểu chữ tùy ý
+                      ),
+                    ),
+                    Container(
+                      // autogroupnoihr4q (MwWt8BD1xfSeh6CM27Noih)
+                      margin: EdgeInsets.fromLTRB(
+                          0 * fem, 0 * fem, 0 * fem, 30 * fem),
+                      padding: EdgeInsets.fromLTRB(
+                          20.5 * fem, 20 * fem, 20.5 * fem, 20 * fem),
+                      width: double.infinity,
+                      height: 165 * fem,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Color(0xffebebeb)),
+                        color: Color(0xffffffff),
+                        borderRadius: BorderRadius.circular(10 * fem),
+                      ),
+                      child: GestureDetector(
+                        onTap: () {
+                         
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => ViewPost()),
+                          );
+                        },
+                        child: CarouselSlider(
+                          options: CarouselOptions(
+                            enlargeCenterPage: true,
+                            enableInfiniteScroll: false,
+                            autoPlay: true,
+                          ),
+                          items: imageList
+                              .map((e) => ClipRRect(
+                                    borderRadius: BorderRadius.circular(8),
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      children: <Widget>[
+                                        Image.network(
+                                          e,
+                                          width: 1050,
+                                          height: 350,
+                                          fit: BoxFit.cover,
+                                        )
+                                      ],
+                                    ),
+                                  ))
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                    Text(
                       "Tin tức nông sản",
                       style: TextStyle(
                         fontSize: 20, // Điều chỉnh kích thước tiêu đề tùy ý
@@ -145,17 +303,17 @@ class _HomeState extends State<Home> {
                           // Thực hiện chuyển trang khi bấm vào Carousel
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => NewsWebView()),
+                            MaterialPageRoute(
+                                builder: (context) => NewsWebView()),
                           );
                         },
                         child: CarouselSlider(
                           options: CarouselOptions(
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: false,
-                            autoPlay: true,
-                            scrollDirection: Axis.horizontal,
-                            autoPlayInterval: Duration(seconds: 5)
-                          ),
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: false,
+                              autoPlay: true,
+                              scrollDirection: Axis.horizontal,
+                              autoPlayInterval: Duration(seconds: 5)),
                           items: imageNews
                               .map((e) => ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
@@ -175,9 +333,7 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-                    
-
-                     Text(
+                    Text(
                       "So sánh giá",
                       style: TextStyle(
                         fontSize: 20, // Điều chỉnh kích thước tiêu đề tùy ý
@@ -203,17 +359,17 @@ class _HomeState extends State<Home> {
                           // Thực hiện chuyển trang khi bấm vào Carousel
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => CompareScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => CompareScreen()),
                           );
                         },
                         child: CarouselSlider(
                           options: CarouselOptions(
-                            enlargeCenterPage: true,
-                            enableInfiniteScroll: false,
-                            autoPlay: true,
-                            scrollDirection: Axis.horizontal,
-                            autoPlayInterval: Duration(seconds: 5)
-                          ),
+                              enlargeCenterPage: true,
+                              enableInfiniteScroll: false,
+                              autoPlay: true,
+                              scrollDirection: Axis.horizontal,
+                              autoPlayInterval: Duration(seconds: 5)),
                           items: comparePrice
                               .map((e) => ClipRRect(
                                     borderRadius: BorderRadius.circular(8),
@@ -233,7 +389,6 @@ class _HomeState extends State<Home> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -244,7 +399,7 @@ class _HomeState extends State<Home> {
               top: 102 * fem,
               child: Container(
                 width: 428 * fem,
-                height: 191 * fem,
+                height: 255 * fem,
                 child: Stack(
                   children: [
                     Positioned(
@@ -254,7 +409,7 @@ class _HomeState extends State<Home> {
                       child: Align(
                         child: SizedBox(
                           width: 428 * fem,
-                          height: 121 * fem,
+                          height: 400 * fem,
                           child: Container(
                             decoration: BoxDecoration(
                               color: Color(0xff6cc51d),
@@ -264,300 +419,74 @@ class _HomeState extends State<Home> {
                       ),
                     ),
                     Positioned(
-                      // weekbq3 (2993:2636)
-                      left: 19 * fem,
-                      top: 66 * fem,
+                      left: 2,
+                      top: 1,
                       child: Container(
-                        width: 390 * fem,
-                        height: 125 * fem,
+                        width: 390,
+                        height: 400,
                         decoration: BoxDecoration(
-                          color: Color(0xffffffff),
-                          borderRadius: BorderRadius.circular(10 * fem),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
                               color: Color(0x3f000000),
-                              offset: Offset(0 * fem, 4 * fem),
-                              blurRadius: 2 * fem,
+                              offset: Offset(0, 4),
+                              blurRadius: 2,
                             ),
                           ],
                         ),
-                        child: Stack(
-                          children: [
-                            Positioned(
-                              // date4id (2993:2639)
-                              left: 10 * fem,
-                              top: 76 * fem,
-                              child: Container(
-                                width: 34 * fem,
-                                height: 34 * fem,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xff868889)),
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(17 * fem),
-                                ),
-                                child: Center(
-                                  child: Center(
-                                    child: Text(
-                                      '29',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 20 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.2 * fem,
-                                        color: Color(0xff868889),
-                                      ),
+                        child: TableCalendar(
+                          calendarBuilders: CalendarBuilders(
+                            markerBuilder: (context, date, events) {
+                              final hasTask =
+                                  hasTaskOnDay(date, datagardentask);
+                              if (hasTask) {
+                                return Positioned(
+                                  bottom: 1,
+                                  child: Container(
+                                    width: 6, // Điều chỉnh kích thước marker
+                                    height: 6,
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.red, // Màu của marker
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              // autogrouphls35Nq (MwWtYuzoExAPuhwkCiHLs3)
-                              left: 10 * fem,
-                              top: 17 * fem,
-                              child: Container(
-                                width: 202 * fem,
-                                height: 93 * fem,
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Container(
-                                      // week5ofoctoberbMB (2993:2662)
-                                      margin: EdgeInsets.fromLTRB(
-                                          0 * fem, 0 * fem, 31 * fem, 32 * fem),
-                                      child: Text(
-                                        'Week 5 of October',
-                                        style: SafeGoogleFont(
-                                          'Poppins',
-                                          fontSize: 18 * ffem,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.5 * ffem / fem,
-                                          letterSpacing: 0.18 * fem,
-                                          color: Color(0xff000000),
-                                        ),
-                                      ),
-                                    ),
-                                    Container(
-                                      // autogroup653w4kZ (MwWtfk8kWacNZZTVuL653w)
-                                      height: 34 * fem,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Container(
-                                            // dateC65 (2993:2640)
-                                            width: 34 * fem,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Color(0xff868889)),
-                                              color: Color(0xffffffff),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      17 * fem),
-                                            ),
-                                            child: Center(
-                                              child: Center(
-                                                child: Text(
-                                                  '30',
-                                                  textAlign: TextAlign.center,
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 20 * ffem,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.2 * fem,
-                                                    color: Color(0xff868889),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 22 * fem,
-                                          ),
-                                          Container(
-                                            // datecvV (2993:2643)
-                                            width: 34 * fem,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Color(0xff868889)),
-                                              color: Color(0xffffffff),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      17 * fem),
-                                            ),
-                                            child: Center(
-                                              child: Center(
-                                                child: Text(
-                                                  '31',
-                                                  textAlign: TextAlign.center,
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 20 * ffem,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.2 * fem,
-                                                    color: Color(0xff868889),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(
-                                            width: 22 * fem,
-                                          ),
-                                          Container(
-                                            // date3ku (2993:2646)
-                                            width: 34 * fem,
-                                            height: double.infinity,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  color: Color(0xff868889)),
-                                              color: Color(0xffffffff),
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      17 * fem),
-                                            ),
-                                            child: Center(
-                                              child: Center(
-                                                child: Text(
-                                                  '01',
-                                                  textAlign: TextAlign.center,
-                                                  style: SafeGoogleFont(
-                                                    'Poppins',
-                                                    fontSize: 20 * ffem,
-                                                    fontWeight: FontWeight.w600,
-                                                    height: 1.5 * ffem / fem,
-                                                    letterSpacing: 0.2 * fem,
-                                                    color: Color(0xff868889),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              // dateiMF (2993:2649)
-                              left: 234 * fem,
-                              top: 76 * fem,
-                              child: Container(
-                                width: 34 * fem,
-                                height: 34 * fem,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xff868889)),
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(17 * fem),
-                                ),
-                                child: Center(
-                                  child: Center(
-                                    child: Text(
-                                      '02',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 20 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.2 * fem,
-                                        color: Color(0xff868889),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              // date9SZ (2993:2652)
-                              left: 290 * fem,
-                              top: 76 * fem,
-                              child: Container(
-                                width: 34 * fem,
-                                height: 34 * fem,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xff868889)),
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(17 * fem),
-                                ),
-                                child: Center(
-                                  child: Center(
-                                    child: Text(
-                                      '03',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 20 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.2 * fem,
-                                        color: Color(0xff868889),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              // datePLu (2993:2655)
-                              left: 346 * fem,
-                              top: 76 * fem,
-                              child: Container(
-                                width: 34 * fem,
-                                height: 34 * fem,
-                                decoration: BoxDecoration(
-                                  border: Border.all(color: Color(0xff868889)),
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(17 * fem),
-                                ),
-                                child: Center(
-                                  child: Center(
-                                    child: Text(
-                                      '04',
-                                      textAlign: TextAlign.center,
-                                      style: SafeGoogleFont(
-                                        'Poppins',
-                                        fontSize: 20 * ffem,
-                                        fontWeight: FontWeight.w600,
-                                        height: 1.5 * ffem / fem,
-                                        letterSpacing: 0.2 * fem,
-                                        color: Color(0xff868889),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      // manageyourgardensdW9 (2993:2633)
-                      left: 28 * fem,
-                      top: 0 * fem,
-                      child: Align(
-                        child: SizedBox(
-                          width: 226 * fem,
-                          height: 30 * fem,
-                          child: Text(
-                            'Manage your gardens',
-                            style: SafeGoogleFont(
-                              'Poppins',
-                              fontSize: 20 * ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5 * ffem / fem,
-                              color: Color(0xffffffff),
-                            ),
+                                );
+                              }
+                              return null;
+                            },
                           ),
+                          locale: 'vi_VN',
+                          availableCalendarFormats: {
+                            CalendarFormat.month: 'Tháng',
+                            CalendarFormat.week: 'Tuần',
+                          },
+                          calendarFormat: _calendarFormat,
+                          headerStyle: HeaderStyle(
+                            titleCentered: true,
+                            formatButtonShowsNext: false,
+                            formatButtonVisible: false,
+                            titleTextStyle: TextStyle(
+                                fontSize: 18,
+                                color: Colors.black), // Text color
+                          ),
+                          daysOfWeekStyle: DaysOfWeekStyle(
+                            weekdayStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black), // Weekday text color
+                            weekendStyle: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black), // Weekend text color
+                          ),
+                          rowHeight:
+                              30, // Điều chỉnh chiều cao của hàng ngày trong lịch
+                          focusedDay: _focusedDay,
+                          firstDay: DateTime.utc(2023, 1, 1),
+                          lastDay: DateTime.utc(2023, 12, 31),
+                          selectedDayPredicate: (day) {
+                            return isSameDay(_selectedDay, day);
+                          },
+                          onDaySelected: _onDaySelected,
                         ),
                       ),
                     ),
@@ -571,8 +500,12 @@ class _HomeState extends State<Home> {
               top: 0 * fem,
               child: Container(
                 padding: EdgeInsets.fromLTRB(
-                    18 * fem, 14.87 * fem, 17 * fem, 6.78 * fem),
-                width: 428 * fem,
+                  18 * fem,
+                  14.87 * fem,
+                  17 * fem,
+                  6.78 * fem,
+                ),
+                width: 558 * fem,
                 height: 102 * fem,
                 decoration: BoxDecoration(
                   color: Color(0xff6cc51d),
@@ -583,7 +516,11 @@ class _HomeState extends State<Home> {
                     Container(
                       // frame168Ztu (2993:2629)
                       margin: EdgeInsets.fromLTRB(
-                          1.72 * fem, 25 * fem, 137.72 * fem, 0 * fem),
+                        1.72 * fem,
+                        25 * fem,
+                        100.72 * fem,
+                        0 * fem,
+                      ),
                       width: double.infinity,
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -591,7 +528,11 @@ class _HomeState extends State<Home> {
                           Container(
                             // brocoliH4D (2993:2630)
                             margin: EdgeInsets.fromLTRB(
-                                0 * fem, 0 * fem, 5 * fem, 0 * fem),
+                              0 * fem,
+                              0 * fem,
+                              5 * fem,
+                              0 * fem,
+                            ),
                             width: 46.56 * fem,
                             height: 49.01 * fem,
                             child: Image.asset(
@@ -603,7 +544,11 @@ class _HomeState extends State<Home> {
                           Container(
                             // skinclinicyhj (2993:2632)
                             margin: EdgeInsets.fromLTRB(
-                                0 * fem, 0 * fem, 0 * fem, 0 * fem),
+                              0 * fem,
+                              0 * fem,
+                              0 * fem,
+                              0 * fem,
+                            ),
                             child: Text(
                               'Fruit season',
                               style: SafeGoogleFont(
@@ -615,6 +560,35 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ViewFruit()),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(
+                                110 * fem,
+                                0 * fem,
+                                0 * fem,
+                                0 * fem,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons
+                                        .list, // You can replace this with your desired icon
+                                    color: Colors
+                                        .white, // Set the color you prefer
+                                    size: 30.0, // Adjust the size as needed
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -625,7 +599,6 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-      )
-    );
+    ));
   }
 }

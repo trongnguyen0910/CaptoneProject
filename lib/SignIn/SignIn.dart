@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
@@ -19,19 +18,20 @@ class Login extends StatefulWidget {
   @override
   State<Login> createState() => _LoginState();
 }
- 
+
 class _LoginState extends State<Login> {
+  String? refreshToken; // Lưu trữ RefreshToken
   bool _isPassword = true;
   final _usernameController = TextEditingController();
-final _passwordController = TextEditingController();
-void login(String email, password) async {
+  final _passwordController = TextEditingController();
+  void login(String email, password) async {
     try {
       var request = http.Request(
         'POST',
         Uri.parse(
             'http://fruitseasonapims-001-site1.btempurl.com/api/auths/login'),
       );
-       request.headers['Content-Type'] = 'application/json; charset=UTF-8';
+      request.headers['Content-Type'] = 'application/json; charset=UTF-8';
       request.body = json.encode({
         'email': email,
         'password': password,
@@ -66,30 +66,26 @@ void login(String email, password) async {
       print('status code: ${response.statusCode}');
       var jsonResponse = json.decode(body);
       var accountID = jsonResponse['data']['userId'];
-     var accessToken = jsonResponse['data']['accessToken'];
-      // var accessToken = jsonResponse['AccessToken'];
-      // var emailStylefer = jsonResponse['Account']['Email'];
+      var accessToken = jsonResponse['data']['accessToken'];
+      refreshToken = jsonResponse['data']['refreshToken'];
+
       print('$accountID');
-       print('$accessToken');
-      // print('AccessToken: $accessToken');
+      print('$accessToken');
+
       if (accountID != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setInt('accountID', accountID);
       }
-      // if (emailStylefer != null) {
-      //   SharedPreferences prefs = await SharedPreferences.getInstance();
-      //   await prefs.setString('emailStylefer', emailStylefer);
-      // }
+
       if (accessToken != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', accessToken);
       }
-      // ignore: unrelated_type_equality_checks
-      
     } catch (e) {
       print(e.toString());
     }
   }
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 418;
@@ -257,7 +253,7 @@ void login(String email, password) async {
                           ),
                           Expanded(
                             child: TextFormField(
-                             controller: _passwordController,
+                              controller: _passwordController,
                               obscureText: _isPassword,
                               decoration: InputDecoration(
                                 labelText: 'Password',
@@ -342,11 +338,11 @@ void login(String email, password) async {
                           TextButton(
                             // forgotpasswordxL1 (10:308)
                             onPressed: () {
-                               Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ForgotPassword()),
-                        );
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => ForgotPassword()),
+                              );
                             },
                             style: TextButton.styleFrom(
                               padding: EdgeInsets.zero,
@@ -384,8 +380,8 @@ void login(String email, password) async {
                       ),
                       child: TextButton(
                         onPressed: () {
-                           login(_usernameController.text.toString(),
-                    _passwordController.text.toString());
+                          login(_usernameController.text.toString(),
+                              _passwordController.text.toString());
                         },
                         child: Text(
                           'Login',
@@ -404,10 +400,10 @@ void login(String email, password) async {
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => CompleteProfile()),
-                        );
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CompleteProfile()),
+                          );
                         },
                         style: TextButton.styleFrom(
                           padding: EdgeInsets.zero,

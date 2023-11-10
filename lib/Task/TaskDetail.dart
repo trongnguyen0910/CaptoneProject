@@ -6,6 +6,8 @@ import 'package:myapp/Controller/GardenTaskController.dart';
 import 'package:myapp/Garden/garden-detail-task.dart';
 import 'package:myapp/utils.dart';
 
+import 'UpdateTask.dart';
+
 class TaskDetail extends StatelessWidget {
   final DataGardenTask datagardentask;
   TaskDetail({Key? key, required this.datagardentask}) : super(key: key);
@@ -18,7 +20,7 @@ class TaskDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plant Detail', style: TextStyle(color: Colors.black)),
+        title: Text('Task Detail', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -107,7 +109,7 @@ class TaskDetail extends StatelessWidget {
               ),
             ),
             Positioned(
-              bottom: 0,
+              bottom: 80*fem,
               left: 0,
               right: 0,
               child: Container(
@@ -140,6 +142,49 @@ class TaskDetail extends StatelessWidget {
                 ),
               ),
             ),
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: GestureDetector(
+                onTap: () {
+                  // Chuyển hướng đến màn hình cập nhật task khi "Update Task" được nhấn
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UpdateTaskScreen(  datagardentask: datagardentask)),
+                  );
+                },
+                child: Container(
+                  margin: EdgeInsets.all(20 * fem),
+                  width: double.infinity,
+                  height: 60 * fem,
+                  decoration: BoxDecoration(
+                   color: Color(0xff6cc51d), // Màu sắc có thể điều chỉnh tùy ý
+                    borderRadius: BorderRadius.circular(5 * fem),
+                    boxShadow: [
+                      BoxShadow(
+                       color: Color(0x3f6cc51d),
+                        offset: Offset(0 * fem, 10 * fem),
+                        blurRadius: 4.5 * fem,
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      'Update Task',
+                      textAlign: TextAlign.center,
+                      style: SafeGoogleFont(
+                        'Poppins',
+                        fontSize: 15 * ffem,
+                        fontWeight: FontWeight.w600,
+                        height: 1.5 * ffem / fem,
+                        color: Color(0xffffffff),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
           ],
         ),
       ),

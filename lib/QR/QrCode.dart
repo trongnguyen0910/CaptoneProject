@@ -38,7 +38,7 @@ class QrCode extends StatelessWidget {
     //   size: 200,
     // );
     String generateQRString(DataPlant dataPlant) {
-  return '${dataPlant.plantName}, ${dataPlant.description}, ${dataPlant.image}, ${dataPlant.gardenName}, ${dataPlant.plantingDate}, ${dataPlant.harvestingDate}';
+  return '${dataPlant.plantName}, ${dataPlant.description}, ${dataPlant.image}, ${dataPlant.gardenName}, ${dataPlant.plantingDate}, ${dataPlant.harvestingDate}, ${dataPlant.plantId}';
 }
 
 // Sử dụng hàm này để tạo chuỗi mới cho việc tạo mã QR

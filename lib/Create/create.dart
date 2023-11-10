@@ -4,6 +4,8 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 
+import 'create-crop-growth-task.dart';
+import 'create-crop-stage.dart';
 import 'create-crop.dart';
 import 'create-garden-task.dart';
 import 'create-garden.dart';
@@ -17,15 +19,112 @@ class Create extends StatelessWidget {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
-      body: Container(
+      body: SingleChildScrollView(
+      child: Container(
         // creates84 (3143:2449)
         width: double.infinity,
-        height: 926 * fem,
+        height: 1100 * fem,
         decoration: BoxDecoration(
           color: Color(0xfff4f5f9),
         ),
         child: Stack(
           children: [
+              Positioned(
+              // cropvarietyaoA (3145:2650)
+              left: 19 * fem,
+              top: 940 * fem,
+              child: TextButton(
+                onPressed: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateCropGrowthTask()),
+                        );},
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                      15 * fem, 37 * fem, 15 * fem, 36 * fem),
+                  width: 390 * fem,
+                  height: 100 * fem,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5 * fem),
+                    color: Color(0x4c000000),
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        'assets/mobile/images/cropvariety.png',
+                      ),
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(
+                            0.5), // Điều này làm cho hình ảnh bị mờ và độ sáng giảm đi
+                        BlendMode
+                            .darken, // Điều này làm cho hình ảnh trở nên tối hơn
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Crop Variety Growth Task',
+                    style: SafeGoogleFont(
+                      'Poppins',
+                      fontSize: 18 * ffem,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5 * ffem / fem,
+                      letterSpacing: 0.18 * fem,
+                      color: Color(0xffffffff),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              // cropvarietyaoA (3145:2650)
+              left: 19 * fem,
+              top: 804 * fem,
+              child: TextButton(
+                onPressed: () {Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateCropStage()),
+                        );},
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                ),
+                child: Container(
+                  padding: EdgeInsets.fromLTRB(
+                      15 * fem, 37 * fem, 15 * fem, 36 * fem),
+                  width: 390 * fem,
+                  height: 100 * fem,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5 * fem),
+                    color: Color(0x4c000000),
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: AssetImage(
+                        'assets/mobile/images/cropvariety.png',
+                      ),
+                      colorFilter: ColorFilter.mode(
+                        Colors.black.withOpacity(
+                            0.5), // Điều này làm cho hình ảnh bị mờ và độ sáng giảm đi
+                        BlendMode
+                            .darken, // Điều này làm cho hình ảnh trở nên tối hơn
+                      ),
+                    ),
+                  ),
+                  child: Text(
+                    'Crop Variety Stage',
+                    style: SafeGoogleFont(
+                      'Poppins',
+                      fontSize: 18 * ffem,
+                      fontWeight: FontWeight.w500,
+                      height: 1.5 * ffem / fem,
+                      letterSpacing: 0.18 * fem,
+                      color: Color(0xffffffff),
+                    ),
+                  ),
+                ),
+              ),
+            ),
             Positioned(
               // cropvarietyaoA (3145:2650)
               left: 19 * fem,
@@ -124,6 +223,7 @@ class Create extends StatelessWidget {
                 ),
               ),
             ),
+            
             Positioned(
               // taskkUg (3145:2642)
               left: 19 * fem,
@@ -321,6 +421,7 @@ class Create extends StatelessWidget {
           ],
         ),
       ),
+      )
     );
   }
 }
