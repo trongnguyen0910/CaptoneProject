@@ -73,7 +73,7 @@ class _ViewPostState extends State<ViewPost> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fruit List', style: TextStyle(color: Colors.black)),
+        title: Text('Post List', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -136,6 +136,7 @@ class _ViewPostState extends State<ViewPost> {
                     type: filteredTrans[index].type,
                     postContent: filteredTrans[index].postContent,
                     postImage: filteredTrans[index].postImage,
+                    postTitle: filteredTrans[index].postTitle,
                     press: () {},
                   ),
                 );

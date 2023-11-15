@@ -11,6 +11,7 @@ class PostObject extends StatelessWidget {
     String? type;
     String? postContent;
     String? postImage;
+    String? postTitle;
   final VoidCallback press;
   
   PostObject({
@@ -18,6 +19,7 @@ class PostObject extends StatelessWidget {
     required this.type,
     required this.postContent,
     required this.postImage,
+    required this.postTitle,
     required this.press,
   });
 
@@ -28,7 +30,7 @@ class PostObject extends StatelessWidget {
     double ffem = fem * 0.97;
 
     return Card(
-      margin: EdgeInsets.fromLTRB(20 * fem, 0, 0 * fem, 0 * fem),
+      margin: EdgeInsets.fromLTRB(10 * fem, 0, 5 * fem, 0 * fem),
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(15.0),
       ),
@@ -59,7 +61,7 @@ class PostObject extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$postContent',
+                  '$postTitle',
                   style: TextStyle(
                     fontSize: 20 * ffem,
                     fontWeight: FontWeight.w700,

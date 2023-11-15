@@ -1,88 +1,107 @@
 import 'package:flutter/material.dart';
-
-import '../model/GardenModel.dart';
-import '../model/TaskModel.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 
 class TaskObject extends StatelessWidget {
   final VoidCallback press;
   String? gardenTaskName;
   DateTime? gardenTaskDate;
   String? status;
+
   TaskObject({
     required this.press,
     required this.gardenTaskName,
     required this.gardenTaskDate,
     required this.status,
   });
+
   @override
   Widget build(BuildContext context) {
     final double fem = 1.0; // Define your fem value here
     final double ffem = 1.0; // Define your ffem value here
 
-    return Container(
-      padding: EdgeInsets.fromLTRB(15 * fem, 10 * fem, 15 * fem, 10 * fem),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        border: Border.all(color: Color(0xffebebeb)),
-        color: Color(0xffffffff),
-        borderRadius: BorderRadius.circular(10 * fem),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            width: double.infinity,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: Text(
-                    '$gardenTaskName',
-                    style: TextStyle(
-                      fontFamily: 'Poppins',
-                      fontSize: 15 * ffem,
-                      fontWeight: FontWeight.w600,
-                      height: 1.5 * ffem / fem,
-                      color: Color(0xff000000),
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                    maxLines: 1,
-                  ),
-                ),
-                Text(
-                  '$status',
-                  textAlign: TextAlign.right,
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 15 * ffem,
-                    fontWeight: FontWeight.w600,
-                    height: 1.5 * ffem / fem,
-                    color: '$status' == "Completed"
-                        ? Color.fromARGB(
-                            255, 1, 124, 5) // Màu xanh cho trạng thái "done"
-                        : Colors.red, // Màu đỏ cho trạng thái khác
-                  ),
-                ),
-              ],
+    return AnimationConfiguration.staggeredList(
+      position: 1,
+      duration: const Duration(milliseconds: 375),
+      child: SlideAnimation(
+        verticalOffset: 50.0,
+        child: FadeInAnimation(
+          child: Neumorphic(
+            style: NeumorphicStyle(
+              shape: NeumorphicShape.convex,
+              boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(15 * fem)),
+              depth: 50,
+              intensity: 0.7,
+              lightSource: LightSource.top,
+              color: Colors.white,
             ),
-          ),
-          Container(
-            margin: EdgeInsets.fromLTRB(0 * fem, 0 * fem, 0 * fem, 18 * fem),
-            constraints: BoxConstraints(
-              maxWidth: 251 * fem,
-            ),
-            child: Text(
-              '$gardenTaskDate',
-              style: TextStyle(
-                fontFamily: 'Poppins',
-                fontSize: 13 * ffem,
-                fontWeight: FontWeight.w400,
-                height: 1.5 * ffem / fem,
-                color: Color(0xff000000),
+            child: Container(
+              padding: EdgeInsets.all(15 * fem),
+              width: double.infinity,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.assignment,
+                        color: Colors.blue, // Customize the icon color
+                        size: 24 * fem,
+                      ),
+                      SizedBox(width: 12 * fem),
+                      Expanded(
+                        child: Text(
+                          '$gardenTaskName',
+                          style: TextStyle(
+                            fontFamily: 'Poppins',
+                            fontSize: 18 * ffem,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                      ),
+                      Text(
+                        '$status',
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 18 * ffem,
+                          fontWeight: FontWeight.w600,
+                          color: '$status' == 'Completed'
+                              ? Colors.green // Green color for "Completed" status
+                              : Colors.red, // Red color for other statuses
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: 12 * fem),
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.calendar_today,
+                        color: Colors.grey, // Customize the icon color
+                        size: 16 * fem,
+                      ),
+                      SizedBox(width: 8 * fem),
+                      Text(
+                        '${gardenTaskDate?.toString() ?? ''}',
+                        style: TextStyle(
+                          fontFamily: 'Poppins',
+                          fontSize: 14 * ffem,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.black54,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }

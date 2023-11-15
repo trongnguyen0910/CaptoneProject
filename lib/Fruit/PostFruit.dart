@@ -20,6 +20,7 @@ import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
 import '../Controller/VarietyController.dart';
 import '../GetX/GardenGetX.dart';
+import 'PostImageFruit.dart';
 import 'ViewFruit.dart';
 
 
@@ -160,6 +161,8 @@ class _CreatePostState extends State<CreatePost> {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
         ..showSnackBar(snackBar);
+       
+ 
       Future.delayed(Duration(seconds: 2), () {
         Navigator.push(
           context,
@@ -571,7 +574,7 @@ class _CreatePostState extends State<CreatePost> {
                                                 fontSize: 15),
                                           ),
                                           items: [
-                                            'Order ',
+                                            'Order',
                                             'Pre-order',
                                           ].map((String value) {
                                             return DropdownMenuItem<String>(
@@ -582,7 +585,7 @@ class _CreatePostState extends State<CreatePost> {
                                           onChanged: (newValue) {
                                             // Set the new selected value
                                             setState(() {
-                                              _selectedValue = newValue;
+                                              _selectedValue = newValue?.trim();
                                             });
                                           },
                                         ),

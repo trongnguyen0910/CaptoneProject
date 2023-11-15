@@ -47,8 +47,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         TextEditingController(text: widget.datagardentask.gardenTaskName);
     _taskDescriptionController =
         TextEditingController(text: widget.datagardentask.description);
-    _image =
-        TextEditingController(text: widget.datagardentask.image!);
+     _image = TextEditingController(text: widget.datagardentask.image ?? '');
     _statusController =
         TextEditingController(text: widget.datagardentask.status!);
      _selectedStatus = _statusController.text;
@@ -59,24 +58,28 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   File? image;
 
-  Future pickImage() async {
-    try {
-      final imagePicker = ImagePicker();
-      final pickedImage =
-          await imagePicker.pickImage(source: ImageSource.gallery);
+ Future pickImage() async {
+  try {
+    final imagePicker = ImagePicker();
+    final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
 
-      if (pickedImage != null) {
-        final imageFile = File(pickedImage.path);
-        setState(() {
-          image = imageFile;
-        });
-      } else {
-        print('No image selected');
-      }
-    } on PlatformException catch (e) {
-      print('Failed to pick image: $e');
+    if (pickedImage != null) {
+      final imageFile = File(pickedImage.path);
+      setState(() {
+        image = imageFile;
+      });
+    } else {
+      print('No image selected');
+      setState(() {
+        image = null;
+        _image.text = widget.datagardentask.image ?? '';
+      });
     }
+  } on PlatformException catch (e) {
+    print('Failed to pick image: $e');
   }
+}
+
 
 Future<void> updatetask(int taskId) async {
     final prefs = await SharedPreferences.getInstance();
@@ -108,12 +111,16 @@ Future<void> updatetask(int taskId) async {
     //   "image": imageURL,
     // };
     // request.body = jsonEncode(data);
- String imageURL = image != null ? image!.path : _image.text;
+  String imageURL = image != null ? image!.path : _image.text;
 
-  if (imageURL.isEmpty) {
-    print('No image selected');
-    return;
+
+  if (imageURL.isEmpty && image == null) {
+    // No image selected, use the API image
+    print('No image selected, using API image');
+    imageURL = _image.text;
   }
+
+     if (image != null) {
     var imageFile = File(image!.path);
     var imageStream = http.ByteStream(imageFile.openRead());
     var imageLength = await imageFile.length();
@@ -126,6 +133,8 @@ Future<void> updatetask(int taskId) async {
       contentType: MediaType('image', 'png'),
     );
     request.files.add(multipartFile);
+  }
+
 
     try {
       var response = await request.send();

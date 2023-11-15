@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/Controller/ComparePriceController.dart';
 
-class ListComparePrice extends StatelessWidget {
-  int? historyId;
-  String? fruitName;
-  double? price;
-  String? location;
-  String? status;
-  DateTime? createdDate;
+import 'package:flutter/material.dart';
 
+import 'package:flutter/material.dart';
+
+class ListComparePrice extends StatelessWidget {
+  final int? historyId;
+  final String? fruitName;
+  final double? price;
+  final String? location;
+  final String? status;
+  final DateTime? createdDate;
 
   ListComparePrice({
     required this.historyId,
@@ -18,142 +21,96 @@ class ListComparePrice extends StatelessWidget {
     required this.location,
     required this.status,
     required this.createdDate,
-
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromARGB(255, 241, 241, 241),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(0, 4, 0, 4),
-        child: Card(
-          elevation: 1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.0),
+      margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12.0),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, 2),
           ),
-          child: Row(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 0.0, right: 10.0),
-                child: Container(
-                  height: MediaQuery.of(context).size.width / 3.5,
-                ),
-              ),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "$historyId",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w900,
-                      ),
-                    ),
-                    SizedBox(height: 10.0),
-                    Row(
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12.0),
+        child: Material(
+          color: Colors.white,
+          child: InkWell(
+            onTap: () {
+              // Handle tap if needed
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "Name: ",
+                          "ID: $historyId",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(width: 10.0),
+                        SizedBox(height: 8),
                         Text(
                           "$fruitName",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            color: Color.fromARGB(255, 255, 19, 2),
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.orange,
                           ),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
+                        SizedBox(height: 8),
                         Text(
-                          "Create Date: ",
+                          "Create Date: ${DateFormat('dd-MM-yyyy hh:mm:ss').format(createdDate!)}",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 14,
+                            color: Colors.grey,
                           ),
                         ),
-                        SizedBox(width: 10.0),
+                        SizedBox(height: 8),
                         Text(
-                          DateFormat('dd-MM-yyyy hh:mm:ss')
-                              .format(createdDate!),
+                          "Location: $location",
                           style: TextStyle(
-                            fontSize: 14.0,
+                            fontSize: 16,
                             color: Colors.black,
                           ),
                         ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
+                        SizedBox(height: 8),
                         Text(
-                          "Location: ",
+                          "Status: $status",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: status == "Active" ? Colors.green : Colors.red,
                           ),
                         ),
-                        SizedBox(width: 10.0),
+                        SizedBox(height: 8),
                         Text(
-                          "$location",
+                          "\$${price?.toStringAsFixed(2)}",
                           style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          "Status: ",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "$status",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.green,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue,
                           ),
                         ),
                       ],
                     ),
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          "Price: ",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        SizedBox(width: 5.0),
-                        Text(
-                          "$price",
-                          style: TextStyle(
-                            fontSize: 14.0,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              )
-            ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
