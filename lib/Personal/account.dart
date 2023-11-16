@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 
+import '../Order/ListOrder.dart';
 import 'about-me.dart';
 import 'address.dart';
 
@@ -14,6 +15,18 @@ class Personal extends StatelessWidget {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
+        appBar: AppBar(
+        title: Text('Thông tin tài khoản',
+            style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
     body:Container(
       width: double.infinity,
       child: Container(
@@ -26,60 +39,8 @@ class Personal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Container(
-              // titlebar3MK (3014:1169)
-              margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 0*fem, 28*fem),
-              width: double.infinity,
-              height: 110*fem,
-              decoration: BoxDecoration (
-                color: Color(0xffffffff),
-              ),
-              child: Stack(
-                children: [
-                  Positioned(
-                    // taskdetailY3B (3014:1171)
-                    left: 161.9710083008*fem,
-                    top: 63*fem,
-                    child: Align(
-                      child: SizedBox(
-                        width: 105*fem,
-                        height: 27*fem,
-                        child: Text(
-                          'Account',
-                          textAlign: TextAlign.center,
-                          style: SafeGoogleFont (
-                            'Poppins',
-                            fontSize: 18*ffem,
-                            fontWeight: FontWeight.w500,
-                            height: 1.5*ffem/fem,
-                            letterSpacing: 0.54*fem,
-                            color: Color(0xff000000),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Positioned(
-                    // backarrownTK (3014:1172)
-                    left: 16.7707977295*fem,
-                    top: 68*fem,
-                    child: Align(
-                      child: SizedBox(
-                        width: 24.58*fem,
-                        height: 16.54*fem,
-                        child: Image.asset(
-                          'assets/mobile/images/backarrow-5Jh.png',
-                          width: 24.58*fem,
-                          height: 16.54*fem,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Container(
               // avatarn1P (93:1607)
-              margin: EdgeInsets.fromLTRB(156*fem, 0*fem, 153.21*fem, 28.08*fem),
+              margin: EdgeInsets.fromLTRB(156*fem, 20*fem, 153.21*fem, 28.08*fem),
               width: double.infinity,
               height: 120.92*fem,
               child: Stack(
@@ -231,7 +192,7 @@ class Personal extends StatelessWidget {
                               Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => MyAddress()),
+                              builder: (context) => ListOrder()),
                         );
                             },
                             style: TextButton.styleFrom (
@@ -254,9 +215,9 @@ class Personal extends StatelessWidget {
                                   ),
                                   Container(
                                     // myaddressXys (94:955)
-                                    margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 232.41*fem, 0.6*fem),
+                                    margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 0.41*fem, 0.6*fem),
                                     child: Text(
-                                      'My Address',
+                                      'Danh sách đơn hàng',
                                       style: SafeGoogleFont (
                                         'Poppins',
                                         fontSize: 12*ffem,
@@ -267,17 +228,7 @@ class Personal extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    // groupd1K (94:956)
-                                    margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 0*fem, 0*fem),
-                                    width: 10.96*fem,
-                                    height: 18.6*fem,
-                                    child: Image.asset(
-                                      'assets/mobile/images/group-UiM.png',
-                                      width: 10.96*fem,
-                                      height: 18.6*fem,
-                                    ),
-                                  ),
+                                
                                 ],
                               ),
                             ),

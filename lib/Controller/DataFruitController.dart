@@ -13,7 +13,7 @@ class DataFruit {
     String? fruitName;
     String? fruitDescription;
     double? price;
-    int? quantityAvailable;
+    double? quantityAvailable;
     int? quantityInTransit;
     String? originCity;
     String? orderType;
@@ -48,7 +48,7 @@ class DataFruit {
         fruitName: json["fruitName"],
         fruitDescription: json["fruitDescription"],
         price: json["price"]?.toDouble(),
-        quantityAvailable: json["quantityAvailable"],
+        quantityAvailable: json["quantityAvailable"]?.toDouble(),
         quantityInTransit: json["quantityInTransit"],
         originCity: json["originCity"],
         orderType: json["orderType"],

@@ -575,7 +575,7 @@ class _CreatePostState extends State<CreatePost> {
                                           ),
                                           items: [
                                             'Order',
-                                            'Pre-order',
+                                            'PreOrder',
                                           ].map((String value) {
                                             return DropdownMenuItem<String>(
                                               value: value,

@@ -14,7 +14,7 @@ import 'ViewFruit.dart';
 class FruitObject extends StatefulWidget {
   String? fruitName;
   double? price;
-  int? quantityAvailable;
+  double? quantityAvailable;
   List<FruitImage>? fruitImages;
   int? fruitId;
   final VoidCallback press;
@@ -24,7 +24,7 @@ class FruitObject extends StatefulWidget {
     required this.price,
     required this.quantityAvailable,
     required this.fruitImages,
-     required this.fruitId,
+    required this.fruitId,
     required this.press,
   });
 
@@ -33,7 +33,6 @@ class FruitObject extends StatefulWidget {
 }
 
 class _FruitObjectState extends State<FruitObject> {
-
    Future<void> deleteFruit(int fruitId) async {
     print('fruitId: $fruitId');
     final prefs = await SharedPreferences.getInstance();

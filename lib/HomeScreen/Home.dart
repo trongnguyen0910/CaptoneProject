@@ -3,12 +3,14 @@ import 'dart:convert';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/rendering.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+import '../Chat/ChatList.dart';
 import '../ComparePrice/CompareScreen.dart';
 import '../ComparePrice/MainCompare.dart';
 import '../Controller/GardenTaskController.dart';
@@ -26,6 +28,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  ScrollController _scrollController = ScrollController();
+  bool _isFabVisible = true;
+
   List<DataGardenTask> datagardentask = [];
   Map<DateTime, List> _markedDateMap = {};
 
@@ -116,6 +121,21 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     getTask();
+     _scrollController.addListener(() {
+      if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.forward) {
+        // User is scrolling up, show FloatingActionButton
+        setState(() {
+          _isFabVisible = true;
+        });
+      } else if (_scrollController.position.userScrollDirection ==
+          ScrollDirection.reverse) {
+        // User is scrolling down, hide FloatingActionButton
+        setState(() {
+          _isFabVisible = false;
+        });
+      }
+    });
   }
 
   final List<String> imageList = [
@@ -148,6 +168,7 @@ class _HomeState extends State<Home> {
     double ffem = fem * 0.97;
     return Scaffold(
         body: SingleChildScrollView(
+           controller: _scrollController,
       child: Container(
         // homefm3 (2985:1182)
         width: double.infinity,
@@ -599,6 +620,16 @@ class _HomeState extends State<Home> {
           ],
         ),
       ),
-    ));
+    ),
+       floatingActionButton: _isFabVisible
+          ?  FloatingActionButton(
+      onPressed: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => ChatListPage()));
+      },
+      tooltip: 'Add Post',
+      child: Icon(Icons.chat),
+      backgroundColor: Color(0xff6cc51d),
+    ) : null,
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_neumorphic/flutter_neumorphic.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/HomeScreen/comment.dart';
@@ -14,6 +15,7 @@ import '../Controller/DataFruitController.dart';
 import 'package:http/http.dart' as http;
 
 import '../Controller/ReviewFruitController.dart';
+import 'AddDiscount.dart';
 import 'PostImageFruit.dart';
 
 class FruitDetail extends StatefulWidget {
@@ -58,6 +60,7 @@ class _FruitDetailState extends State<FruitDetail> {
 
   @override
   Widget build(BuildContext context) {
+    bool showAddDiscountButton = widget.fruit.orderType == "PreOrder";
     double baseWidth = 430;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
@@ -87,10 +90,11 @@ class _FruitDetailState extends State<FruitDetail> {
             children: [
               GestureDetector(
                 onTap: () {
-                  
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => PostImageFruit(fruitId: widget.fruit.fruitId!)),
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            PostImageFruit(fruitId: widget.fruit.fruitId!)),
                   );
                 },
                 child: Container(
@@ -219,36 +223,46 @@ class _FruitDetailState extends State<FruitDetail> {
                   );
                 },
               ),
-              // Input for adding comments
-              Container(
-                padding: EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        decoration: InputDecoration(
-                          hintText: 'Write your comment...',
-                          border: InputBorder.none,
-                        ),
-                        maxLines: 3,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      onPressed: () {},
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10),
             ],
           ),
         ),
       ),
+      floatingActionButton: showAddDiscountButton
+          ? Stack(
+              children: [
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: NeumorphicButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddDiscount(fruitId: widget.fruit.fruitId!),
+                        ),
+                      );
+                    },
+                    style: NeumorphicStyle(
+                      color: Color(0xff6cc51d),
+                      boxShape: NeumorphicBoxShape.roundRect(
+                          BorderRadius.circular(10)),
+                    ),
+                    padding: EdgeInsets.symmetric(
+                        vertical: 20 * fem, horizontal: 20 * fem),
+                    child: Text(
+                      'Add Discounts',
+                      style: TextStyle(
+                        fontFamily: 'Poppins',
+                        fontSize: 20 * ffem,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            )
+          : null,
     );
   }
 }
