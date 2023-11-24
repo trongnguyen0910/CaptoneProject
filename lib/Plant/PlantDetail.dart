@@ -11,6 +11,7 @@ import '../Controller/PlantController.dart';
 import '../Garden/garden-detail-task.dart';
 import '../QR/QrCode.dart';
 import '../Task/TaskPlant.dart';
+import 'UpdatePlant.dart';
 
 class PlantDetail extends StatelessWidget {
   final DataPlant dataPlant;
@@ -109,6 +110,66 @@ class PlantDetail extends StatelessWidget {
                       textAlign: TextAlign.justify,
                     ),
                     SizedBox(height: 20 * fem),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        NeumorphicButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    UpdatePlantScreen(dataPlant: dataPlant),
+                              ),
+                            );
+                          },
+                          style: NeumorphicStyle(
+                            color: Color(0xff6cc51d),
+                            boxShape: NeumorphicBoxShape.roundRect(
+                                BorderRadius.circular(10)),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20 * fem, horizontal: 40 * fem),
+                          child: Text(
+                            'Update Plant',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 20 * ffem,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        NeumorphicButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TaskPlant(id: dataPlant.plantId!),
+                              ),
+                            );
+                          },
+                          style: NeumorphicStyle(
+                            color: Color(0xff6cc51d),
+                            boxShape: NeumorphicBoxShape.roundRect(
+                                BorderRadius.circular(10)),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                              vertical: 20 * fem, horizontal: 40 * fem),
+                          child: Text(
+                            'Show Task',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 20 * ffem,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 15 * fem),
                     NeumorphicButton(
                       onPressed: () {
                         Navigator.push(
@@ -120,36 +181,13 @@ class PlantDetail extends StatelessWidget {
                       },
                       style: NeumorphicStyle(
                         color: Color(0xff6cc51d),
-                        boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(10)),
+                        boxShape: NeumorphicBoxShape.roundRect(
+                            BorderRadius.circular(10)),
                       ),
-                      padding: EdgeInsets.symmetric(vertical: 20 * fem, horizontal: 40 * fem),
+                      padding: EdgeInsets.symmetric(
+                          vertical: 20 * fem, horizontal: 40 * fem),
                       child: Text(
                         'Show QR Code',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 20 * ffem,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 15 * fem),
-                    NeumorphicButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskPlant(id: dataPlant.plantId!),
-                          ),
-                        );
-                      },
-                      style: NeumorphicStyle(
-                        color: Color(0xff6cc51d),
-                        boxShape: NeumorphicBoxShape.roundRect(BorderRadius.circular(10)),
-                      ),
-                      padding: EdgeInsets.symmetric(vertical: 20 * fem, horizontal: 40 * fem),
-                      child: Text(
-                        'Show Task',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 20 * ffem,

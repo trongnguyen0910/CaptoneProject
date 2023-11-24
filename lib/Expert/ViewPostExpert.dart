@@ -1,27 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'dart:ui';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:myapp/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Controller/DataFruitController.dart';
-import '../Controller/DataPostController.dart';
-import '../Controller/GardenController.dart';
-import '../GetX/GardenGetX.dart';
-import '../HomeScreen/Home.dart';
-import '../model/GardenModel.dart';
-
 import 'package:http/http.dart' as http;
-
+import '../Controller/DataPostController.dart';
 import 'PostObject.dart';
 import 'ViewPostExpertDetail.dart';
-
-
+import '../model/GardenModel.dart';
+import '../HomeScreen/Home.dart';
 
 class ViewPost extends StatefulWidget {
   @override
@@ -38,7 +23,7 @@ class _ViewPostState extends State<ViewPost> {
     getPost();
   }
 
-  Future<void> getPost() async {
+   Future<void> getPost() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
@@ -60,7 +45,6 @@ class _ViewPostState extends State<ViewPost> {
       }
     }
   }
-
   @override
   Widget build(BuildContext context) {
     List<DataPost> filteredTrans = datapost.where((item) {
@@ -96,24 +80,23 @@ class _ViewPostState extends State<ViewPost> {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: TextField(
-                onChanged: (value) {
-                  setState(() {
-                    searchText = value;
-                  });
-                },
-                decoration: InputDecoration(
-                  hintText: 'Search...',
-                ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  searchText = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search...',
               ),
             ),
-            GridView.builder(
-              shrinkWrap: true, // Ensure the GridView takes the required space
+          ),
+          Expanded(
+            child: GridView.builder(
               gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
                 maxCrossAxisExtent: 300.0,
                 mainAxisSpacing: 20.0,
@@ -127,7 +110,8 @@ class _ViewPostState extends State<ViewPost> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => PostDetail(datapost: datapost[index]),
+                        builder: (context) =>
+                            PostDetail(datapost: datapost[index]),
                       ),
                     );
                   },
@@ -142,8 +126,8 @@ class _ViewPostState extends State<ViewPost> {
                 );
               },
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

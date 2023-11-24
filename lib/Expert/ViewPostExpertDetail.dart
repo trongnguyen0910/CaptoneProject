@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:comment_box/comment/comment.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/HomeScreen/comment.dart';
@@ -169,15 +170,9 @@ class _PostDetailState extends State<PostDetail> {
                 ),
               ),
               SizedBox(height: 15 * fem),
-              Text(
-                '${widget.datapost.postContent}',
-                style: SafeGoogleFont(
-                  'Inter',
-                  fontSize: 18 * ffem,
-                  fontWeight: FontWeight.w400,
-                  color: Color(0xff000000),
+               Html(
+                  data: '${widget.datapost.postContent}',
                 ),
-              ),
               SizedBox(height: 20 * fem),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,

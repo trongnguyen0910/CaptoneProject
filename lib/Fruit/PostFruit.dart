@@ -53,8 +53,9 @@ class _CreatePostState extends State<CreatePost> {
   Future<void> getPlant() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+    final accountID = prefs.getInt('accountID');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=0';
+        'https://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=0&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

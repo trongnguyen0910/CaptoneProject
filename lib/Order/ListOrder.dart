@@ -1,12 +1,9 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../Controller/ComparePriceController.dart';
-
 import 'package:http/http.dart' as http;
 
+import '../Controller/ComparePriceController.dart';
 import '../Controller/OrderController.dart';
 import 'OrderObject.dart';
 
@@ -19,7 +16,8 @@ class ListOrder extends StatefulWidget {
 
 class _ListOrderState extends State<ListOrder> {
   List<DataOrder> order = [];
-  String searchText = '';
+  String searchTextProcessed = '';
+  String searchTextPending = '';
 
   @override
   void initState() {
@@ -48,79 +46,119 @@ class _ListOrderState extends State<ListOrder> {
       }
     }
   }
-  List<DataOrder> sortOrderByStatus(List<DataOrder> order) {
-    order.sort((a, b) {
-      Map<String, int> statusOrder = {
-        'Pending': 0,
-        'Accepted': 1,
-        'Rejected': 2,
-        'Cancelled': 3,
-      };
 
-     int aStatus = statusOrder[a.status!]!;
-     int bStatus = statusOrder[b.status!]!;
-
-   
-      return aStatus.compareTo(bStatus);
-    });
-    return order;
+  List<DataOrder> sortOrderByStatus(
+      List<DataOrder> order, List<String> statuses) {
+    return order.where((item) => statuses.contains(item.status)).toList();
   }
 
   @override
   Widget build(BuildContext context) {
-    List<DataOrder> sortedOrder = sortOrderByStatus(order);
-    List<DataOrder> filteredTrans = sortedOrder.where((item) {
-      return item.phoneNumber!.toLowerCase().contains(searchText.toLowerCase());
-    }).toList();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Quản lý đơn hàng', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () async {
-            Navigator.of(context).pop();
-          },
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title:
+              Text('Quản lý đơn hàng', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ),
+          bottom: TabBar(
+            tabs: [
+              Tab(text: 'Đã xử lý'),
+              Tab(text: 'Chưa xử lý'),
+            ],
+            labelColor: Colors.black,
+            indicatorColor: Colors.black,
+          ),
         ),
-      ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Search...',
+        body: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchTextProcessed = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: filteredTrans.length,
-              itemBuilder: (BuildContext context, int index) {
-              return OrderObject(
-                  orderId: filteredTrans[index].orderId,
-                  fullName: filteredTrans[index].fullName,
-                  phoneNumber: filteredTrans[index].phoneNumber,
-                  totalAmount: filteredTrans[index].totalAmount,
-                  status: filteredTrans[index].status,
-                  orderDate: filteredTrans[index].orderDate,
-                );
-              },
+            Expanded(
+              child: TabBarView(
+                children: [
+                  // Processed Orders
+                  ListView.builder(
+                    itemCount:
+                        sortOrderByStatus(order, ['Accepted', 'Rejected'])
+                            .where((item) => item.phoneNumber!
+                                .toLowerCase()
+                                .contains(searchTextProcessed.toLowerCase()))
+                            .length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return OrderObject(
+                        orderId: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .orderId,
+                        fullName: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .fullName,
+                        phoneNumber: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .phoneNumber,
+                        totalAmount: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .totalAmount,
+                        status: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .status,
+                        orderDate: sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index]
+                            .orderDate,
+                      );
+                    },
+                  ),
+
+                  // Pending Orders
+                  ListView.builder(
+                    itemCount: sortOrderByStatus(order, ['Pending'])
+                        .where((item) => item.phoneNumber!
+                            .toLowerCase()
+                            .contains(searchTextPending.toLowerCase()))
+                        .length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return OrderObject(
+                        orderId: sortOrderByStatus(order, ['Pending'])[index]
+                            .orderId,
+                        fullName: sortOrderByStatus(order, ['Pending'])[index]
+                            .fullName,
+                        phoneNumber:
+                            sortOrderByStatus(order, ['Pending'])[index]
+                                .phoneNumber,
+                        totalAmount:
+                            sortOrderByStatus(order, ['Pending'])[index]
+                                .totalAmount,
+                        status:
+                            sortOrderByStatus(order, ['Pending'])[index].status,
+                        orderDate: sortOrderByStatus(order, ['Pending'])[index]
+                            .orderDate,
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 }
-
-
-
-

@@ -143,7 +143,7 @@ _creategarden() async {
       imageStream,
       imageLength,
       filename: imageFile.path,
-      contentType: MediaType('image', 'png'),
+      contentType: MediaType('image', 'png',),
     );
     request.files.add(multipartFile);
 

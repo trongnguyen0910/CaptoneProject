@@ -1,3 +1,5 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:get/get.dart';
@@ -7,81 +9,118 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Garden/garden.dart';
 import 'GetX/GardenGetX.dart';
+import 'Notification/firebaseconfig.dart';
+import 'Notification/pushnotification_provider.dart';
 import 'SignIn/SignIn.dart';
 
-// import 'package:myapp/page-1/waitingscreen.dart';
-// import 'package:myapp/page-1/vector-1.dart';
-// import 'package:myapp/page-1/yourprofilegetstartedscreen1.dart';
-// import 'package:myapp/page-1/yourprofilegetstartedscreen2.dart';
-// import 'package:myapp/page-1/createaccountgetstartedscreen1.dart';
-// import 'package:myapp/page-1/createaccountgetstartedscreen2.dart';
-// import 'package:myapp/page-1/sucessfulcreateaccountgetstartedscreen.dart';
-// import 'package:myapp/page-1/forgotpasswordscreen1.dart';
-// import 'package:myapp/page-1/forgotpasswordscreen2.dart';
-// import 'package:myapp/page-1/rectangle-15.dart';
-// import 'package:myapp/page-1/rectangle-18.dart';
-// import 'package:myapp/page-1/colors.dart';
-// import 'package:myapp/page-1/forgotpasswordsuccessfulstatescreen4.dart';
-// import 'package:myapp/page-1/typography.dart';
-// import 'package:myapp/page-1/notification.dart';
-// import 'package:myapp/page-1/homescreen.dart';
-// import 'package:myapp/page-1/notificationscreen1.dart';
-// import 'package:myapp/page-1/notificationscreen2.dart';
-// import 'package:myapp/page-1/your-account-creation-is-successfulyou-can-now-experience-out-services.dart';
-// import 'package:myapp/page-1/notificationscreen3.dart';
-// import 'package:myapp/page-1/medical-1.dart';
-// import 'package:myapp/page-1/medical-2.dart';
-// import 'package:myapp/page-1/cookingrecipemenuscreen1.dart';
-// import 'package:myapp/page-1/forgotpasswordsuccessfulstatescreen4-Zf6.dart';
-// import 'package:myapp/page-1/icon-settings.dart';
-// import 'package:myapp/page-1/forgotpasswordsuccessfulstatescreen4-fRA.dart';
-// import 'package:myapp/page-1/icon-options-horizontal.dart';
-// import 'package:myapp/page-1/icon-options-horizontal-J7r.dart';
-// import 'package:myapp/page-1/icon-options-horizontal-scC.dart';
-// import 'package:myapp/page-1/icon-options-horizontal-u52.dart';
-// import 'package:myapp/page-1/icon-options-horizontal-91J.dart';
-// import 'package:myapp/page-1/cooking-recipelistrecipesscreen2.dart';
-// import 'package:myapp/page-1/notificationscreen3-TUU.dart';
-// import 'package:myapp/page-1/cooking-recipedetailsreen3.dart';
-// import 'package:myapp/page-1/frame-231.dart';
-// import 'package:myapp/page-1/medical-3.dart';
-// import 'package:myapp/page-1/signinandforgotpasswordscreen.dart';
-// import 'package:myapp/page-1/vector.dart';
-// import 'package:myapp/page-1/.dart';
-// import 'package:myapp/page-1/-sZi.dart';
-// import 'package:myapp/page-1/-bXe.dart';
-// import 'package:myapp/page-1/-yAp.dart';
-// import 'package:myapp/page-1/-aZv.dart';
-// import 'package:myapp/page-1/-LL8.dart';
-// import 'package:myapp/page-1/-xF2.dart';
-// import 'package:myapp/page-1/-Ni4.dart';
-// import 'package:myapp/page-1/personal-info.dart';
-// import 'package:myapp/page-1/setting.dart';
-// import 'package:myapp/page-1/quit.dart';
+PushNotificationsProvider pushNotificationsProvider =
+    PushNotificationsProvider();
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  // If you're going to use other Firebase services in the background, such as Firestore,
+  // make sure you call initializeApp before using other Firebase services.
+  print('Recibiendo notificacion en segundo plano ${message.messageId}');
+  // pushNotificationsProvider.showNotification(message);
+}
 
-void main() async  {
+Future<void> initializeFirebase() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Initialize Firebase and wait for it to complete
+  await Firebase.initializeApp(
+    name: 'capstonep-30015',
+    options: FirebaseConfig.currentPlatform,
+  );
 
+  // Get the Firebase Messaging token and write it to storage
+  final token = await FirebaseMessaging.instance.getToken();
+  // if (token != null) {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   await prefs.setString('token', token);
+  // }
+  print('getToken: $token');
 
+  // Set the onBackgroundMessage handler and initialize push notifications
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  pushNotificationsProvider.initPushNotifications();
+}
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+void main() async {
   Get.put(GardenController());
- WidgetsFlutterBinding.ensureInitialized();
+  WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi_VN', null);
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+  await Firebase.initializeApp();
+  await FirebaseMessaging.instance.getInitialMessage();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  messaging.requestPermission();
+  FirebaseMessaging.instance.subscribeToTopic('7');
+
+  messaging.getToken().then((token) async {
+    print("TokenDevice: $token");
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('token', token!);
+  });
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print("Received message: $message");
+  });
+
+// If application is in Background
+  FirebaseMessaging.onMessageOpenedApp.listen(
+    (RemoteMessage message) {
+      print("onMessageOpenApp: $message");
+      //    Navigator.push(
+      //    navigatorKey.currentState!.context,
+      //     MaterialPageRoute(
+      //      builder: (context) => HomeNoti(message: json.encode(message.data)),
+      // ),
+      //     );
+    },
+  );
+
+// If app is closed
+  FirebaseMessaging.instance.getInitialMessage().then(
+    (RemoteMessage? message) {
+      if (message != null) {
+        //       Navigator.push(
+        //   navigatorKey.currentState!.context,
+        //   MaterialPageRoute(
+        //     builder: (context) => HomeNoti(message: json.encode(message.data)),
+        //   ),
+        // );
+      }
+    },
+  );
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
-	@override
-	Widget build(BuildContext context) {
-	return GetMaterialApp(
-		title: 'Flutter',
-		debugShowCheckedModeBanner: false,
-		scrollBehavior: MyCustomScrollBehavior(),
-		theme: ThemeData(
-		primarySwatch: Colors.blue,
-		),
-		home: Login(),
-	);
-	}
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+   @override
+  void initState(){
+     super.initState();
+    pushNotificationsProvider.onMessageListener(context as BuildContext);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      title: 'Flutter',
+      debugShowCheckedModeBanner: false,
+      scrollBehavior: MyCustomScrollBehavior(),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      home: Login(),
+    );
+  }
 }

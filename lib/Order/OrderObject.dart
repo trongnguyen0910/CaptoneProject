@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
@@ -29,7 +30,7 @@ class _OrderObjectState extends State<OrderObject> {
   
    Future<void> UpdateOrder(int orderId, String action) async {
     print('orderId: $orderId');
-     print('action: $action');
+    print('action: $action');
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
@@ -41,7 +42,21 @@ class _OrderObjectState extends State<OrderObject> {
     final response = await http.put(Uri.parse(url), headers: headers);
     var statusCode = response.statusCode;
     print('Update success: $statusCode');
+
+    if (statusCode == 200) {
+      // Show toast for success
+      Fluttertoast.showToast(
+        msg: 'Update successful',
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.BOTTOM,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.green,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );   
+    }
   }
+
   @override
   Widget build(BuildContext context) {
      bool showButtons = widget.status == "Pending";

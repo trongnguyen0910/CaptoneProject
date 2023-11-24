@@ -1,29 +1,46 @@
-import 'package:flutter/material.dart';
+import 'dart:convert';
 
+import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../Controller/ChatListUserController.dart';
 import 'ChatScreen.dart';
 
-
-class Chat {
-  String name;
-  String message;
-  String avatar;
-  List<String> messages;
-
-  Chat({required this.name, required this.message, required this.avatar}) : messages = [message];
+class ChatListPage extends StatefulWidget {
+  @override
+  State<ChatListPage> createState() => _ChatListPageState();
 }
-class ChatListPage extends StatelessWidget {
-  final List<Chat> chatList = [
-    Chat(
-      avatar: 'assets/mobile/images/avartarcomment.png',
-      name: 'Duy',
-      message: 'Alo',
-    ),
-    Chat(
-      avatar: 'assets/mobile/images/avartarcomment.png',
-      name: 'Minh',
-      message: 'Ok',
-    ),
-  ];
+
+class _ChatListPageState extends State<ChatListPage> {
+    List<ChatListUser> chatlistuser = [];
+    Future<void> getChat() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'https://fruitseasonapims-001-site1.btempurl.com/Chats/Users';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body);
+    var statusCode = response.statusCode;
+    print('Status list chat user: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          chatlistuser =
+              responseTrans.map((item) => ChatListUser.fromJson(item)).toList();
+        });
+      }
+    }
+  }
+
+@override
+void initState(){
+super.initState();
+getChat();
+}
 
   @override
   Widget build(BuildContext context) {
@@ -40,19 +57,19 @@ class ChatListPage extends StatelessWidget {
         ),
       ),
       body: ListView.builder(
-        itemCount: chatList.length,
+        itemCount: chatlistuser.length,
         itemBuilder: (context, index) {
           return ListTile(
             leading: CircleAvatar(
-              backgroundImage: AssetImage(chatList[index].avatar),
+              backgroundImage: AssetImage('assets/mobile/images/avartarcomment.png'),
             ),
-            title: Text(chatList[index].name),
-            subtitle: Text(chatList[index].message),
+            title: Text(chatlistuser[index].email!),
+            subtitle: Text(chatlistuser[index].fullName!),
             onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => ChatDetailPage(chat: chatList[index]),
+                  builder: (context) => Chat_Page(chatlistuser: chatlistuser[index]),
                 ),
               );
             },

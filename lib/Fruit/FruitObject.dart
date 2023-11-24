@@ -33,6 +33,7 @@ class FruitObject extends StatefulWidget {
 }
 
 class _FruitObjectState extends State<FruitObject> {
+  
    Future<void> deleteFruit(int fruitId) async {
     print('fruitId: $fruitId');
     final prefs = await SharedPreferences.getInstance();

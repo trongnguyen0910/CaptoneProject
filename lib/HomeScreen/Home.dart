@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../Chat/ChatList.dart';
+import '../Chat/ChatScreen.dart';
 import '../ComparePrice/CompareScreen.dart';
 import '../ComparePrice/MainCompare.dart';
 import '../Controller/GardenTaskController.dart';
@@ -21,6 +22,7 @@ import '../Garden/garden.dart';
 import 'package:http/http.dart' as http;
 
 import '../Task/TaskDetail.dart';
+import '../Weather/Weather_page.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -581,6 +583,35 @@ class _HomeState extends State<Home> {
                               ),
                             ),
                           ),
+                           GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => WeatherPage()),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.fromLTRB(
+                                60 * fem,
+                                0 * fem,
+                                0 * fem,
+                                0 * fem,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons
+                                        .cloud, // You can replace this with your desired icon
+                                    color: Colors
+                                        .white, // Set the color you prefer
+                                    size: 30.0, // Adjust the size as needed
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                           GestureDetector(
                             onTap: () {
                               Navigator.push(
@@ -591,7 +622,7 @@ class _HomeState extends State<Home> {
                             },
                             child: Container(
                               margin: EdgeInsets.fromLTRB(
-                                110 * fem,
+                                20 * fem,
                                 0 * fem,
                                 0 * fem,
                                 0 * fem,
@@ -604,7 +635,7 @@ class _HomeState extends State<Home> {
                                         .list, // You can replace this with your desired icon
                                     color: Colors
                                         .white, // Set the color you prefer
-                                    size: 30.0, // Adjust the size as needed
+                                    size: 35.0, // Adjust the size as needed
                                   ),
                                 ],
                               ),

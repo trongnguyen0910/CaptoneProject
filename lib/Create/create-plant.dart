@@ -49,8 +49,9 @@ class _CreatePlantState extends State<CreatePlant> {
   Future<void> getGarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+    final accountID = prefs.getInt('accountID');
     final url =
-        'http://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true';
+        'https://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -127,7 +128,7 @@ class _CreatePlantState extends State<CreatePlant> {
     request.fields['GardenId'] = selectedGardenId.toString();
     request.fields['CropVarietyId'] = selectedVarietyId.toString();
     request.fields['Status'] = status.toString();
-    request.fields['EstimatedHarvestQuantity'] = estimatedHarvestQuantity;
+    request.fields['QuantityPlanted'] = estimatedHarvestQuantity;
   
     
 
@@ -409,11 +410,14 @@ class _CreatePlantState extends State<CreatePlant> {
                                                 fontSize: 15),
                                           ),
                                           items: [
-                                            'Healthy',
-                                            'Growing',
-                                            'Harvestable',
-                                            'Diseased',
-                                            'Dead',
+                                                'YoungTree',
+                                                'FloweringTree',
+                                                'Harvestable',
+                                                'Diseased',
+                                                'Dead'
+                                                'Seed',
+                                                'GerminatedSeed',
+                                                'Seedling',
                                           ].map((String value) {
                                             return DropdownMenuItem<String>(
                                               value: value,
@@ -462,7 +466,7 @@ class _CreatePlantState extends State<CreatePlant> {
                                         child: TextField(
                                           decoration: InputDecoration(
                                             labelText:
-                                                'Estimated Harvest Quantity',
+                                                'Quantity Planted',
                                             labelStyle: TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),

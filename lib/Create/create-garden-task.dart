@@ -29,22 +29,23 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   final _tasknameController = TextEditingController();
   final _taskdescriptionController = TextEditingController();
   final TextEditingController _date = TextEditingController();
-   @override
+  @override
   void initState() {
     super.initState();
     getGarden();
   }
-  
+
   File? image;
-   List<DataGarden> datagarden = [];
-   List<DataPlant> dataplant = [];
-    int? selectedGardenId;
-     int? selectedPlantId;
-   Future<void> getGarden() async {
+  List<DataGarden> datagarden = [];
+  List<DataPlant> dataplant = [];
+  int? selectedGardenId;
+  int? selectedPlantId;
+  Future<void> getGarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+    final accountID = prefs.getInt('accountID');
     final url =
-        'http://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true';
+        'https://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -63,7 +64,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       }
     }
   }
-   Future<void> getPlant(int selectedGardenId) async {
+
+  Future<void> getPlant(int selectedGardenId) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     print('id: $selectedGardenId');
@@ -83,7 +85,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
           dataplant =
               responseTrans.map((item) => DataPlant.fromJson(item)).toList();
         });
-         Get.find<GardenController>().updatePlantList(dataplant);
+        Get.find<GardenController>().updatePlantList(dataplant);
       }
     }
   }
@@ -96,7 +98,6 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
     var taskname = _tasknameController.text;
     var taskdescription = _taskdescriptionController.text;
     var date = _date.text;
-    
 
     String imageURL = image != null ? image!.path : "";
 
@@ -105,7 +106,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
       return;
     }
 
-   var request = http.MultipartRequest(
+    var request = http.MultipartRequest(
       'POST',
       Uri.parse(
           'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks'),
@@ -169,25 +170,25 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
         });
       } else if (response.statusCode != 200) {
         var responseString = await response.stream.bytesToString();
-          var responseBody = json.decode(responseString);
-          var errorMessage = responseBody['errors'];
-          String errorContent = errorMessage.toString(); 
-          final snackBar = SnackBar(
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.transparent,
-            content: AwesomeSnackbarContent(
-              title: 'Error',
-              message: errorContent,
-              contentType: ContentType.failure,
-            ),
-          );
+        var responseBody = json.decode(responseString);
+        var errorMessage = responseBody['errors'];
+        String errorContent = errorMessage.toString();
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'Error',
+            message: errorContent,
+            contentType: ContentType.failure,
+          ),
+        );
 
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(snackBar);
-          print('Response body: $responseString');
-          print('Error 400: $errorMessage');
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+        print('Response body: $responseString');
+        print('Error 400: $errorMessage');
       } else {
         print('Error: ${response.statusCode}');
       }
@@ -221,10 +222,11 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   String? selectedPlantName;
 
   void callGetPlant() {
-  if (selectedGardenId != null) {
-    getPlant(selectedGardenId!);
+    if (selectedGardenId != null) {
+      getPlant(selectedGardenId!);
+    }
   }
-}
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -381,12 +383,14 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                               children: [
                                 DropdownButtonFormField<int>(
                                   value: selectedGardenId,
-                                   decoration: InputDecoration(
-                                            labelText: 'Garden Name',
-                                            labelStyle:
-                                                TextStyle(color: Colors.black,fontSize: 15*ffem, fontWeight: FontWeight.w500,),
-                                            
-                                          ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Garden Name',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                   items: gardenList.map((DataGarden garden) {
                                     return DropdownMenuItem<int>(
                                       value: garden.gardenId,
@@ -396,7 +400,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                   onChanged: (int? gardenId) {
                                     setState(() {
                                       selectedGardenId = gardenId;
-                                      print('selectedGardenId: $selectedGardenId');
+                                      print(
+                                          'selectedGardenId: $selectedGardenId');
                                       callGetPlant();
                                     });
                                   },
@@ -421,12 +426,14 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                               children: [
                                 DropdownButtonFormField<int>(
                                   value: selectedPlantId,
-                                   decoration: InputDecoration(
-                                            labelText: 'Plant Name',
-                                            labelStyle:
-                                                TextStyle(color: Colors.black,fontSize: 15*ffem, fontWeight: FontWeight.w500,),
-                                            
-                                          ),
+                                  decoration: InputDecoration(
+                                    labelText: 'Plant Name',
+                                    labelStyle: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                   items: plantList.map((DataPlant plant) {
                                     return DropdownMenuItem<int>(
                                       value: plant.plantId,
@@ -436,7 +443,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                   onChanged: (int? plantId) {
                                     setState(() {
                                       selectedPlantId = plantId;
-                                      print('selectedPlantId: $selectedPlantId');
+                                      print(
+                                          'selectedPlantId: $selectedPlantId');
                                     });
                                   },
                                 )
@@ -500,8 +508,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                         ],
                       ),
                     ),
-                    
-                     GestureDetector(
+                    GestureDetector(
                       onTap: () {
                         _createtaskgarden();
                       },

@@ -7,6 +7,7 @@ import '../Controller/ComparePriceController.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../HomeScreen/Home.dart';
 import 'CompareScreen.dart';
 
 
@@ -38,7 +39,8 @@ class _CompareScreenState extends State<CompareScreen> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
 
-    final url = 'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-histories?page=$page&pageSize=$pageSize&userId=0';
+    final url =
+        'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-histories?page=$page&pageSize=$pageSize&userId=0';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -63,58 +65,71 @@ class _CompareScreenState extends State<CompareScreen> {
     }).toList();
 
     return Scaffold(
-       appBar: AppBar(
-          title: Text('So sánh giá',
-              style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () async {
-              Navigator.of(context).pop();
-            },
-          ),
+      appBar: AppBar(
+        title: Text('So sánh giá', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
         ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: TextField(
-              onChanged: (value) {
-                setState(() {
-                  searchText = value;
-                });
-              },
-              decoration: InputDecoration(
-                hintText: 'Search...',
+      ),
+      body: GestureDetector(
+        onHorizontalDragEnd: (details) {
+          // Check if swiped left
+          if (details.primaryVelocity! < 0) {
+            // Navigate to another screen using Navigator.push
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Home(),
+              ),
+            );
+          }
+        },
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {
+                    searchText = value;
+                  });
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search...',
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              controller: scrollController,
-              itemCount: filteredTrans.length + (isLoading ? 1 : 0),
-              itemBuilder: (BuildContext context, int index) {
-                if (index == filteredTrans.length) {
-                  if (isLoading) {
-                    return Center(child: CircularProgressIndicator());
+            Expanded(
+              child: ListView.builder(
+                controller: scrollController,
+                itemCount: filteredTrans.length + (isLoading ? 1 : 0),
+                itemBuilder: (BuildContext context, int index) {
+                  if (index == filteredTrans.length) {
+                    if (isLoading) {
+                      return Center(child: CircularProgressIndicator());
+                    } else {
+                      return Container();
+                    }
                   } else {
-                    return Container();
+                    return ListComparePrice(
+                      historyId: filteredTrans[index].historyId,
+                      fruitName: filteredTrans[index].fruitName,
+                      price: filteredTrans[index].price,
+                      location: filteredTrans[index].location,
+                      status: filteredTrans[index].status,
+                      createdDate: filteredTrans[index].createdDate,
+                    );
                   }
-                } else {
-                  return ListComparePrice(
-                    historyId: filteredTrans[index].historyId,
-                    fruitName: filteredTrans[index].fruitName,
-                    price: filteredTrans[index].price,
-                    location: filteredTrans[index].location,
-                    status: filteredTrans[index].status,
-                    createdDate: filteredTrans[index].createdDate,
-                  );
-                }
-              },
+                },
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -135,7 +150,6 @@ class _CompareScreenState extends State<CompareScreen> {
     }
   }
 }
-
 
 
 

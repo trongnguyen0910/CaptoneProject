@@ -111,6 +111,7 @@ class _ViewFruitState extends State<ViewFruit> {
     double? discountPercentage,
     DateTime? discountExpiryDate,
     int? discountThreshold,
+    String? fruitName,
   }) {
     return GestureDetector(
       onTap: () {
@@ -145,7 +146,17 @@ class _ViewFruitState extends State<ViewFruit> {
                     ),
                   ),
                 ),
-                SizedBox(height: 16),
+                 SizedBox(height: 16),
+                Text(
+                  "Tên sản phẩm: $fruitName",
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 10),
                 Text(
                   "Mục Tiêu: $discountThreshold",
                   style: TextStyle(
@@ -157,7 +168,7 @@ class _ViewFruitState extends State<ViewFruit> {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Phần trăm giảm giá: $discountPercentage",
+                  "Phần trăm giảm giá: ${(discountPercentage! * 100).toStringAsFixed(0)}%",
                   style: TextStyle(
                     fontSize: 16.0,
                     fontWeight: FontWeight.bold,
@@ -255,7 +266,7 @@ class _ViewFruitState extends State<ViewFruit> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
-                    height: 280,
+                    height: 330,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: discount
@@ -267,6 +278,7 @@ class _ViewFruitState extends State<ViewFruit> {
                               discount[index].discountExpiryDate,
                           discountPercentage:
                               discount[index].discountPercentage,
+                          fruitName: discount[index].fruitName,
                         );
                       },
                     )),
