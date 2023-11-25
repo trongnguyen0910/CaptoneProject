@@ -28,8 +28,8 @@ class _ListOrderState extends State<ListOrder> {
   Future<void> getOrder() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-
-    final url = 'https://fruitseasonapims-001-site1.btempurl.com/api/orders';
+     final accountID = prefs.getInt('accountID');
+    final url = 'https://fruitseasonapims-001-site1.btempurl.com/api/orders?sellerUserId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
