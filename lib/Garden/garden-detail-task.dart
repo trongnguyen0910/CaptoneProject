@@ -43,7 +43,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
     final accessToken = prefs.getString('accessToken');
     print('id: $id');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=$id';
+        'https://fruitseasonms.azurewebsites.net/api/plants/plants?activeOnly=true&gardenId=$id';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -67,7 +67,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
     final accessToken = prefs.getString('accessToken');
     print('id: $id');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks?activeOnly=false&gardenId=$id&plantId=0';
+        'https://fruitseasonms.azurewebsites.net/api/garden-tasks?activeOnly=true&gardenId=$id&plantId=0';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

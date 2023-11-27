@@ -8,68 +8,7 @@ import '../QR/QrCamera.dart';
 import '../SignIn/ForgotPassword.dart';
 import '../Task/TaskDetail.dart';
 
-// class MainScreen extends StatefulWidget {
-//   @override
-//   _MainScreenState createState() => _MainScreenState();
-// }
 
-// class _MainScreenState extends State<MainScreen> {
-//   int _currentIndex = 0;
-
-//   // List of screens to navigate to
-//   final List<Widget> _screens = [
-//     Home(),
-//     TaskDetail(),
-//     // CreateScreen(),
-//     // NotificationsScreen(),
-//     // ProfileScreen(),
-//   ];
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: PageView(
-//         children: _screens,
-//         controller: PageController(initialPage: _currentIndex),
-//         onPageChanged: (int index) {
-//           setState(() {
-//             _currentIndex = index;
-//           });
-//         },
-//       ),
-//       bottomNavigationBar: BottomNavigationBar(
-//         currentIndex: _currentIndex,
-//         onTap: (int index) {
-//           setState(() {
-//             _currentIndex = index;
-//           });
-//         },
-//         items: [
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.home, color: Colors.green),
-//             label: 'Home',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.scanner, color: Colors.green),
-//             label: 'Scanner',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.add, color: Colors.green),
-//             label: 'Create',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.notifications, color: Colors.green),
-//             label: 'Notifications',
-//           ),
-//           BottomNavigationBarItem(
-//             icon: Icon(Icons.person, color: Colors.green),
-//             label: 'Profile',
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 class Navigation extends StatefulWidget {
   const Navigation({Key? key}) : super(key: key);
   

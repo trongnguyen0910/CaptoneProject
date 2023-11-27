@@ -95,7 +95,7 @@ Future<void> updatetask(int taskId) async {
    var request = http.MultipartRequest(
       'PUT',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks/$taskId'),
+          'https://fruitseasonms.azurewebsites.net/api/garden-tasks/$taskId'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

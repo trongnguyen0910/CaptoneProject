@@ -4,6 +4,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'package:intl/intl.dart';
 
+import 'notification.dart';
+
 class PushNotificationsProvider {
   AndroidNotificationChannel channel = const AndroidNotificationChannel(
     'high_importance_channel', // id
@@ -45,10 +47,10 @@ class PushNotificationsProvider {
     
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       if (message.notification!.body != null) {
-        // Navigator.push(
-        //             context,
-        //             MaterialPageRoute(
-        //                 builder: (context) => const Home()));
+        Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => NotificationClass()));
       }
     });
   }

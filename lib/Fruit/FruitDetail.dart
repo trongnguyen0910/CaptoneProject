@@ -38,7 +38,7 @@ class _FruitDetailState extends State<FruitDetail> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/review-fruits?activeOnly=true&fruitId=$fruitId';
+        'https://fruitseasonms.azurewebsites.net/api/review-fruits?activeOnly=true&fruitId=$fruitId';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

@@ -45,7 +45,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
     final accessToken = prefs.getString('accessToken');
     final accountID = prefs.getInt('accountID');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true&userId=$accountID';
+        'https://fruitseasonms.azurewebsites.net/api/gardens?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -109,7 +109,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks'),
+          'https://fruitseasonms.azurewebsites.net/api/garden-tasks'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

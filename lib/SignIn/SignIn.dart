@@ -20,6 +20,11 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
+  @override
+  void initState() {
+    super.initState();
+  }
+
   String? refreshToken; // Lưu trữ RefreshToken
   bool _isPassword = true;
   final _usernameController = TextEditingController();
@@ -67,6 +72,7 @@ class _LoginState extends State<Login> {
       var jsonResponse = json.decode(body);
       var accountID = jsonResponse['data']['userId'];
       var accessToken = jsonResponse['data']['accessToken'];
+      var emailuser = jsonResponse['data']['email'];
       refreshToken = jsonResponse['data']['refreshToken'];
 
       print('$accountID');
@@ -77,6 +83,11 @@ class _LoginState extends State<Login> {
         await prefs.setInt('accountID', accountID);
       }
 
+      if (emailuser != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('email', emailuser);
+      }
+
       if (accessToken != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('accessToken', accessToken);
@@ -85,6 +96,8 @@ class _LoginState extends State<Login> {
       print(e.toString());
     }
   }
+
+  
 
   @override
   Widget build(BuildContext context) {

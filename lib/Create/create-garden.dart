@@ -126,7 +126,7 @@ _creategarden() async {
    var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/gardens'),
+          'https://fruitseasonms.azurewebsites.net/api/gardens'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

@@ -53,7 +53,7 @@ class _TaskPlantState extends State<TaskPlant> {
     final accessToken = prefs.getString('accessToken');
     print('id: $id');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/garden-tasks?activeOnly=false&gardenId=0&plantId=$id';
+        'https://fruitseasonms.azurewebsites.net/api/garden-tasks?activeOnly=false&gardenId=0&plantId=$id';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

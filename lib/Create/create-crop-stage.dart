@@ -44,7 +44,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-varieties?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/crop-varieties?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -75,7 +75,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
     var endDate = _endDate.text;
 
     var url = Uri.parse(
-        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-variety-stages');
+        'https://fruitseasonms.azurewebsites.net/api/crop-variety-stages');
 
     var data = {
       'cropVarietyId': selectedVarietyId.toString(),

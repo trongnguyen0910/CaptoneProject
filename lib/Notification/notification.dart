@@ -1,172 +1,148 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../Controller/NotificationController.dart';
 
-class NotificationClass extends StatelessWidget {
+class NotificationClass extends StatefulWidget {
+  @override
+  State<NotificationClass> createState() => _NotificationClassState();
+}
+
+class _NotificationClassState extends State<NotificationClass> {
+  @override
+  void initState() {
+    super.initState();
+    getNoti();
+  }
+
+  List<DataNotification> notifications = [];
+  Future<void> getNoti() async {
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'https://fruitseasonms.azurewebsites.net/api/notifications?activeOnly=true';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.get(Uri.parse(url), headers: headers);
+    final responseTrans = json.decode(response.body)['data'];
+    var statusCode = response.statusCode;
+    print('Status code Fruit: $statusCode');
+    if (responseTrans != null) {
+      if (responseTrans is List) {
+        setState(() {
+          notifications = responseTrans
+              .map((item) => DataNotification.fromJson(item))
+              .toList();
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    double baseWidth = 428;
-    double fem = MediaQuery.of(context).size.width / baseWidth;
-    double ffem = fem * 0.97;
     return Scaffold(
-      body:Container(
-      width: double.infinity,
-      child: Container(
-        // notification5gu (3027:1188)
-        width: double.infinity,
-        height: 942*fem,
-        decoration: BoxDecoration (
-          color: Color(0xffffffff),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              // frame271K (3027:1189)
-              left: 0*fem,
-              top: 187*fem,
-              child: Container(
-                width: 428*fem,
-                height: 750*fem,
-                child: Align(
-                  // backgroundBG5 (3027:1190)
-                  alignment: Alignment.topCenter,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 686*fem,
-                    child: Container(
-                      decoration: BoxDecoration (
-                        color: Color(0xfff4f5f9),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-           
-            Positioned(
-              // titlebar6ZP (3027:1204)
-              left: 0*fem,
-              top: 0*fem,
-              child: Container(
-                width: 428*fem,
-                height: 187*fem,
-                decoration: BoxDecoration (
-                  color: Color(0xffffffff),
-                ),
-                child: Stack(
-                  children: [
-                    Positioned(
-                      // searchfieldoCu (3027:1206)
-                      left: 18*fem,
-                      top: 118*fem,
-                      child: Container(
-                        padding: EdgeInsets.fromLTRB(23.85*fem, 14*fem, 22.72*fem, 13*fem),
-                        width: 393*fem,
-                        height: 50*fem,
-                        decoration: BoxDecoration (
-                          color: Color(0xfff4f5f9),
-                          borderRadius: BorderRadius.circular(5*fem),
-                        ),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              // group694Pj (I3027:1206;2888:1196)
-                              margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 144.02*fem, 0*fem),
-                              height: double.infinity,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Container(
-                                    // group21zgh (I3027:1206;2888:1197)
-                                    margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 21.58*fem, 1*fem),
-                                    width: 22.72*fem,
-                                    height: 20*fem,
-                                    child: Image.asset(
-                                      'assets/mobile/images/group-21.png',
-                                      width: 22.72*fem,
-                                      height: 20*fem,
-                                    ),
-                                  ),
-                                  Text(
-                                    // searchkeywordsgpR (I3027:1206;2888:1202)
-                                    'Search keywords..',
-                                    style: SafeGoogleFont (
-                                      'Poppins',
-                                      fontSize: 15*ffem,
-                                      fontWeight: FontWeight.w500,
-                                      height: 1.5*ffem/fem,
-                                      color: Color(0xff868889),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Container(
-                              // groupy2q (I3027:1206;2888:1192)
-                              margin: EdgeInsets.fromLTRB(0*fem, 0*fem, 0*fem, 1.48*fem),
-                              width: 21.11*fem,
-                              height: 16.95*fem,
-                              child: Image.asset(
-                                'assets/mobile/images/group.png',
-                                width: 21.11*fem,
-                                height: 16.95*fem,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      // notificationcrV (3027:1207)
-                      left: 159.0169029236*fem,
-                      top: 63*fem,
-                      child: Align(
-                        child: SizedBox(
-                          width: 111*fem,
-                          height: 27*fem,
-                          child: Text(
-                            'Notification',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont (
-                              'Poppins',
-                              fontSize: 18*ffem,
-                              fontWeight: FontWeight.w500,
-                              height: 1.5*ffem/fem,
-                              letterSpacing: 0.54*fem,
-                              color: Color(0xff000000),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      // backarrowGg9 (3027:1208)
-                      left: 16.7707977295*fem,
-                      top: 68*fem,
-                      child: Align(
-                        child: SizedBox(
-                          width: 24.58*fem,
-                          height: 16.54*fem,
-                          child: Image.asset(
-                            'assets/mobile/images/backarrow.png',
-                            width: 24.58*fem,
-                            height: 16.54*fem,
-                          ),
-                        ),
-                      ),
-                    ),
-                    
-                  ],
-                ),
-              ),
-            ),
-          ],
+        appBar: AppBar(
+        title: Text('Thông báo', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
         ),
       ),
-      )
-          );
+      body: notifications.isNotEmpty
+          ? ListView.builder(
+              itemCount: notifications.length,
+              itemBuilder: (context, index) {
+                final notification = notifications[index];
+                return NotificationCard(notification: notification);
+              },
+            )
+          : Center(
+              child: CircularProgressIndicator(),
+            ),
+    );
+  }
+}
+
+class NotificationCard extends StatelessWidget {
+  final DataNotification notification;
+
+  NotificationCard({required this.notification});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 3,
+      margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      shape: RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.circular(15.0), // Adjust the radius as needed
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.all(16),
+        leading: _buildNotificationIcon(notification.status!),
+        title: Text(
+          notification.message!,
+          style: GoogleFonts.openSans(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'From: ${notification.fullName}',
+                style: TextStyle(color: Colors.grey),
+              ),
+              Text(
+                'Type: ${notification.notificationType}',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+        onTap: () {
+          // Handle tapping on a notification
+        },
+      ),
+    );
+  }
+
+  Widget _buildNotificationIcon(String notificationType) {
+    IconData iconData;
+    Color iconColor;
+    switch (notificationType) {
+      case 'InActive':
+        iconData = Icons.notifications;
+        iconColor = Colors.blue;
+        break;
+      case 'Active':
+        iconData = Icons.event_note;
+        iconColor = Colors.green;
+        break;
+      default:
+        iconData = Icons.info;
+        iconColor = Colors.grey;
+    }
+
+    return Icon(
+      iconData,
+      color: iconColor,
+      size: 30,
+    );
   }
 }

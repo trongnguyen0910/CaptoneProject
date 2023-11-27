@@ -34,7 +34,7 @@ class _CreateCropState extends State<CreateCrop> {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://fruitseasonms-001-site1.ctempurl.com/api/crop-varieties'),
+          'https://fruitseasonms.azurewebsites.net/api/crop-varieties'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';
