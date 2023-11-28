@@ -45,7 +45,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-variety-stages?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/crop-variety-stages?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -65,7 +65,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
     }
   }
 
-  Future<void> createcropvarietystage() async {
+  Future<void> createcropvarietygrowth() async {
     final prefs = await SharedPreferences.getInstance();
     final accountID = prefs.getInt('accountID');
     final accessToken = prefs.getString('accessToken');
@@ -76,7 +76,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
     var endDate = _endDate.text;
 
     var url = Uri.parse(
-        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-variety-growth-tasks');
+        'https://fruitseasonms.azurewebsites.net/api/crop-variety-growth-tasks');
 
     var data = {
       'cropVarietyStageId': selectedVarietyStageId.toString(),
@@ -464,7 +464,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            createcropvarietystage();
+                            createcropvarietygrowth();
                           },
                           child: Container(
                             // primarybuttonoyi (3152:2964)

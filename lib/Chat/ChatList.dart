@@ -17,7 +17,7 @@ class _ChatListPageState extends State<ChatListPage> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/Chats/Users';
+        'https://fruitseasonms.azurewebsites.net/Chats/Users';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

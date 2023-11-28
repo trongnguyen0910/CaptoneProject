@@ -37,7 +37,7 @@ _createimage(int fruitId) async {
    var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-images'),
+          'https://fruitseasonms.azurewebsites.net/api/fruit-images'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

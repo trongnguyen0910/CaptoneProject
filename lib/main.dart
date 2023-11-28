@@ -14,6 +14,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Garden/garden.dart';
 import 'GetX/GardenGetX.dart';
 import 'Notification/firebaseconfig.dart';
+import 'Notification/notification.dart';
 import 'Notification/pushnotification_provider.dart';
 import 'SignIn/SignIn.dart';
 
@@ -58,11 +59,13 @@ void main() async {
   await FirebaseMessaging.instance.getInitialMessage();
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   messaging.requestPermission();
-  FirebaseMessaging.instance.subscribeToTopic('7');
+  final prefs = await SharedPreferences.getInstance();
+  final accountID = prefs.getInt('accountID');
+  print('accountID: $accountID');
+  FirebaseMessaging.instance.subscribeToTopic('${accountID}');
 
   messaging.getToken().then((token) async {
     print("TokenDevice: $token");
-    SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('token', token!);
   });
 
@@ -74,12 +77,12 @@ void main() async {
   FirebaseMessaging.onMessageOpenedApp.listen(
     (RemoteMessage message) {
       print("onMessageOpenApp: $message");
-      //    Navigator.push(
-      //    navigatorKey.currentState!.context,
-      //     MaterialPageRoute(
-      //      builder: (context) => HomeNoti(message: json.encode(message.data)),
-      // ),
-      //     );
+         Navigator.push(
+         navigatorKey.currentState!.context,
+          MaterialPageRoute(
+           builder: (context) => NotificationClass(),
+      ),
+          );
     },
   );
 
@@ -105,9 +108,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-   @override
-  void initState(){
-     super.initState();
+  @override
+  void initState() {
+    super.initState();
     pushNotificationsProvider.onMessageListener(context as BuildContext);
   }
 

@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 
 import '../Controller/ComparePriceController.dart';
 import '../Controller/OrderController.dart';
+import 'OrderDetail.dart';
 import 'OrderObject.dart';
 
 class ListOrder extends StatefulWidget {
@@ -28,8 +29,9 @@ class _ListOrderState extends State<ListOrder> {
   Future<void> getOrder() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-     final accountID = prefs.getInt('accountID');
-    final url = 'https://fruitseasonapims-001-site1.btempurl.com/api/orders?sellerUserId=$accountID';
+    final accountID = prefs.getInt('accountID');
+    final url =
+        'https://fruitseasonms.azurewebsites.net/api/orders?sellerUserId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -50,6 +52,14 @@ class _ListOrderState extends State<ListOrder> {
   List<DataOrder> sortOrderByStatus(
       List<DataOrder> order, List<String> statuses) {
     return order.where((item) => statuses.contains(item.status)).toList();
+  }
+
+  void navigateToOrderDetailPage(DataOrder order) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => OrderDetailPage(order: order),
+      ),
+    );
   }
 
   @override
@@ -104,25 +114,39 @@ class _ListOrderState extends State<ListOrder> {
                                 .contains(searchTextProcessed.toLowerCase()))
                             .length,
                     itemBuilder: (BuildContext context, int index) {
-                      return OrderObject(
-                        orderId: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .orderId,
-                        fullName: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .fullName,
-                        phoneNumber: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .phoneNumber,
-                        totalAmount: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .totalAmount,
-                        status: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .status,
-                        orderDate: sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index]
-                            .orderDate,
+                      return GestureDetector(
+                        onTap: () {
+                          navigateToOrderDetailPage(
+                            sortOrderByStatus(
+                                order, ['Accepted', 'Rejected'])[index],
+                          );
+                        },
+                        child: OrderObject(
+                          orderId: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .orderId,
+                          fullName: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .fullName,
+                          phoneNumber: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .phoneNumber,
+                          totalAmount: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .totalAmount,
+                          status: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .status,
+                          orderDate: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .orderDate,
+                          depositAmount: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .depositAmount,
+                          remainingAmount: sortOrderByStatus(
+                                  order, ['Accepted', 'Rejected'])[index]
+                              .remainingAmount,
+                        ),
                       );
                     },
                   ),
@@ -135,21 +159,35 @@ class _ListOrderState extends State<ListOrder> {
                             .contains(searchTextPending.toLowerCase()))
                         .length,
                     itemBuilder: (BuildContext context, int index) {
-                      return OrderObject(
-                        orderId: sortOrderByStatus(order, ['Pending'])[index]
-                            .orderId,
-                        fullName: sortOrderByStatus(order, ['Pending'])[index]
-                            .fullName,
-                        phoneNumber:
-                            sortOrderByStatus(order, ['Pending'])[index]
-                                .phoneNumber,
-                        totalAmount:
-                            sortOrderByStatus(order, ['Pending'])[index]
-                                .totalAmount,
-                        status:
-                            sortOrderByStatus(order, ['Pending'])[index].status,
-                        orderDate: sortOrderByStatus(order, ['Pending'])[index]
-                            .orderDate,
+                      return GestureDetector(
+                        onTap: () {
+                          navigateToOrderDetailPage(
+                            sortOrderByStatus(order, ['Pending'])[index],
+                          );
+                        },
+                        child: OrderObject(
+                          orderId: sortOrderByStatus(order, ['Pending'])[index]
+                              .orderId,
+                          fullName: sortOrderByStatus(order, ['Pending'])[index]
+                              .fullName,
+                          phoneNumber:
+                              sortOrderByStatus(order, ['Pending'])[index]
+                                  .phoneNumber,
+                          totalAmount:
+                              sortOrderByStatus(order, ['Pending'])[index]
+                                  .totalAmount,
+                          status: sortOrderByStatus(order, ['Pending'])[index]
+                              .status,
+                          orderDate:
+                              sortOrderByStatus(order, ['Pending'])[index]
+                                  .orderDate,
+                          depositAmount:
+                              sortOrderByStatus(order, ['Pending'])[index]
+                                  .depositAmount,
+                          remainingAmount:
+                              sortOrderByStatus(order, ['Pending'])[index]
+                                  .remainingAmount,
+                        ),
                       );
                     },
                   ),

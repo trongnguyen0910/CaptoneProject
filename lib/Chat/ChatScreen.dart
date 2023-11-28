@@ -131,7 +131,7 @@ Future<ListChats> fetchMessages(int idHoiThoai) async {
   final accessToken = prefs.getString('accessToken');
   final response = await http.get(
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/Chats/History/$idHoiThoai'),
+          'https://fruitseasonms.azurewebsites.net/Chats/History/$idHoiThoai'),
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',

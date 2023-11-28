@@ -32,15 +32,15 @@ class _CompareScreenState extends State<CompareScreen> {
   void initState() {
     super.initState();
     scrollController.addListener(_scrollListener);
-    getTrans();
+    getPrice();
   }
 
-  Future<void> getTrans() async {
+  Future<void> getPrice() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
 
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-histories?page=$page&pageSize=$pageSize&userId=0';
+        'https://fruitseasonms.azurewebsites.net/api/fruit-histories?page=$page&pageSize=$pageSize&userId=0';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -141,7 +141,7 @@ class _CompareScreenState extends State<CompareScreen> {
           isLoading = true;
         });
         page = page + 1;
-        getTrans().then((_) {
+        getPrice().then((_) {
           setState(() {
             isLoading = false;
           });

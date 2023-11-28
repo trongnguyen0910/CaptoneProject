@@ -36,9 +36,9 @@ class _GardenState extends State<Garden> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final accountID = prefs.getInt('accountID');
-    
+
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true&userId=$accountID';
+        'https://fruitseasonms.azurewebsites.net/api/gardens?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -108,29 +108,34 @@ class _GardenState extends State<Garden> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
-              itemCount: filteredTrans.length,
-              itemBuilder: (BuildContext context, int index) {
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            GardenDetailTask(id: datagarden[index].gardenId!),
-                      ),
-                    );
-                  },
-                  child: GardenObject(
-                      gardenName: filteredTrans[index].gardenName,
-                      description: filteredTrans[index].description,
-                      fullName: filteredTrans[index].fullName,
-                      region: filteredTrans[index].region,
-                      image: filteredTrans[index].image,
-                      press: () {}),
-                );
-              },
-            ),
+            child: filteredTrans.isNotEmpty
+                ? ListView.builder(
+                    itemCount: filteredTrans.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GardenDetailTask(
+                                  id: datagarden[index].gardenId!),
+                            ),
+                          );
+                        },
+                        child: GardenObject(
+                          gardenName: filteredTrans[index].gardenName,
+                          description: filteredTrans[index].description,
+                          fullName: filteredTrans[index].fullName,
+                          region: filteredTrans[index].region,
+                          image: filteredTrans[index].image,
+                          press: () {},
+                        ),
+                      );
+                    },
+                  )
+                : Center(
+                    child: CircularProgressIndicator(),
+                  ),
           ),
         ],
       ),

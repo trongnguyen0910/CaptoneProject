@@ -105,7 +105,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
     var request = http.MultipartRequest(
       'PUT',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/plants/$plantID'),
+          'https://fruitseasonms.azurewebsites.net/api/plants/$plantID'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

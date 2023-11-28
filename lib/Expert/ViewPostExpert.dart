@@ -27,7 +27,7 @@ class _ViewPostState extends State<ViewPost> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/posts?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/posts?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -62,11 +62,8 @@ class _ViewPostState extends State<ViewPost> {
         centerTitle: true,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Home()),
-            );
+         onPressed: () async {
+            Navigator.of(context).pop();
           },
         ),
         actions: [

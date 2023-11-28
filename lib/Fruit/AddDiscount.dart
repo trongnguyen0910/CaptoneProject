@@ -50,7 +50,7 @@ class _AddDiscountState extends State<AddDiscount> {
   var fruitId = widget.fruitId;
   var date = _date.text;
 
-  var apiUrl = 'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-discounts';
+  var apiUrl = 'https://fruitseasonms.azurewebsites.net/api/fruit-discounts';
   var headers = {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

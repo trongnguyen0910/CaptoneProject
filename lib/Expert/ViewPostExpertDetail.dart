@@ -41,7 +41,7 @@ class _PostDetailState extends State<PostDetail> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/comments?activeOnly=false&postId=$postID';
+        'https://fruitseasonms.azurewebsites.net/api/comments?activeOnly=false&postId=$postID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -72,7 +72,7 @@ class _PostDetailState extends State<PostDetail> {
   var comment = _commentController.text;
   var postID = widget.datapost.postId.toString();
   var userId = accountID;
-  var url = 'https://fruitseasonapims-001-site1.btempurl.com/api/comments';
+  var url = 'https://fruitseasonms.azurewebsites.net/api/comments';
 
   var headers = {
     'Content-Type': 'application/json',

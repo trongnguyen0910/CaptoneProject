@@ -51,7 +51,7 @@ class _CreatePlantState extends State<CreatePlant> {
     final accessToken = prefs.getString('accessToken');
     final accountID = prefs.getInt('accountID');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/gardens?activeOnly=true&userId=$accountID';
+        'https://fruitseasonms.azurewebsites.net/api/gardens?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -75,7 +75,7 @@ class _CreatePlantState extends State<CreatePlant> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/crop-varieties?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/crop-varieties?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -117,7 +117,7 @@ class _CreatePlantState extends State<CreatePlant> {
     var request = http.MultipartRequest(
       'POST',
       Uri.parse(
-          'https://fruitseasonapims-001-site1.btempurl.com/api/plants'),
+          'https://fruitseasonms.azurewebsites.net/api/plants'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';

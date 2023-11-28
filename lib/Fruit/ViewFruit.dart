@@ -61,7 +61,7 @@ class _ViewFruitState extends State<ViewFruit> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/fruits/fruit-farmers?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/fruits/fruit-farmers?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -84,7 +84,7 @@ class _ViewFruitState extends State<ViewFruit> {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final url =
-        'https://fruitseasonapims-001-site1.btempurl.com/api/fruit-discounts?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/fruit-discounts?activeOnly=true';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
