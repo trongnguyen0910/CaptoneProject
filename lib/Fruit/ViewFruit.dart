@@ -83,8 +83,9 @@ class _ViewFruitState extends State<ViewFruit> {
   Future<void> getDiscount() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+    final accountID=prefs.getInt('accountID');
     final url =
-        'https://fruitseasonms.azurewebsites.net/api/fruit-discounts?activeOnly=true';
+        'https://fruitseasonms.azurewebsites.net/api/fruit-discounts?activeOnly=true&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -129,7 +130,7 @@ class _ViewFruitState extends State<ViewFruit> {
           ),
           child: Container(
             height: 300,
-            width: 150,
+            width: 170,
             padding: const EdgeInsets.all(16.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -139,10 +140,10 @@ class _ViewFruitState extends State<ViewFruit> {
                   radius: 40.0,
                   backgroundColor: Colors.white,
                   child: Padding(
-                    padding: const EdgeInsets.all(14.0),
+                    padding: const EdgeInsets.all(1.0),
                     child: Image(
                       image:
-                          AssetImage("assets/mobile/images/avartarcomment.png"),
+                          AssetImage("assets/mobile/images/discountimage.png"),
                     ),
                   ),
                 ),
@@ -212,7 +213,7 @@ class _ViewFruitState extends State<ViewFruit> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fruit List', style: TextStyle(color: Colors.black)),
+        title: Text('Danh sách trái cây', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -248,7 +249,7 @@ class _ViewFruitState extends State<ViewFruit> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search...',
+                  hintText: 'Tìm kiếm...',
                 ),
               ),
             ),
@@ -266,7 +267,7 @@ class _ViewFruitState extends State<ViewFruit> {
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Container(
-                    height: 330,
+                    height: 380,
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: discount
@@ -297,7 +298,7 @@ class _ViewFruitState extends State<ViewFruit> {
               maxCrossAxisExtent: 300.0,
               mainAxisSpacing: 20.0,
               crossAxisSpacing: 10.0,
-              childAspectRatio: 1.0,
+              childAspectRatio: 0.6,
             ),
             delegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
@@ -306,7 +307,7 @@ class _ViewFruitState extends State<ViewFruit> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => FruitDetail(fruit: fruit[index]),
+                        builder: (context) => FruitDetail(fruit: filteredTrans[index]),
                       ),
                     );
                   },

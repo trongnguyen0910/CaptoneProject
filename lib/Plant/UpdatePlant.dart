@@ -31,6 +31,8 @@ class UpdatePlantScreen extends StatefulWidget {
 }
 
 class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+
   late TextEditingController _plantNameController;
   late TextEditingController _plantDescriptionController;
   late TextEditingController _plantingdate;
@@ -100,12 +102,11 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
     var plantingdate = _plantingdate.text;
     var harvestingdate = _harvestingdate.text;
     print('status: $status');
-     print('estimatedHarvestQuantity: $estimatedHarvestQuantity');
-   
+    print('estimatedHarvestQuantity: $estimatedHarvestQuantity');
+
     var request = http.MultipartRequest(
       'PUT',
-      Uri.parse(
-          'https://fruitseasonms.azurewebsites.net/api/plants/$plantID'),
+      Uri.parse('https://fruitseasonms.azurewebsites.net/api/plants/$plantID'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';
@@ -177,7 +178,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
       } else if (response.statusCode != 200) {
         var responseString = await response.stream.bytesToString();
         var responseBody = json.decode(responseString);
-        var errorMessage = responseBody['errors'];
+        var errorMessage = responseBody['message'];
         String errorContent = errorMessage.toString();
         final snackBar = SnackBar(
           elevation: 0,
@@ -203,6 +204,17 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
     }
   }
 
+  Map<String, String> valueMappings = {
+    'YoungTree': 'Cây trẻ',
+    'FloweringTree': 'Cây đang nở hoa',
+    'Harvestable': 'Cây có thể thu hoạch',
+    'Diseased': 'Cây bị bệnh',
+    'Dead': 'Cây chết',
+    'Seed': 'Hạt giống',
+    'GerminatedSeed': 'Hạt giống đã nảy mầm',
+    'Seedling': 'Cây con',
+  };
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -210,7 +222,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Update Plant', style: TextStyle(color: Colors.black)),
+          title: Text('Cập nhật', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
           leading: IconButton(
@@ -275,7 +287,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Plant name',
+                                                labelText: 'Tên cây trồng',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -327,7 +339,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -380,7 +392,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Quantity Planted',
+                                                labelText: 'Số lượng cây trồng',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -397,6 +409,8 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                                 ),
                                               ),
                                               controller: _quantityPlanted,
+                                              keyboardType:
+                                                  TextInputType.number,
                                             ),
                                           ),
                                         ],
@@ -435,24 +449,17 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                               isExpanded: true,
                                               value: _selectedStatus,
                                               decoration: InputDecoration(
-                                                labelText: 'Status',
+                                                labelText: 'Trạng thái',
                                                 labelStyle: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 15),
                                               ),
-                                              items: [
-                                                'YoungTree',
-                                                'FloweringTree',
-                                                'Harvestable',
-                                                'Diseased',
-                                                'Dead'
-                                                'Seed',
-                                                'GerminatedSeed',
-                                                'Seedling',
-                                              ].map((String value) {
+                                              items: valueMappings.keys
+                                                  .map((String value) {
                                                 return DropdownMenuItem<String>(
                                                   value: value,
-                                                  child: Text(value),
+                                                  child: Text(valueMappings[
+                                                      value]!), // Hiển thị giá trị tiếng Việt
                                                 );
                                               }).toList(),
                                               onChanged: (newValue) {
@@ -468,45 +475,61 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                         ],
                                       ),
                                     ),
-                                    Visibility(
-                                      visible: _selectedStatus == 'Harvestable',
-                                      child: Container(
-                                        // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                        margin: EdgeInsets.fromLTRB(0 * fem,
-                                            0 * fem, 0 * fem, 12 * fem),
-                                        width: double.infinity,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Expanded(
-                                              child: TextField(
-                                                decoration: InputDecoration(
-                                                  labelText:
-                                                      'Estimated Harvest Quantity',
-                                                  labelStyle: TextStyle(
-                                                    color: Color.fromARGB(
-                                                        255, 0, 0, 0),
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    letterSpacing: 0.45 * fem,
-                                                  ),
-                                                  suffixText: '*',
-                                                  suffixStyle: TextStyle(
-                                                    color: Color(0xffe74c3c),
-                                                    fontSize: 15 * ffem,
-                                                    fontWeight: FontWeight.w500,
-                                                    letterSpacing: 0.45 * fem,
+                                    Form(
+                                        key: _formKey,
+                                        child: Visibility(
+                                          visible:
+                                              _selectedStatus == 'Harvestable',
+                                          child: Container(
+                                            // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                            margin: EdgeInsets.fromLTRB(0 * fem,
+                                                0 * fem, 0 * fem, 12 * fem),
+                                            width: double.infinity,
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              children: [
+                                                Expanded(
+                                                  child: TextFormField(
+                                                    decoration: InputDecoration(
+                                                      labelText:
+                                                          'Ước tính thu hoạch/kg',
+                                                      labelStyle: TextStyle(
+                                                        color: Color.fromARGB(
+                                                            255, 0, 0, 0),
+                                                        fontSize: 15 * ffem,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        letterSpacing:
+                                                            0.45 * fem,
+                                                      ),
+                                                      suffixText: '*',
+                                                      suffixStyle: TextStyle(
+                                                        color:
+                                                            Color(0xffe74c3c),
+                                                        fontSize: 15 * ffem,
+                                                        fontWeight:
+                                                            FontWeight.w500,
+                                                        letterSpacing:
+                                                            0.45 * fem,
+                                                      ),
+                                                    ),
+                                                    validator: (value) {
+                                                      if (double.parse(value!) <
+                                                          0) {
+                                                        return 'Estimated harvest quantity cannot be negative';
+                                                      }
+                                                    },
+                                                    keyboardType:
+                                                        TextInputType.number,
+                                                    controller:
+                                                        _estimatedHarvestQuantity,
                                                   ),
                                                 ),
-                                                controller:
-                                                    _estimatedHarvestQuantity,
-                                              ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
+                                          ),
+                                        )),
                                   ],
                                 ),
                               ),
@@ -546,7 +569,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                         },
                                         controller: _plantingdate,
                                         decoration: InputDecoration(
-                                          labelText: 'Planting Date',
+                                          labelText: 'Ngày trồng',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -603,7 +626,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                                         },
                                         controller: _harvestingdate,
                                         decoration: InputDecoration(
-                                          labelText: 'Harvesting Date',
+                                          labelText: 'Ngày thu hoạch',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -629,6 +652,9 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
+                            if (_formKey.currentState?.validate() == false) {
+                              return;
+                            }
                             updateplant(widget.dataPlant.plantId!);
                           },
                           child: Container(

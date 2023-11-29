@@ -25,7 +25,7 @@ class GardenDetailTask extends StatefulWidget {
 }
 
 class _GardenDetailTaskState extends State<GardenDetailTask> {
-   List<DataGarden> datagarden = [];
+  List<DataGarden> datagarden = [];
   int _currentTabIndex = 0;
   String taskSearchText = "";
   String plantSearchText = "";
@@ -58,10 +58,11 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
           dataplant =
               responseTrans.map((item) => DataPlant.fromJson(item)).toList();
         });
-         Get.find<GardenController>().updatePlantList(dataplant);
+        Get.find<GardenController>().updatePlantList(dataplant);
       }
     }
   }
+
   Future<void> getTask(int id) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
@@ -79,13 +80,15 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
     if (responseTrans != null) {
       if (responseTrans is List) {
         setState(() {
-          datagardentask =
-              responseTrans.map((item) => DataGardenTask.fromJson(item)).toList();
+          datagardentask = responseTrans
+              .map((item) => DataGardenTask.fromJson(item))
+              .toList();
         });
       }
     }
   }
-   List<DataGardenTask> sortTasksByStatus(List<DataGardenTask> tasks) {
+
+  List<DataGardenTask> sortTasksByStatus(List<DataGardenTask> tasks) {
     tasks.sort((a, b) {
       // Xác định ưu tiên sắp xếp dựa trên trạng thái của nhiệm vụ
       Map<String, int> statusOrder = {
@@ -95,10 +98,9 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
         'Cancelled': 3,
       };
 
-     int aStatus = statusOrder[a.status!]!;
-     int bStatus = statusOrder[b.status!]!;
+      int aStatus = statusOrder[a.status!]!;
+      int bStatus = statusOrder[b.status!]!;
 
-   
       return aStatus.compareTo(bStatus);
     });
     return tasks;
@@ -106,7 +108,7 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
 
   @override
   Widget build(BuildContext context) {
-     List<DataGardenTask> sortedTasks = sortTasksByStatus(datagardentask);
+    List<DataGardenTask> sortedTasks = sortTasksByStatus(datagardentask);
 
     List<DataGardenTask> filteredAndSortedTasks = sortedTasks.where((item) {
       return item.gardenTaskName!
@@ -127,7 +129,8 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Garden List', style: TextStyle(color: Colors.black)),
+          title:
+              Text('Chi tiết khu vườn', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
           leading: IconButton(
@@ -141,8 +144,8 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
           ),
           bottom: TabBar(
             tabs: [
-              Tab(text: 'Task'),
-              Tab(text: 'Plant'),
+              Tab(text: 'Công việc'),
+              Tab(text: 'Cây trồng'),
             ],
             onTap: (index) {
               setState(() {
@@ -165,7 +168,11 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                         });
                       },
                       decoration: InputDecoration(
-                        hintText: 'Search Tasks...',
+                        hintText: 'Tìm kiếm ',
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -178,15 +185,18 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TaskDetail(datagardentask:datagardentask[index]),
+                                builder: (context) => TaskDetail(
+                                    datagardentask: filteredAndSortedTasks[index]),
                               ),
                             );
                           },
                           child: TaskObject(
-                              // datagardentask:datagardentask[index],
-                              gardenTaskName: filteredAndSortedTasks[index].gardenTaskName,
-                              gardenTaskDate: filteredAndSortedTasks[index].gardenTaskDate,
-                              status: filteredAndSortedTasks[index].status,
+                            // datagardentask:datagardentask[index],
+                            gardenTaskName:
+                                filteredAndSortedTasks[index].gardenTaskName,
+                            gardenTaskDate:
+                                filteredAndSortedTasks[index].gardenTaskDate,
+                            status: filteredAndSortedTasks[index].status,
                             press: () {},
                           ),
                         );
@@ -206,7 +216,11 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                         });
                       },
                       decoration: InputDecoration(
-                        hintText: 'Search Plants...',
+                        hintText: 'Tìm kiếm...',
+                        prefixIcon: Icon(Icons.search, color: Colors.black),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
                     ),
                   ),
@@ -220,14 +234,13 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
                       ),
                       itemCount: filteredTrans.length,
                       itemBuilder: (BuildContext context, int index) {
-                        // Filter your plant items based on 'plantSearchText'
-                        // Example: if (PlantModel.plantModel[index].contains(plantSearchText))
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => PlantDetail(dataPlant:dataplant[index]),
+                                builder: (context) =>
+                                    PlantDetail(dataPlant: filteredTrans[index]),
                               ),
                             );
                           },
@@ -244,6 +257,4 @@ class _GardenDetailTaskState extends State<GardenDetailTask> {
       ),
     );
   }
-  
-
 }

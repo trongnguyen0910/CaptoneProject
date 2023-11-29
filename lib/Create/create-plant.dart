@@ -116,8 +116,7 @@ class _CreatePlantState extends State<CreatePlant> {
 
     var request = http.MultipartRequest(
       'POST',
-      Uri.parse(
-          'https://fruitseasonms.azurewebsites.net/api/plants'),
+      Uri.parse('https://fruitseasonms.azurewebsites.net/api/plants'),
     );
     request.headers['accept'] = 'multipart/form-data';
     request.headers['Authorization'] = 'Bearer $accessToken';
@@ -129,8 +128,6 @@ class _CreatePlantState extends State<CreatePlant> {
     request.fields['CropVarietyId'] = selectedVarietyId.toString();
     request.fields['Status'] = status.toString();
     request.fields['QuantityPlanted'] = estimatedHarvestQuantity;
-  
-    
 
     // var data = {
     //   "taskName": taskname,
@@ -229,12 +226,21 @@ class _CreatePlantState extends State<CreatePlant> {
     }
   }
 
+  Map<String, String> valueMappings = {
+    'YoungTree': 'Cây trẻ',
+    'FloweringTree': 'Cây đang nở hoa',
+    'Harvestable': 'Cây có thể thu hoạch',
+    'Diseased': 'Cây bị bệnh',
+    'Dead': 'Cây chết',
+    'Seed': 'Hạt giống',
+    'GerminatedSeed': 'Hạt giống đã nảy mầm',
+    'Seedling': 'Cây con',
+  };
+
   var gardenList = Get.find<GardenController>().gardenList;
   var varietyList = Get.find<GardenController>().varietyList;
   String? selectedGardenName;
   String? selectedvarietyName;
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -242,572 +248,529 @@ class _CreatePlantState extends State<CreatePlant> {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
+        appBar: AppBar(
+          title: Text('Tạo cây trồng', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         body: SingleChildScrollView(
-      child: Container(
-        // creategardentask5rx (3154:3128)
-        width: double.infinity,
-        height: 1406 * fem,
-        decoration: BoxDecoration(
-          color: Color(0xfff4f5f9),
-        ),
-        child: Stack(
-          children: [
-            Positioned(
-              // bodyCRn (3154:3130)
-              left: 18 * fem,
-              top: 318 * fem,
-              child: Container(
-                width: 392.88 * fem,
-                height: 1152.71 * fem,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      // detailVfn (3154:3132)
-                      margin: EdgeInsets.fromLTRB(
-                          0 * fem, 0 * fem, 0.88 * fem, 30.7 * fem),
-                      width: 392 * fem,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(5 * fem),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            // namezMe (3154:3143)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  // autogroupdmqlhG4 (LtKoAgTTv81Bq2o4bfDmQL)
-                                  margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            labelText: 'Plant name',
-                                            labelStyle: TextStyle(
-                                              color:
-                                                  Color.fromARGB(255, 0, 0, 0),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                            suffixText: '*',
-                                            suffixStyle: TextStyle(
-                                              color: Color(0xffe74c3c),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                          ),
-                                          controller: _plantnameController,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // descriptionFD2 (3154:3138)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                  margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            labelText: 'Description',
-                                            labelStyle: TextStyle(
-                                              color:
-                                                  Color.fromARGB(255, 0, 0, 0),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                            suffixText: '*',
-                                            suffixStyle: TextStyle(
-                                              color: Color(0xffe74c3c),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                          ),
-                                          controller:
-                                              _plantdescriptionController,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // descriptionFD2 (3154:3138)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                  margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: DropdownButtonFormField<String>(
-                                          isExpanded: true,
-                                          value: _selectedValue,
-                                          decoration: InputDecoration(
-                                            labelText: 'Status',
-                                            labelStyle: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15),
-                                          ),
-                                          items: [
-                                                'YoungTree',
-                                                'FloweringTree',
-                                                'Harvestable',
-                                                'Diseased',
-                                                'Dead'
-                                                'Seed',
-                                                'GerminatedSeed',
-                                                'Seedling',
-                                          ].map((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                          onChanged: (newValue) {
-                                            // Set the new selected value
-                                            setState(() {
-                                              _selectedValue = newValue;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // descriptionFD2 (3154:3138)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                  margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: TextField(
-                                          decoration: InputDecoration(
-                                            labelText:
-                                                'Quantity Planted',
-                                            labelStyle: TextStyle(
-                                              color:
-                                                  Color.fromARGB(255, 0, 0, 0),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                            suffixText: '*',
-                                            suffixStyle: TextStyle(
-                                              color: Color(0xffe74c3c),
-                                              fontSize: 15 * ffem,
-                                              fontWeight: FontWeight.w500,
-                                              letterSpacing: 0.45 * fem,
-                                            ),
-                                          ),
-                                          keyboardType: TextInputType.number,
-                                          controller:
-                                              _estimatedHarvestQuantityController
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // startXrg (3154:3260)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                DropdownButtonFormField<int>(
-                                  value: selectedGardenId,
-                                  decoration: InputDecoration(
-                                    labelText: 'Garden Name',
-                                    labelStyle: TextStyle(
-                                        color: Colors.black, fontSize: 15),
-                                  ),
-                                  items: gardenList.map((DataGarden garden) {
-                                    return DropdownMenuItem<int>(
-                                      value: garden.gardenId,
-                                      child: Text(garden.gardenName ?? ''),
-                                    );
-                                  }).toList(),
-                                  onChanged: (int? gardenId) {
-                                    setState(() {
-                                      selectedGardenId = gardenId;
-                                      print(
-                                          'selectedGardenId: $selectedGardenId');
-                                    });
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // startXrg (3154:3260)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 15 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                DropdownButtonFormField<int>(
-                                  value: selectedVarietyId,
-                                  decoration: InputDecoration(
-                                    labelText: 'Crop Variety Name',
-                                    labelStyle: TextStyle(
-                                        color: Colors.black, fontSize: 15),
-                                  ),
-                                  items: varietyList.map((DataVariety variety) {
-                                    return DropdownMenuItem<int>(
-                                      value: variety.cropVarietyId,
-                                      child: Text(variety.cropVarietyName ?? ''),
-                                    );
-                                  }).toList(),
-                                  onChanged: (int? varietyId) {
-                                    setState(() {
-                                      selectedVarietyId = varietyId;
-                                      print(
-                                          'selectedvarietyId: $selectedVarietyId');
-                                    });
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // startdAx (3154:3256)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 15 * fem, 25 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    onTap: () async {
-                                      DateTime? pickeddate =
-                                          await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(1000),
-                                              lastDate: DateTime(2101));
-                                      if (pickeddate != null) {
-                                        setState(() {
-                                          _plantingDate.text = DateFormat('yyyy-MM-dd')
-                                              .format(pickeddate);
-                                        });
-                                      }
-                                    },
-                                    controller: _plantingDate,
-                                    decoration: InputDecoration(
-                                      labelText: 'Planting Date',
-                                      labelStyle: TextStyle(
-                                        fontFamily: 'Satoshi',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.2575 * ffem / fem,
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value?.isEmpty == true) {
-                                        return 'Please enter your date';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 25 * fem,
-                          ),
-                          Container(
-                            // startdAx (3154:3256)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 15 * fem, 25 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Expanded(
-                                  child: TextFormField(
-                                    onTap: () async {
-                                      DateTime? pickeddate =
-                                          await showDatePicker(
-                                              context: context,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(1000),
-                                              lastDate: DateTime(2101));
-                                      if (pickeddate != null) {
-                                        setState(() {
-                                          _harvestingDate.text = DateFormat('yyyy-MM-dd')
-                                              .format(pickeddate);
-                                        });
-                                      }
-                                    },
-                                    controller: _harvestingDate,
-                                    decoration: InputDecoration(
-                                      labelText: 'Harvesting Date',
-                                      labelStyle: TextStyle(
-                                        fontFamily: 'Satoshi',
-                                        fontSize: 15 * ffem,
-                                        fontWeight: FontWeight.w500,
-                                        height: 1.2575 * ffem / fem,
-                                        color: Color.fromARGB(255, 0, 0, 0),
-                                      ),
-                                    ),
-                                    validator: (value) {
-                                      if (value?.isEmpty == true) {
-                                        return 'Please enter your date';
-                                      } else {
-                                        return null;
-                                      }
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        _createtaskgarden();
-                      },
-                      child: Container(
-                        // primarybuttonoyi (3152:2964)
-                        margin: EdgeInsets.fromLTRB(
-                            0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
-                        width: double.infinity,
-                        height: 62.01 * fem,
-                        decoration: BoxDecoration(
-                          color: Color(0xff6cc51d),
-                          borderRadius: BorderRadius.circular(5 * fem),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Color(0x3f6cc51d),
-                              offset: Offset(0 * fem, 10 * fem),
-                              blurRadius: 4.5 * fem,
-                            ),
-                          ],
-                        ),
-                        child: Center(
-                          child: Text(
-                            'Save change',
-                            textAlign: TextAlign.center,
-                            style: SafeGoogleFont(
-                              'Poppins',
-                              fontSize: 15 * ffem,
-                              fontWeight: FontWeight.w600,
-                              height: 1.5 * ffem / fem,
-                              color: Color(0xffffffff),
-                            ),
-                          ),
-                        ),
-                      ),
-                    )
-                  ],
-                ),
-              ),
+          child: Container(
+            // creategardentask5rx (3154:3128)
+            width: double.infinity,
+            height: 1406 * fem,
+            decoration: BoxDecoration(
+              color: Color(0xfff4f5f9),
             ),
-            Positioned(
-              // rectangle60edn (3154:3168)
-              left: 0 * fem,
-              top: 122 * fem,
-              child: GestureDetector(
-                onTap: () {
-                  // Add your onTap functionality here
-                  pickImage(); // For example, call the pickImage function when tapped
-                },
-                child: Align(
-                  child: image != null
-                      ? Image.file(
-                          image!,
-                          width: 128,
-                          height: 128,
-                          fit: BoxFit.cover,
-                        )
-                      : SizedBox(
-                          width: 428 * fem,
-                          height: 200 * fem,
-                          child: ClipRRect(
+            child: Stack(
+              children: [
+                Positioned(
+                  // bodyCRn (3154:3130)
+                  left: 18 * fem,
+                  top: 278 * fem,
+                  child: Container(
+                    width: 392.88 * fem,
+                    height: 1152.71 * fem,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Container(
+                          // detailVfn (3154:3132)
+                          margin: EdgeInsets.fromLTRB(
+                              0 * fem, 0 * fem, 0.88 * fem, 30.7 * fem),
+                          width: 392 * fem,
+                          decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(5 * fem),
-                            child: Image.asset(
-                              'assets/mobile/images/add-image.png',
-                              fit: BoxFit.cover,
-                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                // namezMe (3154:3143)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      // autogroupdmqlhG4 (LtKoAgTTv81Bq2o4bfDmQL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                labelText: 'Tên cây trồng',
+                                                labelStyle: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 0, 0, 0),
+                                                  fontSize: 15 * ffem,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 0.45 * fem,
+                                                ),
+                                                suffixText: '*',
+                                                suffixStyle: TextStyle(
+                                                  color: Color(0xffe74c3c),
+                                                  fontSize: 15 * ffem,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 0.45 * fem,
+                                                ),
+                                              ),
+                                              controller: _plantnameController,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // descriptionFD2 (3154:3138)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                              decoration: InputDecoration(
+                                                labelText: 'Mô tả',
+                                                labelStyle: TextStyle(
+                                                  color: Color.fromARGB(
+                                                      255, 0, 0, 0),
+                                                  fontSize: 15 * ffem,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 0.45 * fem,
+                                                ),
+                                                suffixText: '*',
+                                                suffixStyle: TextStyle(
+                                                  color: Color(0xffe74c3c),
+                                                  fontSize: 15 * ffem,
+                                                  fontWeight: FontWeight.w500,
+                                                  letterSpacing: 0.45 * fem,
+                                                ),
+                                              ),
+                                              controller:
+                                                  _plantdescriptionController,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // descriptionFD2 (3154:3138)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child:
+                                                DropdownButtonFormField<String>(
+                                              isExpanded: true,
+                                              value: _selectedValue,
+                                              decoration: InputDecoration(
+                                                labelText: 'Trạng thái',
+                                                labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15),
+                                              ),
+                                              items: valueMappings.keys
+                                                  .map((String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(valueMappings[
+                                                      value]!), 
+                                                );
+                                              }).toList(),
+                                              onChanged: (newValue) {
+                                                // Lưu giá trị tiếng Anh
+                                                setState(() {
+                                                  _selectedValue = newValue!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // descriptionFD2 (3154:3138)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                                decoration: InputDecoration(
+                                                  labelText: 'Số lượng trồng',
+                                                  labelStyle: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 0, 0, 0),
+                                                    fontSize: 15 * ffem,
+                                                    fontWeight: FontWeight.w500,
+                                                    letterSpacing: 0.45 * fem,
+                                                  ),
+                                                  suffixText: '*',
+                                                  suffixStyle: TextStyle(
+                                                    color: Color(0xffe74c3c),
+                                                    fontSize: 15 * ffem,
+                                                    fontWeight: FontWeight.w500,
+                                                    letterSpacing: 0.45 * fem,
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                controller:
+                                                    _estimatedHarvestQuantityController),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // startXrg (3154:3260)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    DropdownButtonFormField<int>(
+                                      value: selectedGardenId,
+                                      decoration: InputDecoration(
+                                        labelText: 'Tên khu vườn',
+                                        labelStyle: TextStyle(
+                                            color: Colors.black, fontSize: 15),
+                                      ),
+                                      items:
+                                          gardenList.map((DataGarden garden) {
+                                        return DropdownMenuItem<int>(
+                                          value: garden.gardenId,
+                                          child: Text(garden.gardenName ?? ''),
+                                        );
+                                      }).toList(),
+                                      onChanged: (int? gardenId) {
+                                        setState(() {
+                                          selectedGardenId = gardenId;
+                                          print(
+                                              'selectedGardenId: $selectedGardenId');
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // startXrg (3154:3260)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    DropdownButtonFormField<int>(
+                                      value: selectedVarietyId,
+                                      decoration: InputDecoration(
+                                        labelText: 'Loại cây trồng',
+                                        labelStyle: TextStyle(
+                                            color: Colors.black, fontSize: 15),
+                                      ),
+                                      items: varietyList
+                                          .map((DataVariety variety) {
+                                        return DropdownMenuItem<int>(
+                                          value: variety.cropVarietyId,
+                                          child: Text(
+                                              variety.cropVarietyName ?? ''),
+                                        );
+                                      }).toList(),
+                                      onChanged: (int? varietyId) {
+                                        setState(() {
+                                          selectedVarietyId = varietyId;
+                                          print(
+                                              'selectedvarietyId: $selectedVarietyId');
+                                        });
+                                      },
+                                    )
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // startdAx (3154:3256)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 15 * fem, 25 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        onTap: () async {
+                                          DateTime? pickeddate =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(1000),
+                                                  lastDate: DateTime(2101));
+                                          if (pickeddate != null) {
+                                            setState(() {
+                                              _plantingDate.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(pickeddate);
+                                            });
+                                          }
+                                        },
+                                        controller: _plantingDate,
+                                        decoration: InputDecoration(
+                                          labelText: 'Ngày trồng',
+                                          labelStyle: TextStyle(
+                                            fontFamily: 'Satoshi',
+                                            fontSize: 15 * ffem,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.2575 * ffem / fem,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value?.isEmpty == true) {
+                                            return 'Please enter your date';
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // startdAx (3154:3256)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 15 * fem, 25 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        onTap: () async {
+                                          DateTime? pickeddate =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate: DateTime.now(),
+                                                  firstDate: DateTime(1000),
+                                                  lastDate: DateTime(2101));
+                                          if (pickeddate != null) {
+                                            setState(() {
+                                              _harvestingDate.text =
+                                                  DateFormat('yyyy-MM-dd')
+                                                      .format(pickeddate);
+                                            });
+                                          }
+                                        },
+                                        controller: _harvestingDate,
+                                        decoration: InputDecoration(
+                                          labelText: 'Ngày thu hoạch',
+                                          labelStyle: TextStyle(
+                                            fontFamily: 'Satoshi',
+                                            fontSize: 15 * ffem,
+                                            fontWeight: FontWeight.w500,
+                                            height: 1.2575 * ffem / fem,
+                                            color: Color.fromARGB(255, 0, 0, 0),
+                                          ),
+                                        ),
+                                        validator: (value) {
+                                          if (value?.isEmpty == true) {
+                                            return 'Please enter your date';
+                                          } else {
+                                            return null;
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                ),
-              ),
-            ),
-            Positioned(
-              // titlebarMHJ (3154:3149)
-              left: 0 * fem,
-              top: 0 * fem,
-              child: Container(
-                padding: EdgeInsets.fromLTRB(
-                    16.77 * fem, 65.11 * fem, 156.06 * fem, 29.84 * fem),
-                width: 428 * fem,
-                height: 121.95 * fem,
-                decoration: BoxDecoration(
-                  color: Color(0xffffffff),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Create()),
-                        );
-                      },
-                      child: Container(
-                        // backarrowNRe (3145:2686)
-                        margin: EdgeInsets.fromLTRB(
-                            0 * fem, 0.42 * fem, 103.09 * fem, 0 * fem),
-                        width: 24.58 * fem,
-                        height: 17.09 * fem,
-                        child: Image.asset(
-                          'assets/mobile/images/backarrow.png',
-                          width: 24.58 * fem,
-                          height: 17.09 * fem,
-                        ),
-                      ),
+                        GestureDetector(
+                          onTap: () {
+                            _createtaskgarden();
+                          },
+                          child: Container(
+                            // primarybuttonoyi (3152:2964)
+                            margin: EdgeInsets.fromLTRB(
+                                0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
+                            width: double.infinity,
+                            height: 62.01 * fem,
+                            decoration: BoxDecoration(
+                              color: Color(0xff6cc51d),
+                              borderRadius: BorderRadius.circular(5 * fem),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Color(0x3f6cc51d),
+                                  offset: Offset(0 * fem, 10 * fem),
+                                  blurRadius: 4.5 * fem,
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                'Lưu',
+                                textAlign: TextAlign.center,
+                                style: SafeGoogleFont(
+                                  'Poppins',
+                                  fontSize: 15 * ffem,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.5 * ffem / fem,
+                                  color: Color(0xffffffff),
+                                ),
+                              ),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                    Text(
-                      // createtaskLQ8 (3154:3151)
-                      'Create Plant',
-                      textAlign: TextAlign.center,
-                      style: SafeGoogleFont(
-                        'Poppins',
-                        fontSize: 18 * ffem,
-                        fontWeight: FontWeight.w500,
-                        height: 1.5 * ffem / fem,
-                        letterSpacing: 0.54 * fem,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-              ),
+                Positioned(
+                  // rectangle60edn (3154:3168)
+                  left: 0 * fem,
+                  top: 52 * fem,
+                  child: GestureDetector(
+                    onTap: () {
+                      // Add your onTap functionality here
+                      pickImage(); // For example, call the pickImage function when tapped
+                    },
+                    child: Align(
+                      child: image != null
+                          ? Image.file(
+                              image!,
+                              width: 128,
+                              height: 128,
+                              fit: BoxFit.cover,
+                            )
+                          : SizedBox(
+                              width: 428 * fem,
+                              height: 200 * fem,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(5 * fem),
+                                child: Image.asset(
+                                  'assets/mobile/images/add-image.png',
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ));
+          ),
+        ));
   }
 }

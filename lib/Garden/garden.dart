@@ -69,7 +69,7 @@ class _GardenState extends State<Garden> {
     double ffem = fem * 0.97;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Garden List', style: TextStyle(color: Colors.black)),
+        title: Text('Danh sách khu vườn', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -103,7 +103,7 @@ class _GardenState extends State<Garden> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Search...',
+                hintText: 'Tìm kiếm...',
               ),
             ),
           ),
@@ -118,7 +118,7 @@ class _GardenState extends State<Garden> {
                             context,
                             MaterialPageRoute(
                               builder: (context) => GardenDetailTask(
-                                  id: datagarden[index].gardenId!),
+                                  id: filteredTrans[index].gardenId!),
                             ),
                           );
                         },
@@ -128,6 +128,7 @@ class _GardenState extends State<Garden> {
                           fullName: filteredTrans[index].fullName,
                           region: filteredTrans[index].region,
                           image: filteredTrans[index].image,
+                          quantityplant: filteredTrans[index].quantityPlanted,
                           press: () {},
                         ),
                       );

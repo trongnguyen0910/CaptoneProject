@@ -250,7 +250,7 @@ class _FruitDetailState extends State<FruitDetail> {
                     padding: EdgeInsets.symmetric(
                         vertical: 20 * fem, horizontal: 20 * fem),
                     child: Text(
-                      'Add Discounts',
+                      'Thêm giảm giá',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 20 * ffem,

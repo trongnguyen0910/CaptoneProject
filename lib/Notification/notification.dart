@@ -53,12 +53,7 @@ class _NotificationClassState extends State<NotificationClass> {
         title: Text('Thông báo', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () async {
-            Navigator.of(context).pop();
-          },
-        ),
+       
       ),
       body: notifications.isNotEmpty
           ? ListView.builder(

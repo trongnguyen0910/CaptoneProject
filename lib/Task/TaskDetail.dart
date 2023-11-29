@@ -240,20 +240,20 @@ class _TaskDetailState extends State<TaskDetail> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text('Confirm Finish'),
-                    content: Text('Are you sure you want to finish this task?'),
+                    title: Text('Xác nhận kết thúc'),
+                    content: Text('Bạn có chắc chắn kết thúc công việc này không?'),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(false);
                         },
-                        child: Text('Cancel'),
+                        child: Text('Hủy'),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop(true);
                         },
-                        child: Text('Finish'),
+                        child: Text('Kết Thúc'),
                       ),
                     ],
                   );
@@ -267,7 +267,7 @@ class _TaskDetailState extends State<TaskDetail> {
                 );
               }
             },
-            label: Text('Finish Task'),
+            label: Text('Kết thúc'),
             icon: Icon(Icons.check),
             backgroundColor: Color(0xff6cc51d),
           ),
@@ -282,7 +282,7 @@ class _TaskDetailState extends State<TaskDetail> {
                 ),
               );
             },
-            label: Text('Update Task'),
+            label: Text('Cập nhật'),
             icon: Icon(Icons.edit),
             backgroundColor: Color(0xff6cc51d),
           ),

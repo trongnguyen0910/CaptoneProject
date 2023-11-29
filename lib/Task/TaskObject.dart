@@ -64,15 +64,17 @@ class TaskObject extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        '$status',
+                        '${status == "Pending" ? "Chưa hoàn thành" : status == "InProgress" ? "Đang thực hiện" :  status == "Completed"? "Hoàn thành" : "Hủy bỏ"}',
                         textAlign: TextAlign.right,
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 18 * ffem,
                           fontWeight: FontWeight.w600,
-                          color: '$status' == 'Completed'
+                          color: status == 'Completed'
                               ? Colors.green // Green color for "Completed" status
-                              : Colors.red, // Red color for other statuses
+                              : status == 'InProgress' ? Colors.orange
+                              : status == 'Pending'? Colors.red:
+                              Color.fromARGB(255, 118, 123, 118), // Red color for other statuses
                         ),
                       ),
                     ],

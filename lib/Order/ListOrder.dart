@@ -98,7 +98,7 @@ class _ListOrderState extends State<ListOrder> {
                   });
                 },
                 decoration: InputDecoration(
-                  hintText: 'Search...',
+                  hintText: 'Tìm kiếm...',
                 ),
               ),
             ),

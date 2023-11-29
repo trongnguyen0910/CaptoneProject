@@ -164,7 +164,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Create Crop Variety Growth Task',
+          title: Text('Tạo mới công việc sinh trưởng',
               style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
@@ -230,7 +230,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Task name',
+                                                labelText: 'Tên công việc',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -282,7 +282,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -326,7 +326,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                                     DropdownButtonFormField<int>(
                                       value: selectedVarietyStageId,
                                       decoration: InputDecoration(
-                                        labelText: 'Crop Variety Stage',
+                                        labelText: 'Giai đoạn',
                                         labelStyle: TextStyle(
                                             color: Colors.black, fontSize: 15 * ffem,fontWeight: FontWeight.w500),
                                       ),
@@ -383,7 +383,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                                         },
                                         controller: _startDate,
                                         decoration: InputDecoration(
-                                          labelText: 'Start Date',
+                                          labelText: 'Ngày bắt đầu',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -438,7 +438,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                                         },
                                         controller: _endDate,
                                         decoration: InputDecoration(
-                                          labelText: 'End Date',
+                                          labelText: 'Ngày kết thúc',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -485,7 +485,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

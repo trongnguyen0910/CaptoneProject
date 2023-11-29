@@ -70,12 +70,12 @@ class PostObject extends StatelessWidget {
                 ),
                 SizedBox(height: 10 * fem),
                 Text(
-                  'Type: $type', 
+                  'Thể loại: $type', 
                   style: TextStyle(fontSize: 16 * ffem),
                 ),
                 SizedBox(height: 10 * fem),
                 Text(
-                  'Full Name: $fullName', 
+                  'Tên chuyên gia: $fullName', 
                   style: TextStyle(fontSize: 16 * ffem),
                 ),
                 SizedBox(height: 10 * fem),

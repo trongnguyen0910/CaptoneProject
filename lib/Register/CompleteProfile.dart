@@ -19,6 +19,8 @@ import 'SuccessfulCreateAccount.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
+import 'VerifyAccount.dart';
+
 class CompleteProfile extends StatefulWidget {
   @override
   State<CompleteProfile> createState() => _CompleteProfileState();
@@ -91,8 +93,8 @@ class _CompleteProfileState extends State<CompleteProfile> {
           behavior: SnackBarBehavior.floating,
           backgroundColor: Colors.green, // Màu nền màu xanh
           content: AwesomeSnackbarContent(
-            title: 'Success', // Tiêu đề thành công
-            message: 'Operation was successful', // Tin nhắn thành công
+            title: 'Thành công', // Tiêu đề thành công
+            message: 'Vui lòng xác nhận OTP', // Tin nhắn thành công
             contentType: ContentType.success, // Loại snackbar thành công
           ),
         );
@@ -103,13 +105,13 @@ class _CompleteProfileState extends State<CompleteProfile> {
         Future.delayed(Duration(seconds: 2), () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Login()),
+            MaterialPageRoute(builder: (context) => VerifyAccount()),
           );
         });
       } else if (response.statusCode != 200) {
         var responseString = await response.stream.bytesToString();
         var responseBody = json.decode(responseString);
-        var errorMessage = responseBody['errors'];
+        var errorMessage = responseBody['message'];
         String errorContent = errorMessage.toString();
         final snackBar = SnackBar(
           elevation: 0,
@@ -121,7 +123,6 @@ class _CompleteProfileState extends State<CompleteProfile> {
             contentType: ContentType.failure,
           ),
         );
-
         ScaffoldMessenger.of(context)
           ..hideCurrentSnackBar()
           ..showSnackBar(snackBar);
@@ -168,7 +169,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Complete Your Profile',
+        title: Text('Đăng ký',
             style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
@@ -206,7 +207,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                       )
                     : Center(
                         child: Text(
-                          'Upload Profile Image',
+                          'Tải ảnh đại diện',
                           style: TextStyle(
                             fontFamily: 'Satoshi',
                             fontSize: 16 * ffem,
@@ -242,7 +243,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                     obscureText: _isPassword,
                     controller: passwordController,
                     decoration: InputDecoration(
-                      labelText: 'Password',
+                      labelText: 'Mật khẩu',
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
                         fontSize: 20 * ffem,
@@ -275,7 +276,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                   TextFormField(
                     controller: _fullnameController,
                     decoration: InputDecoration(
-                      labelText: 'Full Name',
+                      labelText: 'Họ và tên',
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
                         fontSize: 20 * ffem,
@@ -298,7 +299,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                   TextFormField(
                     controller: _phonenumberController,
                     decoration: InputDecoration(
-                      labelText: 'Phone Number',
+                      labelText: 'Số điện thoại',
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
                         fontSize: 20 * ffem,
@@ -321,7 +322,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                   TextFormField(
                     controller: _addressController,
                     decoration: InputDecoration(
-                      labelText: 'Address',
+                      labelText: 'Địa chỉ',
                       labelStyle: TextStyle(
                         fontFamily: 'Satoshi',
                         fontSize: 20 * ffem,
@@ -359,7 +360,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                             )
                           : Center(
                               child: Text(
-                                'Upload Momo Image',
+                                'Tải hình ảnh QR Momo',
                                 style: TextStyle(
                                   fontFamily: 'Satoshi',
                                   fontSize: 16 * ffem,

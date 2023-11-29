@@ -162,7 +162,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Create Crop Variety Stage',
+          title: Text('Tạo mới giai đoạn',
               style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
@@ -228,7 +228,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Stage name',
+                                                labelText: 'Tên giai đoạn',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -280,7 +280,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -324,7 +324,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                                     DropdownButtonFormField<int>(
                                       value: selectedVarietyId,
                                       decoration: InputDecoration(
-                                        labelText: 'Crop Variety Name',
+                                        labelText: 'Tên loại cây',
                                         labelStyle: TextStyle(
                                             color: Colors.black, fontSize: 15 * ffem,fontWeight: FontWeight.w500),
                                       ),
@@ -381,7 +381,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                                         },
                                         controller: _startDate,
                                         decoration: InputDecoration(
-                                          labelText: 'Start Date',
+                                          labelText: 'Ngày bắt đầu',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -436,7 +436,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                                         },
                                         controller: _endDate,
                                         decoration: InputDecoration(
-                                          labelText: 'End Date',
+                                          labelText: 'Ngày kết thúc',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,

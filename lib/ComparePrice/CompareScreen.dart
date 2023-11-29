@@ -57,14 +57,6 @@ class ListComparePrice extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          "ID: $historyId",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Text(
                           "$fruitName",
                           style: TextStyle(
                             fontSize: 20,
@@ -74,7 +66,7 @@ class ListComparePrice extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "Create Date: ${DateFormat('dd-MM-yyyy hh:mm:ss').format(createdDate!)}",
+                          "Ngày tạo: ${DateFormat('dd-MM-yyyy hh:mm:ss').format(createdDate!)}",
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.grey,
@@ -82,7 +74,7 @@ class ListComparePrice extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "Location: $location",
+                          "Địa điểm: $location",
                           style: TextStyle(
                             fontSize: 16,
                             color: Colors.black,
@@ -90,15 +82,16 @@ class ListComparePrice extends StatelessWidget {
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "Status: $status",
+                          "Trạng thái: $status",
                           style: TextStyle(
                             fontSize: 16,
-                            color: status == "Active" ? Colors.green : Colors.red,
+                            color:
+                                status == "Active" ? Colors.green : Colors.red,
                           ),
                         ),
                         SizedBox(height: 8),
                         Text(
-                          "\$${price?.toStringAsFixed(2)}",
+                          "${price?.toStringAsFixed(0)}vnđ",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,

@@ -94,8 +94,8 @@ class OrderDetailPage extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text('Số lượng: ${detail.quantity}'),
-                                Text('Giá: ${detail.unitPrice}'),
-                                Text('Tổng tiền: ${detail.totalAmount}'),
+                                Text('Giá: ${detail.unitPrice?.toStringAsFixed(3)}vnđ'),
+                                Text('Tổng tiền: ${detail.totalAmount?.toStringAsFixed(3)}vnđ'),
                                 Text('Loại: ${detail.oderDetailType}'),
                                 if (detail.oderDetailType == 'PreOrder')
                                   Text('Mặt hàng giảm giá: ${detail.discountName}'),
@@ -119,7 +119,7 @@ class OrderDetailPage extends StatelessWidget {
                     padding:
                         EdgeInsets.symmetric(vertical: 16.0, horizontal: 32.0),
                     child: Text(
-                      'Tổng tiền: ${order.totalAmount}',
+                      'Tổng tiền: ${order.totalAmount?.toStringAsFixed(3)}vnđ',
                       style: TextStyle(
                         fontSize: 24.0,
                         fontWeight: FontWeight.bold,

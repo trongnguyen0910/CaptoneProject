@@ -192,7 +192,7 @@ class _CreateSeasonState extends State<CreateSeason> {
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Create Season', style: TextStyle(color: Colors.black)),
+          title: Text('Tạo mới mùa vụ', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
           leading: IconButton(
@@ -257,7 +257,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Season name',
+                                                labelText: 'Tên mùa vụ',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -309,7 +309,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -353,7 +353,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                                     DropdownButtonFormField<int>(
                                       value: selectedGardenId,
                                       decoration: InputDecoration(
-                                        labelText: 'Garden Name',
+                                        labelText: 'Tên khu vườn',
                                         labelStyle: TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
@@ -409,7 +409,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                                         },
                                         controller: _startDate,
                                         decoration: InputDecoration(
-                                          labelText: 'Start Date',
+                                          labelText: 'Ngày bắt đầu',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -464,7 +464,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                                         },
                                         controller: _endDate,
                                         decoration: InputDecoration(
-                                          labelText: 'End Date',
+                                          labelText: 'Ngày kết thúc',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -511,7 +511,7 @@ class _CreateSeasonState extends State<CreateSeason> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

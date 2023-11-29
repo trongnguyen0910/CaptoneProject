@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -7,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
+import '../Personal/account.dart';
 import 'ListOrder.dart';
 
 class OrderObject extends StatefulWidget {
@@ -50,7 +52,7 @@ class _OrderObjectState extends State<OrderObject> {
     final response = await http.put(Uri.parse(url), headers: headers);
     var statusCode = response.statusCode;
     print('Response Body: ${response.body}');
-    
+
     print('Statud Code: $statusCode');
     if (statusCode == 200) {
       // Show toast for success
@@ -64,49 +66,75 @@ class _OrderObjectState extends State<OrderObject> {
         fontSize: 16.0,
       );
     } else {
-      Fluttertoast.showToast(
-        msg: 'Update Fails',
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.BOTTOM,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.green,
-        textColor: Colors.white,
-        fontSize: 16.0,
+      var responseString = response.body;
+      var responseBody = json.decode(responseString);
+      var errorMessage = responseBody['errors'];
+      String errorContent = errorMessage.toString();
+      final snackBar = SnackBar(
+        elevation: 0,
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: Colors.transparent,
+        content: AwesomeSnackbarContent(
+          title: 'Error',
+          message: errorContent,
+          contentType: ContentType.failure,
+        ),
       );
+
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(snackBar);
     }
     if (response.body.isNotEmpty) {
       final Map<String, dynamic> data = json.decode(response.body);
+      print('data:$data');
       final imageUrl = data['imageMomoUrl'];
+      print('imageUrl: $imageUrl');
       final depositAmount = data['depositAmount'];
       if (imageUrl != null) {
-        _showImageDialog(imageUrl, depositAmount);
+        _showImageDialog(context, imageUrl, depositAmount);
       }
+      else{
+        Navigator.of(context).pop(); // Close the dialog
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => ListOrder()));
     }
+    } 
   }
 
-  Future<void> _showImageDialog(String imageUrl, double depositAmount) async {
+  Future<void> _showImageDialog(BuildContext context, String imageUrl, double depositAmount) async {
     return showDialog<void>(
-      context: context,
-      builder: (BuildContext context) {
+     context: context,
+    builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: Text('Order Rejected'),
+          title:
+              Text('Trạng thái đơn hàng', style: TextStyle(color: Colors.red)),
           content: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Text('Order rejected successfully processed.'),
+              Text('Từ chối đơn hàng thành công',
+                  style: TextStyle(fontSize: 16)),
               SizedBox(height: 16),
-              Image.network(imageUrl),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(imageUrl,
+                    height: 250, width: 250, fit: BoxFit.cover),
+              ),
               SizedBox(height: 16),
-              Text('Số tiền hoàn trả: ${depositAmount}'),
+              Text('Số tiền hoàn trả: ${depositAmount}',
+                  style: TextStyle(fontSize: 16)),
             ],
           ),
           actions: <Widget>[
-            TextButton(
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.red, // background color
+                onPrimary: Colors.white, // text color
+              ),
               onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                      builder: (BuildContext context) => ListOrder()),
-                );
+               Navigator.of(dialogContext).pop(); // Close the dialog
+              Navigator.push(context, MaterialPageRoute(builder: (context) => ListOrder()));
               },
               child: Text('Close'),
             ),
@@ -119,7 +147,6 @@ class _OrderObjectState extends State<OrderObject> {
   @override
   Widget build(BuildContext context) {
     bool showButtons = widget.status == "Pending";
-
     return AnimationConfiguration.staggeredList(
         position: 0,
         duration: const Duration(milliseconds: 500),
@@ -159,7 +186,7 @@ class _OrderObjectState extends State<OrderObject> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 Text(
-                                  "Order ID: ${widget.orderId}",
+                                  "Mã đơn hàng: ${widget.orderId}",
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -168,7 +195,7 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "${widget.fullName}",
+                                  "Tên người mua: ${widget.fullName}",
                                   style: TextStyle(
                                     fontSize: 20,
                                     fontWeight: FontWeight.bold,
@@ -177,7 +204,7 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Create Date: ${DateFormat('dd-MM-yyyy hh:mm:ss').format(widget.orderDate!)}",
+                                  "Ngày mua: ${DateFormat('dd-MM-yyyy hh:mm:ss').format(widget.orderDate!)}",
                                   style: TextStyle(
                                     fontSize: 14,
                                     color: Colors.grey[600],
@@ -185,7 +212,7 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Phone: ${widget.phoneNumber}",
+                                  "Số điện thoại: ${widget.phoneNumber}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
@@ -193,17 +220,19 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Status: ${widget.status}",
+                                  "Trạng thái: ${widget.status == "Accepted" ? "Chấp nhận" : widget.status == "Rejected" ? "Từ chối" : "Chờ duyệt"}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: widget.status == "Accepted"
                                         ? Colors.green
-                                        : Colors.red,
+                                        : widget.status == "Rejected"
+                                            ? Colors.red
+                                            : Colors.orange,
                                   ),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Số tiền đã trả: ${widget.depositAmount}",
+                                  "Số tiền đã trả: ${widget.depositAmount?.toStringAsFixed(3)} vnđ",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
@@ -211,7 +240,7 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Số tiền còn lại: ${widget.remainingAmount}",
+                                  "Số tiền còn lại: ${widget.remainingAmount!.toStringAsFixed(3)} vnđ",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.black,
@@ -219,7 +248,7 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Tổng tiền: \$${widget.totalAmount?.toStringAsFixed(2)}",
+                                  "Tổng tiền: ${widget.totalAmount?.toStringAsFixed(3)}vnđ",
                                   style: TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,

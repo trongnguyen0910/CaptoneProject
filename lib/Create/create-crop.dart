@@ -135,6 +135,17 @@ print('Request data - Variety Name: $varietyname, Description: $description');
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
+       appBar: AppBar(
+          title: Text('Tạo mới loại cây', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         body: SingleChildScrollView(
       child: Container(
         // createcroppfz (3154:3209)
@@ -148,7 +159,7 @@ print('Request data - Variety Name: $varietyname, Description: $description');
             Positioned(
               // bodyqzQ (3154:3211)
               left: 18 * fem,
-              top: 358 * fem,
+              top: 308 * fem,
               child: Container(
                 width: 392.88 * fem,
                 height: 502.71 * fem,
@@ -192,7 +203,7 @@ print('Request data - Variety Name: $varietyname, Description: $description');
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: 'Variety name',
+                                            labelText: 'Tên loại cây',
                                             labelStyle: TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),
@@ -241,7 +252,7 @@ print('Request data - Variety Name: $varietyname, Description: $description');
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: 'Description',
+                                            labelText: 'Mô tả',
                                             labelStyle: TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),
@@ -312,7 +323,7 @@ print('Request data - Variety Name: $varietyname, Description: $description');
             Positioned(
               // rectangle59rSC (3152:3005)
               left: 0 * fem,
-              top: 122 * fem,
+              top: 52 * fem,
               child: GestureDetector(
                 onTap: () {
                   // Add your onTap functionality here
@@ -337,58 +348,6 @@ print('Request data - Variety Name: $varietyname, Description: $description');
                             ),
                           ),
                         ),
-                ),
-              ),
-            ),
-            Positioned(
-              // titlebarGd6 (3154:3230)
-              left: 0 * fem,
-              top: 0 * fem,
-              child: Container(
-                padding: EdgeInsets.fromLTRB(
-                    17.77 * fem, 65.11 * fem, 10.56 * fem, 29.84 * fem),
-                width: 428 * fem,
-                height: 121.95 * fem,
-                decoration: BoxDecoration(
-                  color: Color(0xffffffff),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Create()),
-                        );
-                      },
-                      child: Container(
-                        // backarrowNRe (3145:2686)
-                        margin: EdgeInsets.fromLTRB(
-                            0 * fem, 0.42 * fem, 83.09 * fem, 0 * fem),
-                        width: 24.58 * fem,
-                        height: 17.09 * fem,
-                        child: Image.asset(
-                          'assets/mobile/images/backarrow.png',
-                          width: 24.58 * fem,
-                          height: 17.09 * fem,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      // createcropvariety4J4 (3154:3232)
-                      'Create Crop Variety',
-                      textAlign: TextAlign.center,
-                      style: SafeGoogleFont(
-                        'Poppins',
-                        fontSize: 18 * ffem,
-                        fontWeight: FontWeight.w500,
-                        height: 1.5 * ffem / fem,
-                        letterSpacing: 0.54 * fem,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                  ],
                 ),
               ),
             ),

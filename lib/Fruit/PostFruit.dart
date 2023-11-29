@@ -228,7 +228,7 @@ class _CreatePostState extends State<CreatePost> {
       } else if (response.statusCode != 200) {
         var responseString = response.body;
         var responseBody = json.decode(responseString);
-        var errorMessage = responseBody['errors'];
+        var errorMessage = responseBody['message'];
         String errorContent = errorMessage.toString();
         final snackBar = SnackBar(
           elevation: 0,
@@ -300,7 +300,7 @@ class _CreatePostState extends State<CreatePost> {
           child: Container(
             // creategardentask5rx (3154:3128)
             width: double.infinity,
-            height: 1150 * fem,
+            height: 1250 * fem,
             decoration: BoxDecoration(
               color: Color(0xfff4f5f9),
             ),
@@ -351,7 +351,7 @@ class _CreatePostState extends State<CreatePost> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Fruit Name',
+                                                labelText: 'Tên trái cây',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -403,7 +403,7 @@ class _CreatePostState extends State<CreatePost> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -457,7 +457,7 @@ class _CreatePostState extends State<CreatePost> {
                                             child: TextField(
                                                 decoration: InputDecoration(
                                                   labelText:
-                                                      'Quantity Available',
+                                                      'Số lượng/sản phẩm',
                                                   labelStyle: TextStyle(
                                                     color: Color.fromARGB(
                                                         255, 0, 0, 0),
@@ -522,7 +522,7 @@ class _CreatePostState extends State<CreatePost> {
                                                 Expanded(
                                                   child: TextField(
                                                     decoration: InputDecoration(
-                                                      labelText: 'Price',
+                                                      labelText: 'Giá/kg',
                                                       labelStyle: TextStyle(
                                                         color: Color.fromARGB(
                                                             255, 0, 0, 0),
@@ -665,7 +665,7 @@ class _CreatePostState extends State<CreatePost> {
                                           Expanded(
                                             child: TextField(
                                                 decoration: InputDecoration(
-                                                  labelText: 'Origin City',
+                                                  labelText: 'Vị trí',
                                                   labelStyle: TextStyle(
                                                     color: Color.fromARGB(
                                                         255, 0, 0, 0),
@@ -720,7 +720,7 @@ class _CreatePostState extends State<CreatePost> {
                                               isExpanded: true,
                                               value: _selectedValue,
                                               decoration: InputDecoration(
-                                                labelText: 'Order Type',
+                                                labelText: 'Loại đơn hàng',
                                                 labelStyle: TextStyle(
                                                     color: Colors.black,
                                                     fontSize: 15),
@@ -767,7 +767,7 @@ class _CreatePostState extends State<CreatePost> {
                                     DropdownButtonFormField<int>(
                                       value: selectedPlantId,
                                       decoration: InputDecoration(
-                                        labelText: 'Plant',
+                                        labelText: 'Sản phẩm',
                                         labelStyle: TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
@@ -806,7 +806,7 @@ class _CreatePostState extends State<CreatePost> {
                                     DropdownButtonFormField<int>(
                                       value: selectedCategoryId,
                                       decoration: InputDecoration(
-                                        labelText: 'Category Fruit',
+                                        labelText: 'Loại sản phẩm',
                                         labelStyle: TextStyle(
                                             color: Colors.black, fontSize: 15),
                                       ),
@@ -858,7 +858,7 @@ class _CreatePostState extends State<CreatePost> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

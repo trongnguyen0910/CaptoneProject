@@ -112,10 +112,11 @@ class _WeatherObjectState extends State<WeatherObject> {
                           ),
                           Expanded(
                             child: Text(
-                              widget.weather.description!.substring(8),
+                              '${widget.weather.description!.substring(8)}',
                               style: TextStyle(
                                   color: Colors.blue.shade900, fontSize: 14.0),
                             ),
+                            
                           ),
                         ],
                       ),

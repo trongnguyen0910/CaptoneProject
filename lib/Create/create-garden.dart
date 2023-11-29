@@ -27,92 +27,7 @@ class _CreateGardenState extends State<CreateGarden> {
 
   File? image;
 
-  // _creategarden() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final accountID = prefs.getInt('accountID');
-  //   final accessToken = prefs.getString('accessToken');
-  //   print('acc: $accountID');
-  //   var gardenname = _gardennameController.text;
-  //   var description = _descriptionController.text;
-  //   var region = _regionController.text;
-
-  //   String imageURL = image != null ? image!.path : "";
-
-  //   if (imageURL.isEmpty) {
-  //     print('No image selected');
-  //     return;
-  //   }
-
-  //   var request = http.Request(
-  //     'POST',
-  //     Uri.parse('http://fruitseasonapi-001-site1.atempurl.com/api/gardens'),
-  //   );
-  //   request.headers['Content-Type'] = 'application/json; charset=UTF-8';
-  //   request.headers['Authorization'] = 'Bearer $accessToken';
-
-  //   var data = {
-  //     "gardenName": gardenname,
-  //     "description": description,
-  //     "region": region,
-  //     "userId": accountID,
-  //     "image": imageURL,
-  //   };
-  //   request.body = jsonEncode(data);
-
-  //   try {
-  //     var response = await request.send();
-  //     var statusCode = response.statusCode;
-  //     print('Status code: $statusCode');
-
-  //     if (response.statusCode == 200) {
-  //       print('ok');
-  //       final snackBar = SnackBar(
-  //         elevation: 0,
-  //         behavior: SnackBarBehavior.floating,
-  //         backgroundColor: Colors.green, // Màu nền màu xanh
-  //         content: AwesomeSnackbarContent(
-  //           title: 'Success', // Tiêu đề thành công
-  //           message: 'Operation was successful', // Tin nhắn thành công
-  //           contentType: ContentType.success, // Loại snackbar thành công
-  //         ),
-  //       );
-
-  //       ScaffoldMessenger.of(context)
-  //         ..hideCurrentSnackBar()
-  //         ..showSnackBar(snackBar);
-  //       Future.delayed(Duration(seconds: 2), () {
-  //         Navigator.push(
-  //           context,
-  //           MaterialPageRoute(builder: (context) => Create()),
-  //         );
-  //       });
-  //     } else if (response.statusCode != 200) {
-  //       var responseString = await response.stream.bytesToString();
-  //       var responseBody = json.decode(responseString);
-  //       var errorMessage = responseBody['errors']['errorMessage'];
-  //       final snackBar = SnackBar(
-  //         elevation: 0,
-  //         behavior: SnackBarBehavior.floating,
-  //         backgroundColor: Colors.transparent,
-  //         content: AwesomeSnackbarContent(
-  //           title: 'Error',
-  //           message: errorMessage,
-  //           contentType: ContentType.failure,
-  //         ),
-  //       );
-
-  //       ScaffoldMessenger.of(context)
-  //         ..hideCurrentSnackBar()
-  //         ..showSnackBar(snackBar);
-  //       print('Response body: $responseString');
-  //       print('Error 400: $errorMessage');
-  //     } else {
-  //       print('Error: ${response.statusCode}');
-  //     }
-  //   } catch (e) {
-  //     print('Exception: $e');
-  //   }
-  // }
+  
 _creategarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accountID = prefs.getInt('accountID');
@@ -235,11 +150,22 @@ _creategarden() async {
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
+       appBar: AppBar(
+          title: Text('Tạo mới khu vườn', style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
+            },
+          ),
+        ),
         body: SingleChildScrollView(
       child: Container(
         // creategardenne4 (3152:2961)
         width: double.infinity,
-        height: 926 * fem,
+        height: 876 * fem,
         decoration: BoxDecoration(
           color: Color(0xfff4f5f9),
         ),
@@ -288,7 +214,7 @@ _creategarden() async {
                                         Expanded(
                                           child: TextField(
                                             decoration: InputDecoration(
-                                              labelText: 'Garden name',
+                                              labelText: 'Tên khu vườn',
                                               labelStyle: TextStyle(
                                                 color: Color.fromARGB(
                                                     255, 0, 0, 0),
@@ -339,7 +265,7 @@ _creategarden() async {
                                       Expanded(
                                         child: TextField(
                                           decoration: InputDecoration(
-                                            labelText: 'Description',
+                                            labelText: 'Mô tả',
                                             labelStyle: TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),
@@ -392,7 +318,7 @@ _creategarden() async {
                                         child: TextField(
                                           controller: _regionController,
                                           decoration: InputDecoration(
-                                            labelText: 'Region',
+                                            labelText: 'Vị trí',
                                             labelStyle: TextStyle(
                                               color:
                                                   Color.fromARGB(255, 0, 0, 0),
@@ -442,7 +368,7 @@ _creategarden() async {
                         ),
                         child: Center(
                           child: Text(
-                            'Save change',
+                            'Lưu',
                             textAlign: TextAlign.center,
                             style: SafeGoogleFont(
                               'Poppins',
@@ -462,7 +388,7 @@ _creategarden() async {
             Positioned(
               // rectangle59rSC (3152:3005)
               left: 0 * fem,
-              top: 122 * fem,
+              top: 82 * fem,
               child: GestureDetector(
                 onTap: () {
                   // Add your onTap functionality here
@@ -490,58 +416,7 @@ _creategarden() async {
                 ),
               ),
             ),
-            Positioned(
-              // titlebarYZv (3152:2983)
-              left: 0 * fem,
-              top: 0 * fem,
-              child: Container(
-                padding: EdgeInsets.fromLTRB(
-                    16.77 * fem, 65.11 * fem, 142.56 * fem, 29.84 * fem),
-                width: 428 * fem,
-                height: 121.95 * fem,
-                decoration: BoxDecoration(
-                  color: Color(0xffffffff),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => Create()),
-                        );
-                      },
-                      child: Container(
-                        // backarrowNRe (3145:2686)
-                        margin: EdgeInsets.fromLTRB(
-                            0 * fem, 0.42 * fem, 103.09 * fem, 0 * fem),
-                        width: 24.58 * fem,
-                        height: 17.09 * fem,
-                        child: Image.asset(
-                          'assets/mobile/images/backarrow.png',
-                          width: 24.58 * fem,
-                          height: 17.09 * fem,
-                        ),
-                      ),
-                    ),
-                    Text(
-                      // creategardenjeQ (3152:2985)
-                      'Create Garden',
-                      textAlign: TextAlign.center,
-                      style: SafeGoogleFont(
-                        'Poppins',
-                        fontSize: 18 * ffem,
-                        fontWeight: FontWeight.w500,
-                        height: 1.5 * ffem / fem,
-                        letterSpacing: 0.54 * fem,
-                        color: Color(0xff000000),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+         
           ],
         ),
       ),

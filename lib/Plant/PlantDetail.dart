@@ -27,7 +27,7 @@ class PlantDetail extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plant Detail', style: TextStyle(color: Colors.black)),
+        title: Text('Chi tiết cây trồng', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -89,7 +89,7 @@ class PlantDetail extends StatelessWidget {
                     ),
                     SizedBox(height: 10 * fem),
                     Text(
-                      'Plant date: ${dataPlant.plantingDate}\nHarvesting Date: ${dataPlant.harvestingDate}\nGarden: ${dataPlant.gardenName}',
+                      'Ngày trồng: ${dataPlant.plantingDate}\nNgày thu hoạch: ${dataPlant.harvestingDate}\nTên khu vườn: ${dataPlant.gardenName}',
                       style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 18 * ffem,
@@ -131,7 +131,7 @@ class PlantDetail extends StatelessWidget {
                           padding: EdgeInsets.symmetric(
                               vertical: 20 * fem, horizontal: 40 * fem),
                           child: Text(
-                            'Update Plant',
+                            'Cập nhật',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 20 * ffem,
@@ -158,7 +158,7 @@ class PlantDetail extends StatelessWidget {
                           padding: EdgeInsets.symmetric(
                               vertical: 20 * fem, horizontal: 40 * fem),
                           child: Text(
-                            'Show Task',
+                            'Công việc',
                             style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 20 * ffem,
@@ -187,7 +187,7 @@ class PlantDetail extends StatelessWidget {
                       padding: EdgeInsets.symmetric(
                           vertical: 20 * fem, horizontal: 40 * fem),
                       child: Text(
-                        'Show QR Code',
+                        'QR Code',
                         style: TextStyle(
                           fontFamily: 'Poppins',
                           fontSize: 20 * ffem,

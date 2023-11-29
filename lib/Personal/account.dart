@@ -73,12 +73,7 @@ class _PersonalState extends State<Personal> {
               style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () async {
-              Navigator.of(context).pop();
-            },
-          ),
+         
         ),
         body: Container(
           width: double.infinity,
@@ -209,7 +204,7 @@ class _PersonalState extends State<Personal> {
                                 margin: EdgeInsets.fromLTRB(
                                     0 * fem, 0 * fem, 244.41 * fem, 0.6 * fem),
                                 child: Text(
-                                  'About me',
+                                  'Giới thiệu',
                                   style: SafeGoogleFont(
                                     'Poppins',
                                     fontSize: 12 * ffem,
@@ -268,10 +263,10 @@ class _PersonalState extends State<Personal> {
                                         // group203qr9 (94:1086)
                                         margin: EdgeInsets.fromLTRB(0 * fem,
                                             0 * fem, 18.25 * fem, 0 * fem),
-                                        width: 15.1 * fem,
-                                        height: 20.67 * fem,
+                                        width: 23.1 * fem,
+                                        height: 25.67 * fem,
                                         child: Image.asset(
-                                          'assets/mobile/images/group-203.png',
+                                          'assets/mobile/images/checklist.png',
                                           width: 15.1 * fem,
                                           height: 20.67 * fem,
                                         ),
@@ -329,7 +324,7 @@ class _PersonalState extends State<Personal> {
                                       margin: EdgeInsets.fromLTRB(0 * fem,
                                           0.43 * fem, 0 * fem, 0 * fem),
                                       child: Text(
-                                        'Sign out',
+                                        'Đăng xuất',
                                         style: SafeGoogleFont(
                                           'Poppins',
                                           fontSize: 12 * ffem,

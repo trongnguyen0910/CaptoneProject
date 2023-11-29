@@ -251,7 +251,7 @@ class _PostDetailState extends State<PostDetail> {
                       child: TextFormField(
                         controller: _commentController,
                         decoration: InputDecoration(
-                          hintText: 'Write your comment...',
+                          hintText: 'Viết bình luận...',
                           border: InputBorder.none,
                         ),
                         maxLines: 3,

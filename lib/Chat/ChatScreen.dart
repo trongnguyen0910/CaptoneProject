@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dash_chat_2/dash_chat_2.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:signalr_netcore/signalr_client.dart';
 
 import '../Controller/ChatListUserController.dart';
 import '../Controller/ListChatController.dart';
@@ -18,10 +19,40 @@ class Chat_Page extends StatefulWidget {
 
 class _Chat_PageState extends State<Chat_Page> {
   late Future<ListChats> futureChat;
+  late HubConnection hubConnection;
+  late String idCurrentUser;
   @override
   void initState() {
     super.initState();
+    initHubConnection();
     futureChat = fetchMessages(widget.chatlistuser.userId!);
+  }
+
+  Future<void> initHubConnection() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    idCurrentUser = await prefs.getInt('accountID').toString();
+    final serverUrl =
+        "https://fruitseasonapims-001-site1.btempurl.com/chat?userid=${idCurrentUser}";
+    print(serverUrl);
+    hubConnection = HubConnectionBuilder().withUrl(serverUrl).build();
+    hubConnection.onclose(({error}) => print('On close'));
+    hubConnection.on("ReceiveMessage", _handleIncomingChatMessage);
+    await hubConnection.start();
+  }
+
+  void _handleIncomingChatMessage(List<Object?>? args) {
+    messages.clear();
+    setState(() {
+      futureChat = fetchMessages(widget.chatlistuser.userId!);
+    });
+  }
+
+  Future<void> sendChatMessage(String chatMessage) async {
+    if (chatMessage.isEmpty || chatMessage.length == 0) {
+      return;
+    }
+    hubConnection.invoke("SendMessage",
+        args: ['$idCurrentUser', '${widget.chatlistuser.userId}', chatMessage]);
   }
 
   ChatUser userCurrent = ChatUser(
@@ -64,21 +95,17 @@ class _Chat_PageState extends State<Chat_Page> {
                         firstName: '${widget.chatlistuser.fullName}',
                       ),
                       createdAt:
-                          DateTime.tryParse(element.sendTimeOnUtc ?? '') ??
-                              DateTime.now(),
+                      DateTime.tryParse(element.sendTimeOnUtc ?? '') ??
+                          DateTime.now(),
                     );
                     messages.add(message);
                   }
                   return DashChat(
                     currentUser: userCurrent,
                     onSend: (ChatMessage m) {
-                      messages.clear();
-                      //TODO SEND MESSAGE POST
-                      setState(() {
-                        messages.insert(0, m);
-                      });
+                      sendChatMessage(m.text);
                     },
-                    messages: messages,
+                    messages: messages.reversed.toList(),
                   );
                 } else if (snapshot.hasError) {
                   return Text('${snapshot.error}');

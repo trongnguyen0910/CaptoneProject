@@ -40,36 +40,59 @@ class _QRScannerScreenState extends State<QRScannerScreen> {
       setState(() {
         scannedData = qrText;
         if (scannedData != null) {
-          List<String> dataParts = scannedData!.split(', ');
+          List<String> dataParts = scannedData!.split(RegExp(r'\s*,\s*'));
 
           if (dataParts.length >= 7) {
             String cropName = dataParts[0];
             String description = dataParts[1];
-            String imageUrl = dataParts[2];
-            String gardenName = dataParts[3];
-            String plantingDate = dataParts[4];
-            String harvestingDate = dataParts[5];
-            String plantIdString = dataParts[6];
-            int plantId = int.parse(plantIdString);
-            DateTime plantingDateTime = DateTime.parse(plantingDate);
-            DateTime harvestingDateTime = DateTime.parse(harvestingDate);
+            String imageUrl =  dataParts[dataParts.length - 5].trim();
+            String gardenName =  dataParts[dataParts.length - 4].trim();
+            String plantingDate = dataParts[dataParts.length - 3].trim();
+            String harvestingDate = dataParts[dataParts.length - 2].trim();
+            String plantIdString = dataParts.last.trim();
+            print('plantIdString: $plantIdString');
+            
+if (int.tryParse(plantIdString.trim()) != null) {
+  int plantId = int.parse(plantIdString.trim());
+  DateTime plantingDateTime = DateTime.parse(plantingDate);
+  DateTime harvestingDateTime = DateTime.parse(harvestingDate);
 
-            DataPlant dataPlant = DataPlant(
-              plantName: cropName,
-              description: description,
-              image: imageUrl,
-              gardenName: gardenName,
-              plantId: plantId,
-              plantingDate: plantingDateTime,
-              harvestingDate: harvestingDateTime,
-            );
+  DataPlant dataPlant = DataPlant(
+    plantName: cropName,
+    description: description,
+    image: imageUrl,
+    gardenName: gardenName,
+    plantId: plantId,
+    plantingDate: plantingDateTime,
+    harvestingDate: harvestingDateTime,
+  );
 
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => PlantDetail(dataPlant: dataPlant),
-              ),
-            );
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => PlantDetail(dataPlant: dataPlant),
+    ),
+  );
+} else {
+  print('Invalid plantIdString: $plantIdString'); // Print the actual value
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: Text('Invalid Plant ID'),
+      content: Text('The plant ID could not be parsed as an integer.'),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('OK'),
+        ),
+      ],
+    ),
+  );
+}
+
+
           } else {
             showDialog(
               context: context,

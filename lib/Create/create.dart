@@ -64,7 +64,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Crop Variety Growth Task',
+                    'Sinh trưởng',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -112,7 +112,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Crop Variety Stage',
+                    'Giai đoạn',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -160,7 +160,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Crop Variety',
+                    'Loại cây',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -210,7 +210,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Plant',
+                    'Cây trồng',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -261,7 +261,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Garden Task',
+                    'Công việc',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -311,7 +311,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Garden',
+                    'Khu vườn',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -361,7 +361,7 @@ class Create extends StatelessWidget {
                     ),
                   ),
                   child: Text(
-                    'Season',
+                    'Mùa vụ',
                     style: SafeGoogleFont(
                       'Poppins',
                       fontSize: 18 * ffem,
@@ -403,7 +403,7 @@ class Create extends StatelessWidget {
                     ),
                     Text(
                       // createzji (3143:2466)
-                      'Create',
+                      'Tạo mới',
                       textAlign: TextAlign.center,
                       style: SafeGoogleFont(
                         'Poppins',

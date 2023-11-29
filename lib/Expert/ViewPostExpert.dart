@@ -57,7 +57,7 @@ class _ViewPostState extends State<ViewPost> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Post List', style: TextStyle(color: Colors.black)),
+        title: Text('Danh sách bài post', style: TextStyle(color: Colors.black)),
         backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
@@ -88,7 +88,7 @@ class _ViewPostState extends State<ViewPost> {
                 });
               },
               decoration: InputDecoration(
-                hintText: 'Search...',
+                hintText: 'Tìm kiếm...',
               ),
             ),
           ),
