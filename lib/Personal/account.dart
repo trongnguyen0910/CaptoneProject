@@ -11,6 +11,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Order/ListOrder.dart';
 import '../SignIn/SignIn.dart';
 import 'about-me.dart';
+import 'VoiceToText.dart';
 import 'address.dart';
 
 class Personal extends StatefulWidget {
@@ -277,6 +278,59 @@ class _PersonalState extends State<Personal> {
                                             0 * fem, 0.41 * fem, 0.6 * fem),
                                         child: Text(
                                           'Danh sách đơn hàng',
+                                          style: SafeGoogleFont(
+                                            'Poppins',
+                                            fontSize: 12 * ffem,
+                                            fontWeight: FontWeight.w600,
+                                            height: 1.5 * ffem / fem,
+                                            letterSpacing: 0.36 * fem,
+                                            color: Color(0xff000000),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                             Container(
+                              // myaddresskZo (94:954)
+                              margin: EdgeInsets.fromLTRB(
+                                  0.44 * fem, 0 * fem, 0 * fem, 53.12 * fem),
+                              child: TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SettingsPage()),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: EdgeInsets.zero,
+                                ),
+                                child: Container(
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        // group203qr9 (94:1086)
+                                        margin: EdgeInsets.fromLTRB(0 * fem,
+                                            0 * fem, 18.25 * fem, 0 * fem),
+                                        width: 23.1 * fem,
+                                        height: 25.67 * fem,
+                                        child: Image.asset(
+                                          'assets/mobile/images/microphone.png',
+                                          width: 15.1 * fem,
+                                          height: 20.67 * fem,
+                                        ),
+                                      ),
+                                      Container(
+                                        // myaddressXys (94:955)
+                                        margin: EdgeInsets.fromLTRB(0 * fem,
+                                            0 * fem, 0.41 * fem, 0.6 * fem),
+                                        child: Text(
+                                          'Voice to text',
                                           style: SafeGoogleFont(
                                             'Poppins',
                                             fontSize: 12 * ffem,

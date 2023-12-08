@@ -169,7 +169,7 @@ class _CreatePostState extends State<CreatePost> {
     var plantId = selectedPlantId;
     var categoryFruitId = selectedCategoryId;
     var orderType = _selectedValue;
-    var quantityInTransit = _quantityInTransit;
+    var quantityInTransit = _quantityInTransit.text;
     var userId = accountID;
     print('orderType:${orderType}');
     var url =
@@ -301,7 +301,7 @@ class _CreatePostState extends State<CreatePost> {
           child: Container(
             // creategardentask5rx (3154:3128)
             width: double.infinity,
-            height: 1280 * fem,
+            height: 1400 * fem,
             decoration: BoxDecoration(
               color: Color(0xfff4f5f9),
             ),
@@ -313,7 +313,7 @@ class _CreatePostState extends State<CreatePost> {
                   top: 20 * fem,
                   child: Container(
                     width: 392.88 * fem,
-                    height: 1352.71 * fem,
+                    height: 1382.71 * fem,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [

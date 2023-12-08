@@ -30,10 +30,11 @@ class _CreateGardenState extends State<CreateGarden> {
   final _regionController = TextEditingController();
   File? image;
    late TextEditingController _currentController;
- bool _isListening = false;
-   SpeechToText _speechToText = SpeechToText();
+  bool _isListening = false;
+  SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
+  
 
   _creategarden() async {
     final prefs = await SharedPreferences.getInstance();
@@ -170,17 +171,10 @@ class _CreateGardenState extends State<CreateGarden> {
     setState(() {});
   }
 
-  /// Manually stop the active speech recognition session
-  /// Note that there are also timeouts that each platform enforces
-  /// and the SpeechToText plugin supports setting timeouts on the
-  /// listen method.
   void _stopListening() async {
     await _speechToText.stop();
     setState(() {});
   }
-
-  /// This is the callback that the SpeechToText plugin calls when
-  /// the platform returns recognized words.
     void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       // Cập nhật kết quả nhận diện giọng nói vào TextField hiện tại được chọn
@@ -198,6 +192,7 @@ class _CreateGardenState extends State<CreateGarden> {
     _startListening();
   }
 }
+
 
    void _toggleListening() {
     if (_isListening) {
@@ -231,13 +226,13 @@ class _CreateGardenState extends State<CreateGarden> {
           ),
         ),
 
-         floatingActionButton: FloatingActionButton(
-        onPressed:
-            // If not yet listening for speech start, otherwise stop
-            _toggleListening,
-        tooltip: 'Listen',
-        child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
-      ),
+      //    floatingActionButton: FloatingActionButton(
+      //   onPressed:
+      //       // If not yet listening for speech start, otherwise stop
+      //       _toggleListening,
+      //   tooltip: 'Listen',
+      //   child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
+      // ),
         body: SingleChildScrollView(
           child: Container(
             // creategardenne4 (3152:2961)

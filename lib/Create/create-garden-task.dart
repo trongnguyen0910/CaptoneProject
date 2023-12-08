@@ -68,9 +68,10 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   Future<void> getPlant(int selectedGardenId) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
+     final accountID = prefs.getInt('accountID');
     print('id: $selectedGardenId');
     final url =
-        'http://fruitseasonapims-001-site1.btempurl.com/api/plants/plants?activeOnly=true&gardenId=$selectedGardenId';
+        'https://fruitseasonms.azurewebsites.net/api/plants/plants?activeOnly=true&gardenId=$selectedGardenId&userId=$accountID';
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',

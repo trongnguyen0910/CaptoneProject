@@ -46,7 +46,7 @@ getChat();
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat List', style: TextStyle(color: Colors.black)),
+        title: Text('Trò chuyện', style: TextStyle(color: Colors.black)),
          backgroundColor: Colors.white,
         centerTitle: true,
         leading: IconButton(
