@@ -676,7 +676,7 @@ class _UpdatePlantScreenState extends State<UpdatePlantScreen> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

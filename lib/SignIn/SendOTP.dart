@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 
-import 'SendOTP.dart';
+import 'ResetPassword.dart';
 
-class ForgotPassword extends StatelessWidget {
+class SendOTP extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -88,7 +88,7 @@ class ForgotPassword extends StatelessWidget {
                                 margin: EdgeInsets.fromLTRB(
                                     0 * fem, 0 * fem, 7.55 * fem, 22 * fem),
                                 child: Text(
-                                  'Tìm tài khoản',
+                                  'Nhập OTP',
                                   style: SafeGoogleFont(
                                     'Inter',
                                     fontSize: 25 * ffem,
@@ -104,7 +104,7 @@ class ForgotPassword extends StatelessWidget {
                                   maxWidth: 278 * fem,
                                 ),
                                 child: Text(
-                                  'Vui lòng nhập địa chỉ email để lấy lại mật khẩu',
+                                  'Vui lòng nhập mã xác thực OTP đã được gửi đến email của bạn.',
                                   textAlign: TextAlign.center,
                                   style: SafeGoogleFont(
                                     'Poppins',
@@ -150,7 +150,7 @@ class ForgotPassword extends StatelessWidget {
                                 child: TextFormField(
                                   // emailaddressMER (10:288)
                                   decoration: InputDecoration(
-                                    labelText: 'Địa chỉ email',
+                                    labelText: 'OTP',
                                     labelStyle: TextStyle(
                                       fontSize: 15 * ffem,
                                       fontWeight: FontWeight.w500,
@@ -158,6 +158,7 @@ class ForgotPassword extends StatelessWidget {
                                       color: Color(0xff868889),
                                     ),
                                   ),
+                                  keyboardType: TextInputType.number,
                                 ),
                               ),
                             ],
@@ -165,9 +166,9 @@ class ForgotPassword extends StatelessWidget {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.push(
+                              Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SendOTP()),
+                              MaterialPageRoute(builder: (context) => ResetPassword()),
                             );
                           },
                           child: Container(

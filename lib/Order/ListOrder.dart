@@ -19,7 +19,7 @@ class _ListOrderState extends State<ListOrder> {
   List<DataOrder> order = [];
   String searchTextProcessed = '';
   String searchTextPending = '';
-
+  String searchShipping = '';
   @override
   void initState() {
     super.initState();
@@ -65,7 +65,7 @@ class _ListOrderState extends State<ListOrder> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title:
@@ -82,6 +82,7 @@ class _ListOrderState extends State<ListOrder> {
             tabs: [
               Tab(text: 'Đã xử lý'),
               Tab(text: 'Chưa xử lý'),
+              Tab(text: 'Vận chuyển'),
             ],
             labelColor: Colors.black,
             indicatorColor: Colors.black,
@@ -108,7 +109,7 @@ class _ListOrderState extends State<ListOrder> {
                   // Processed Orders
                   ListView.builder(
                     itemCount:
-                        sortOrderByStatus(order, ['Accepted', 'Rejected'])
+                        sortOrderByStatus(order, ['Accepted', 'Rejected','UserRefused'])
                             .where((item) => item.phoneNumber!
                                 .toLowerCase()
                                 .contains(searchTextProcessed.toLowerCase()))
@@ -118,34 +119,28 @@ class _ListOrderState extends State<ListOrder> {
                         onTap: () {
                           navigateToOrderDetailPage(
                             sortOrderByStatus(
-                                order, ['Accepted', 'Rejected'])[index],
+                                order, ['Accepted', 'Rejected','UserRefused'])[index],
                           );
                         },
                         child: OrderObject(
                           orderId: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .orderId,
                           fullName: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .fullName,
                           phoneNumber: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .phoneNumber,
                           totalAmount: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .totalAmount,
                           status: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .status,
                           orderDate: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
+                                  order, ['Accepted', 'Rejected','UserRefused'])[index]
                               .orderDate,
-                          depositAmount: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
-                              .depositAmount,
-                          remainingAmount: sortOrderByStatus(
-                                  order, ['Accepted', 'Rejected'])[index]
-                              .remainingAmount,
                         ),
                       );
                     },
@@ -181,12 +176,39 @@ class _ListOrderState extends State<ListOrder> {
                           orderDate:
                               sortOrderByStatus(order, ['Pending'])[index]
                                   .orderDate,
-                          depositAmount:
-                              sortOrderByStatus(order, ['Pending'])[index]
-                                  .depositAmount,
-                          remainingAmount:
-                              sortOrderByStatus(order, ['Pending'])[index]
-                                  .remainingAmount,
+                        ),
+                      );
+                    },
+                  ),
+                   ListView.builder(
+                    itemCount: sortOrderByStatus(order, ['Shipping'])
+                        .where((item) => item.phoneNumber!
+                            .toLowerCase()
+                            .contains(searchShipping.toLowerCase()))
+                        .length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return GestureDetector(
+                        onTap: () {
+                          navigateToOrderDetailPage(
+                            sortOrderByStatus(order, ['Shipping'])[index],
+                          );
+                        },
+                        child: OrderObject(
+                          orderId: sortOrderByStatus(order, ['Shipping'])[index]
+                              .orderId,
+                          fullName: sortOrderByStatus(order, ['Shipping'])[index]
+                              .fullName,
+                          phoneNumber:
+                              sortOrderByStatus(order, ['Shipping'])[index]
+                                  .phoneNumber,
+                          totalAmount:
+                              sortOrderByStatus(order, ['Shipping'])[index]
+                                  .totalAmount,
+                          status: sortOrderByStatus(order, ['Shipping'])[index]
+                              .status,
+                          orderDate:
+                              sortOrderByStatus(order, ['Shipping'])[index]
+                                  .orderDate,
                         ),
                       );
                     },

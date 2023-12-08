@@ -27,6 +27,9 @@ class FruitDetail extends StatefulWidget {
 }
 
 class _FruitDetailState extends State<FruitDetail> {
+   final _commentController = TextEditingController();
+       final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   void initState() {
     super.initState();
@@ -57,7 +60,50 @@ class _FruitDetailState extends State<FruitDetail> {
       }
     }
   }
+   Future<void> _createPostComment() async {
+  final prefs = await SharedPreferences.getInstance();
+  final accountID = prefs.getInt('accountID');
+  final accessToken = prefs.getString('accessToken');
+  var comment = _commentController.text;
+  var fruitID = widget.fruit.fruitId.toString();
+  var userId = accountID;
 
+  var url = 'https://fruitseasonms.azurewebsites.net/api/review-fruits';
+  var request = http.MultipartRequest('POST', Uri.parse(url));
+
+  request.headers.addAll({
+    'Authorization': 'Bearer $accessToken',
+  });
+
+  request.fields['ReviewComment'] = comment;
+  request.fields['Rating'] = '5';
+  request.fields['FruitId'] = fruitID;
+  request.fields['ParentId'] = '0';
+  request.fields['UserId'] = userId.toString();
+  request.fields['UploadFile'] = '';
+
+  try {
+    var response = await request.send();
+    var statusCode = response.statusCode;
+    print('Status code: $statusCode');
+
+    if (statusCode == 200) {
+      _commentController.clear();
+      FocusScope.of(context).unfocus();
+    } else {
+      var responseString = await response.stream.bytesToString();
+      var responseBody = json.decode(responseString);
+      var errorMessage = responseBody['errors'];
+      String errorContent = errorMessage.toString();
+    }
+  } catch (e) {
+    print('Exception: $e');
+  }
+}
+  Future<void> _refresh() async {
+    // Implement the logic to refresh comments
+    await getComment(widget.fruit.fruitId!);
+  }
   @override
   Widget build(BuildContext context) {
     bool showAddDiscountButton = widget.fruit.orderType == "PreOrder";
@@ -78,7 +124,10 @@ class _FruitDetailState extends State<FruitDetail> {
           },
         ),
       ),
-      body: SingleChildScrollView(
+       body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refresh,
+      child: SingleChildScrollView(
         child: Container(
           width: double.infinity,
           decoration: BoxDecoration(
@@ -223,10 +272,39 @@ class _FruitDetailState extends State<FruitDetail> {
                   );
                 },
               ),
+               Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _commentController,
+                        decoration: InputDecoration(
+                          hintText: 'Viết bình luận...',
+                          border: InputBorder.none,
+                        ),
+                        maxLines: 3,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      onPressed: () {
+                        _createPostComment();
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
             ],
           ),
         ),
       ),
+       ),
       floatingActionButton: showAddDiscountButton
           ? Stack(
               children: [

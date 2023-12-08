@@ -98,7 +98,7 @@ class _ViewPostState extends State<ViewPost> {
                 maxCrossAxisExtent: 300.0,
                 mainAxisSpacing: 20.0,
                 crossAxisSpacing: 10.0,
-                childAspectRatio: 1.0,
+                childAspectRatio: 0.6,
               ),
               itemCount: filteredTrans.length,
               itemBuilder: (BuildContext context, int index) {
@@ -108,7 +108,7 @@ class _ViewPostState extends State<ViewPost> {
                       context,
                       MaterialPageRoute(
                         builder: (context) =>
-                            PostDetail(datapost: datapost[index]),
+                            PostDetail(datapost: filteredTrans[index]),
                       ),
                     );
                   },

@@ -32,7 +32,6 @@ class _AddDiscountState extends State<AddDiscount> {
   final _discountNameController = TextEditingController();
   final _discountThresholdController = TextEditingController();
   final _discountPercentageController = TextEditingController();
-  final _depositAmountController = TextEditingController();
   final TextEditingController _date = TextEditingController();
   @override
   void initState() {
@@ -46,7 +45,6 @@ class _AddDiscountState extends State<AddDiscount> {
   var discountName = _discountNameController.text;
   var discountThreshold = _discountThresholdController.text;
   var discountPercentage = _discountPercentageController.text;
-  var depositAmount = _depositAmountController.text;
   var fruitId = widget.fruitId;
   var date = _date.text;
 
@@ -63,7 +61,6 @@ class _AddDiscountState extends State<AddDiscount> {
     'discountThreshold': discountThreshold,
     'discountPercentage': discountPercentage,
     'discountExpiryDate': date,
-    'depositAmount': depositAmount,
   });
 
   try {
@@ -198,7 +195,7 @@ class _AddDiscountState extends State<AddDiscount> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Discount name',
+                                                labelText: 'Tên giảm giá',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -251,7 +248,7 @@ class _AddDiscountState extends State<AddDiscount> {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Discount Threshold',
+                                                labelText: 'Số lượng người mua',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -307,7 +304,7 @@ class _AddDiscountState extends State<AddDiscount> {
                                             child: TextField(
                                               decoration: InputDecoration(
                                                 labelText:
-                                                    'Discount Percentage',
+                                                    'Phần trăm giảm giá',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -335,61 +332,7 @@ class _AddDiscountState extends State<AddDiscount> {
                                   ],
                                 ),
                               ),
-                              SizedBox(
-                                height: 25 * fem,
-                              ),
-                              Container(
-                                // descriptionFD2 (3154:3138)
-                                padding: EdgeInsets.fromLTRB(
-                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                                width: double.infinity,
-                                decoration: BoxDecoration(
-                                  color: Color(0xffffffff),
-                                  borderRadius: BorderRadius.circular(5 * fem),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                      margin: EdgeInsets.fromLTRB(
-                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                      width: double.infinity,
-                                      child: Row(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          Expanded(
-                                            child: TextField(
-                                              decoration: InputDecoration(
-                                                labelText: 'Deposit Amount',
-                                                labelStyle: TextStyle(
-                                                  color: Color.fromARGB(
-                                                      255, 0, 0, 0),
-                                                  fontSize: 15 * ffem,
-                                                  fontWeight: FontWeight.w500,
-                                                  letterSpacing: 0.45 * fem,
-                                                ),
-                                                suffixText: '*',
-                                                suffixStyle: TextStyle(
-                                                  color: Color(0xffe74c3c),
-                                                  fontSize: 15 * ffem,
-                                                  fontWeight: FontWeight.w500,
-                                                  letterSpacing: 0.45 * fem,
-                                                ),
-                                              ),
-                                              keyboardType:
-                                                  TextInputType.number,
-                                              controller:
-                                                  _depositAmountController,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            
                                SizedBox(
                                 height: 25 * fem,
                               ),
@@ -424,7 +367,7 @@ class _AddDiscountState extends State<AddDiscount> {
                                         },
                                         controller: _date,
                                         decoration: InputDecoration(
-                                          labelText: 'Discount Expiry Date',
+                                          labelText: 'Ngày hết hạn',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -455,7 +398,7 @@ class _AddDiscountState extends State<AddDiscount> {
                           child: Container(
                             // primarybuttonoyi (3152:2964)
                             margin: EdgeInsets.fromLTRB(
-                                0.03 * fem, 0 * fem, 0 * fem, 0 * fem),
+                                0.03 * fem, 50 * fem, 0 * fem, 0 * fem),
                             width: double.infinity,
                             height: 62.01 * fem,
                             decoration: BoxDecoration(
@@ -471,7 +414,7 @@ class _AddDiscountState extends State<AddDiscount> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu thay đổi',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

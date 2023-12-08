@@ -18,8 +18,6 @@ class OrderObject extends StatefulWidget {
   final String? status;
   final double? totalAmount;
   final String? phoneNumber;
-  final double? depositAmount;
-  final double? remainingAmount;
 
   OrderObject({
     required this.orderId,
@@ -28,8 +26,6 @@ class OrderObject extends StatefulWidget {
     required this.status,
     required this.totalAmount,
     required this.phoneNumber,
-    required this.depositAmount,
-    required this.remainingAmount,
     Key? key,
   }) : super(key: key);
 
@@ -85,68 +81,12 @@ class _OrderObjectState extends State<OrderObject> {
         ..hideCurrentSnackBar()
         ..showSnackBar(snackBar);
     }
-    if (response.body.isNotEmpty) {
-      final Map<String, dynamic> data = json.decode(response.body);
-      print('data:$data');
-      final imageUrl = data['imageMomoUrl'];
-      print('imageUrl: $imageUrl');
-      final depositAmount = data['depositAmount'];
-      if (imageUrl != null) {
-        _showImageDialog(context, imageUrl, depositAmount);
-      }
-      else{
-        Navigator.of(context).pop(); // Close the dialog
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ListOrder()));
-    }
-    } 
-  }
-
-  Future<void> _showImageDialog(BuildContext context, String imageUrl, double depositAmount) async {
-    return showDialog<void>(
-     context: context,
-    builder: (BuildContext dialogContext) {
-        return AlertDialog(
-          title:
-              Text('Trạng thái đơn hàng', style: TextStyle(color: Colors.red)),
-          content: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('Từ chối đơn hàng thành công',
-                  style: TextStyle(fontSize: 16)),
-              SizedBox(height: 16),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.network(imageUrl,
-                    height: 250, width: 250, fit: BoxFit.cover),
-              ),
-              SizedBox(height: 16),
-              Text('Số tiền hoàn trả: ${depositAmount}',
-                  style: TextStyle(fontSize: 16)),
-            ],
-          ),
-          actions: <Widget>[
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                primary: Colors.red, // background color
-                onPrimary: Colors.white, // text color
-              ),
-              onPressed: () {
-               Navigator.of(dialogContext).pop(); // Close the dialog
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ListOrder()));
-              },
-              child: Text('Close'),
-            ),
-          ],
-        );
-      },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
-    bool showButtons = widget.status == "Pending";
+    bool showButtons =
+        widget.status == "Pending" || widget.status == "Shipping";
     return AnimationConfiguration.staggeredList(
         position: 0,
         duration: const Duration(milliseconds: 500),
@@ -220,30 +160,19 @@ class _OrderObjectState extends State<OrderObject> {
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  "Trạng thái: ${widget.status == "Accepted" ? "Chấp nhận" : widget.status == "Rejected" ? "Từ chối" : "Chờ duyệt"}",
+                                  "Trạng thái: ${widget.status == "Accepted" ? "Chấp nhận" : widget.status == "Rejected" ? "Từ chối" : widget.status == "Shipping" ? "Đang vận chuyển" : widget.status == "UserRefused" ? "Hủy Đơn" : "Chờ duyệt"}",
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: widget.status == "Accepted"
                                         ? Colors.green
                                         : widget.status == "Rejected"
                                             ? Colors.red
-                                            : Colors.orange,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  "Số tiền đã trả: ${widget.depositAmount?.toStringAsFixed(3)} vnđ",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                SizedBox(height: 8),
-                                Text(
-                                  "Số tiền còn lại: ${widget.remainingAmount!.toStringAsFixed(3)} vnđ",
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.black,
+                                            : widget.status == "Shipping"
+                                                ? Color.fromARGB(
+                                                    255, 54, 171, 244)
+                                                : widget.status == "UserRefused"
+                                                    ? Color.fromARGB(255, 164, 0, 0)
+                                                    : Colors.orange,
                                   ),
                                 ),
                                 SizedBox(height: 8),
@@ -270,12 +199,16 @@ class _OrderObjectState extends State<OrderObject> {
                       children: [
                         ElevatedButton(
                           onPressed: () {
-                            UpdateOrder(widget.orderId!, "Accepted");
+                            if (widget.status == "Pending") {
+                              UpdateOrder(widget.orderId!, "Shipping");
+                            } else {
+                              UpdateOrder(widget.orderId!, "Accepted");
+                            }
                             Navigator.of(context).pop();
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
-                                  builder: (BuildContext context) =>
-                                      ListOrder()),
+                                builder: (BuildContext context) => ListOrder(),
+                              ),
                             );
                           },
                           style: ElevatedButton.styleFrom(
@@ -288,7 +221,17 @@ class _OrderObjectState extends State<OrderObject> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            UpdateOrder(widget.orderId!, "Rejected");
+                            if (widget.status == "Pending") {
+                              UpdateOrder(widget.orderId!, "Rejected");
+                            } else {
+                              UpdateOrder(widget.orderId!, "UserRefused");
+                            }
+                            Navigator.of(context).pop();
+                            Navigator.of(context).pushReplacement(
+                              MaterialPageRoute(
+                                builder: (BuildContext context) => ListOrder(),
+                              ),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             primary: Colors.red,

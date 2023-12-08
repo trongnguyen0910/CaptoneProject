@@ -15,8 +15,6 @@ class DataOrder {
   String? deliveryAddress;
   String? paymentMethod;
   double? totalAmount;
-  double? depositAmount;
-  double? remainingAmount;
   String? phoneNumber;
   String? type;
   String? status;
@@ -31,8 +29,6 @@ class DataOrder {
     this.deliveryAddress,
     this.paymentMethod,
     this.totalAmount,
-    this.depositAmount,
-    this.remainingAmount,
     this.phoneNumber,
     this.type,
     this.status,
@@ -50,8 +46,6 @@ class DataOrder {
         deliveryAddress: json["deliveryAddress"],
         paymentMethod: json["paymentMethod"],
         totalAmount: json["totalAmount"]?.toDouble(),
-        depositAmount: json["depositAmount"]?.toDouble(),
-        remainingAmount: json["remainingAmount"]?.toDouble(),
         phoneNumber: json["phoneNumber"],
         type: json["type"],
         status: json["status"],
@@ -72,8 +66,6 @@ class DataOrder {
         "deliveryAddress": deliveryAddress,
         "paymentMethod": paymentMethod,
         "totalAmount": totalAmount,
-        "depositAmount": depositAmount,
-        "remainingAmount": remainingAmount,
         "phoneNumber": phoneNumber,
         "type": type,
         "status": status,

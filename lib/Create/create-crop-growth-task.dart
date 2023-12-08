@@ -314,7 +314,7 @@ class _CreateCropGrowthTaskState extends State<CreateCropGrowthTask> {
                               Container(
                                 // startXrg (3154:3260)
                                 padding: EdgeInsets.fromLTRB(
-                                    15 * fem, 15 * fem, 15 * fem, 12 * fem),
+                                    5 * fem, 15 * fem, 5 * fem, 12 * fem),
                                 width: double.infinity,
                                 decoration: BoxDecoration(
                                   color: Color(0xffffffff),

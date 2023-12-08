@@ -393,7 +393,7 @@ class _CompleteProfileState extends State<CompleteProfile> {
                 ),
                 child: Center(
                   child: Text(
-                    'Continue',
+                    'Tiếp tục',
                     style: TextStyle(
                       fontFamily: 'Satoshi',
                       fontSize: 20 * ffem,

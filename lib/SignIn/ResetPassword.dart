@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 
-import 'SendOTP.dart';
+import 'SignIn.dart';
 
-class ForgotPassword extends StatelessWidget {
+class ResetPassword extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -88,7 +88,7 @@ class ForgotPassword extends StatelessWidget {
                                 margin: EdgeInsets.fromLTRB(
                                     0 * fem, 0 * fem, 7.55 * fem, 22 * fem),
                                 child: Text(
-                                  'Tìm tài khoản',
+                                  'Tạo mật khẩu mới',
                                   style: SafeGoogleFont(
                                     'Inter',
                                     fontSize: 25 * ffem,
@@ -104,7 +104,7 @@ class ForgotPassword extends StatelessWidget {
                                   maxWidth: 278 * fem,
                                 ),
                                 child: Text(
-                                  'Vui lòng nhập địa chỉ email để lấy lại mật khẩu',
+                                  'Vui lòng nhập mật khẩu mới của bạn.',
                                   textAlign: TextAlign.center,
                                   style: SafeGoogleFont(
                                     'Poppins',
@@ -150,7 +150,7 @@ class ForgotPassword extends StatelessWidget {
                                 child: TextFormField(
                                   // emailaddressMER (10:288)
                                   decoration: InputDecoration(
-                                    labelText: 'Địa chỉ email',
+                                    labelText: 'Nhập mật khẩu mới',
                                     labelStyle: TextStyle(
                                       fontSize: 15 * ffem,
                                       fontWeight: FontWeight.w500,
@@ -158,16 +158,65 @@ class ForgotPassword extends StatelessWidget {
                                       color: Color(0xff868889),
                                     ),
                                   ),
+                                  keyboardType: TextInputType.number,
                                 ),
                               ),
+
+                            ],
+                          ),
+                        ),
+                        Container(
+                          // emailfieldVg5 (135:1002)
+                          margin: EdgeInsets.fromLTRB(
+                              0 * fem, 0 * fem, 0 * fem, 13.44 * fem),
+                          padding: EdgeInsets.fromLTRB(28.95 * fem, 9.64 * fem,
+                              20.42 * fem, 25.37 * fem),
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                            color: Color(0xffffffff),
+                            borderRadius: BorderRadius.circular(5 * fem),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                // groupBYu (135:1004)
+                                margin: EdgeInsets.fromLTRB(
+                                    0 * fem, 0 * fem, 21.71 * fem, 0.76 * fem),
+                                width: 23.78 * fem,
+                                height: 18.11 * fem,
+                                child: Image.asset(
+                                  'assets/mobile/images/group-9Qu.png',
+                                  width: 23.78 * fem,
+                                  height: 18.11 * fem,
+                                ),
+                              ),
+                              Expanded(
+                                // Use Expanded to constrain the width of TextFormField
+                                child: TextFormField(
+                                  // emailaddressMER (10:288)
+                                  decoration: InputDecoration(
+                                    labelText: 'Xác minh lại mật khẩu mới',
+                                    labelStyle: TextStyle(
+                                      fontSize: 15 * ffem,
+                                      fontWeight: FontWeight.w500,
+                                      letterSpacing: 0.45 * fem,
+                                      color: Color(0xff868889),
+                                    ),
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                ),
+                              ),
+                              
                             ],
                           ),
                         ),
                         GestureDetector(
                           onTap: () {
+                            
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => SendOTP()),
+                              MaterialPageRoute(builder: (context) => Login()),
                             );
                           },
                           child: Container(

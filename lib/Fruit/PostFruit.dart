@@ -36,6 +36,7 @@ class _CreatePostState extends State<CreatePost> {
   final _fruitdescriptionController = TextEditingController();
   final _priceController = TextEditingController();
   final _quantityAvailableController = TextEditingController();
+  final _quantityInTransit = TextEditingController();
   final _originCityController = TextEditingController();
 
   @override
@@ -168,7 +169,7 @@ class _CreatePostState extends State<CreatePost> {
     var plantId = selectedPlantId;
     var categoryFruitId = selectedCategoryId;
     var orderType = _selectedValue;
-    var quantityInTransit = 0;
+    var quantityInTransit = _quantityInTransit;
     var userId = accountID;
     print('orderType:${orderType}');
     var url =
@@ -300,7 +301,7 @@ class _CreatePostState extends State<CreatePost> {
           child: Container(
             // creategardentask5rx (3154:3128)
             width: double.infinity,
-            height: 1250 * fem,
+            height: 1280 * fem,
             decoration: BoxDecoration(
               color: Color(0xfff4f5f9),
             ),
@@ -429,6 +430,61 @@ class _CreatePostState extends State<CreatePost> {
                                   ],
                                 ),
                               ),
+                                SizedBox(
+                                height: 25 * fem,
+                              ),
+                              Container(
+                                // descriptionFD2 (3154:3138)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child: TextField(
+                                                decoration: InputDecoration(
+                                                  labelText:
+                                                      'Quy cách/kg',
+                                                  labelStyle: TextStyle(
+                                                    color: Color.fromARGB(
+                                                        255, 0, 0, 0),
+                                                    fontSize: 15 * ffem,
+                                                    fontWeight: FontWeight.w500,
+                                                    letterSpacing: 0.45 * fem,
+                                                  ),
+                                                  suffixText: '*',
+                                                  suffixStyle: TextStyle(
+                                                    color: Color(0xffe74c3c),
+                                                    fontSize: 15 * ffem,
+                                                    fontWeight: FontWeight.w500,
+                                                    letterSpacing: 0.45 * fem,
+                                                  ),
+                                                ),
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                controller:
+                                                    _quantityInTransit),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(
                                 height: 25 * fem,
                               ),
@@ -457,7 +513,7 @@ class _CreatePostState extends State<CreatePost> {
                                             child: TextField(
                                                 decoration: InputDecoration(
                                                   labelText:
-                                                      'Số lượng/sản phẩm',
+                                                      'Số lượng có sẵn/kg',
                                                   labelStyle: TextStyle(
                                                     color: Color.fromARGB(
                                                         255, 0, 0, 0),

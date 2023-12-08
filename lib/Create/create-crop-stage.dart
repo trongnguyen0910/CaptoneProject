@@ -483,7 +483,7 @@ class _CreateCropStageState extends State<CreateCropStage> {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

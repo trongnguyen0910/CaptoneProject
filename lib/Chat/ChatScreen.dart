@@ -32,7 +32,7 @@ class _Chat_PageState extends State<Chat_Page> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     idCurrentUser = await prefs.getInt('accountID').toString();
     final serverUrl =
-        "https://fruitseasonapims-001-site1.btempurl.com/chat?userid=${idCurrentUser}";
+        "https://fruitseasonms.azurewebsites.net/chat?userid=${idCurrentUser}";
     print(serverUrl);
     hubConnection = HubConnectionBuilder().withUrl(serverUrl).build();
     hubConnection.onclose(({error}) => print('On close'));
