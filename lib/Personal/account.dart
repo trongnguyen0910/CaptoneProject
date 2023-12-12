@@ -5,14 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:myapp/Personal/voice_to_text_provider.dart';
 import 'package:myapp/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Order/ListOrder.dart';
 import '../SignIn/SignIn.dart';
 import 'about-me.dart';
 import 'VoiceToText.dart';
-import 'address.dart';
 
 class Personal extends StatefulWidget {
   @override
@@ -20,14 +21,14 @@ class Personal extends StatefulWidget {
 }
 
 class _PersonalState extends State<Personal> {
+  late String fullName = '';
+  late String email = '';
   _signout() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
     final email = prefs.getString('email');
     print('email: $email');
-
-    var url =
-        'https://fruitseasonms.azurewebsites.net/api/auths/logout';
+    var url = 'https://fruitseasonms.azurewebsites.net/api/auths/logout';
 
     var headers = {
       'Content-Type': 'application/json',
@@ -64,6 +65,21 @@ class _PersonalState extends State<Personal> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        fullName = prefs.getString('fullName') ?? '';
+      });
+    });
+    SharedPreferences.getInstance().then((prefs) {
+      setState(() {
+        email = prefs.getString('email') ?? '';
+      });
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
@@ -74,7 +90,6 @@ class _PersonalState extends State<Personal> {
               style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
-         
         ),
         body: Container(
           width: double.infinity,
@@ -135,7 +150,7 @@ class _PersonalState extends State<Personal> {
                   margin:
                       EdgeInsets.fromLTRB(3 * fem, 0 * fem, 0 * fem, 2 * fem),
                   child: Text(
-                    'Olivia Austin',
+                    '${fullName}',
                     textAlign: TextAlign.center,
                     style: SafeGoogleFont(
                       'Poppins',
@@ -152,7 +167,7 @@ class _PersonalState extends State<Personal> {
                   margin:
                       EdgeInsets.fromLTRB(2 * fem, 0 * fem, 0 * fem, 48 * fem),
                   child: Text(
-                    'oliviaaustin@gmail.com',
+                    '${email}',
                     textAlign: TextAlign.center,
                     style: SafeGoogleFont(
                       'Poppins',
@@ -167,71 +182,11 @@ class _PersonalState extends State<Personal> {
                 Container(
                   // bodyXQD (155:985)
                   margin: EdgeInsets.fromLTRB(
-                      42.04 * fem, 0 * fem, 31.12 * fem, 108.23 * fem),
+                      32.04 * fem, 0 * fem, 31.12 * fem, 108.23 * fem),
                   width: double.infinity,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      TextButton(
-                        // aboutmeejj (94:858)
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => AboutMe()),
-                          );
-                        },
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                        ),
-                        child: Container(
-                          width: double.infinity,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                // groupmZT (94:864)
-                                margin: EdgeInsets.fromLTRB(
-                                    0 * fem, 0 * fem, 15.63 * fem, 0 * fem),
-                                width: 20.84 * fem,
-                                height: 20.67 * fem,
-                                child: Image.asset(
-                                  'assets/mobile/images/group-DJH.png',
-                                  width: 20.84 * fem,
-                                  height: 20.67 * fem,
-                                ),
-                              ),
-                              Container(
-                                // aboutmee7T (94:859)
-                                margin: EdgeInsets.fromLTRB(
-                                    0 * fem, 0 * fem, 244.41 * fem, 0.6 * fem),
-                                child: Text(
-                                  'Giới thiệu',
-                                  style: SafeGoogleFont(
-                                    'Poppins',
-                                    fontSize: 12 * ffem,
-                                    fontWeight: FontWeight.w600,
-                                    height: 1.5 * ffem / fem,
-                                    letterSpacing: 0.36 * fem,
-                                    color: Color(0xff000000),
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                // groupLky (94:860)
-                                margin: EdgeInsets.fromLTRB(
-                                    0 * fem, 0 * fem, 0 * fem, 0 * fem),
-                                width: 10.96 * fem,
-                                height: 18.6 * fem,
-                                child: Image.asset(
-                                  'assets/mobile/images/group-KjF.png',
-                                  width: 10.96 * fem,
-                                  height: 18.6 * fem,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
                       Container(
                         // autogroupv6ghSZ7 (MwWhvPNkkJKU7nyksBV6gh)
                         padding: EdgeInsets.fromLTRB(
@@ -243,7 +198,7 @@ class _PersonalState extends State<Personal> {
                             Container(
                               // myaddresskZo (94:954)
                               margin: EdgeInsets.fromLTRB(
-                                  0.44 * fem, 0 * fem, 0 * fem, 53.12 * fem),
+                                  0.44 * fem, 0 * fem, 0 * fem, 33.12 * fem),
                               child: TextButton(
                                 onPressed: () {
                                   Navigator.push(
@@ -293,56 +248,55 @@ class _PersonalState extends State<Personal> {
                                 ),
                               ),
                             ),
-                             Container(
+                            Container(
                               // myaddresskZo (94:954)
                               margin: EdgeInsets.fromLTRB(
                                   0.44 * fem, 0 * fem, 0 * fem, 53.12 * fem),
-                              child: TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => SettingsPage()),
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: EdgeInsets.zero,
-                                ),
-                                child: Container(
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        // group203qr9 (94:1086)
-                                        margin: EdgeInsets.fromLTRB(0 * fem,
-                                            0 * fem, 18.25 * fem, 0 * fem),
-                                        width: 23.1 * fem,
-                                        height: 25.67 * fem,
-                                        child: Image.asset(
-                                          'assets/mobile/images/microphone.png',
-                                          width: 15.1 * fem,
-                                          height: 20.67 * fem,
+
+                              child: Container(
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // group203qr9 (94:1086)
+                                      margin: EdgeInsets.fromLTRB(0 * fem,
+                                          0 * fem, 18.25 * fem, 0 * fem),
+                                      width: 23.1 * fem,
+                                      height: 25.67 * fem,
+                                      child: Image.asset(
+                                        'assets/mobile/images/microphone.png',
+                                        width: 15.1 * fem,
+                                        height: 20.67 * fem,
+                                      ),
+                                    ),
+                                    Container(
+                                      // myaddressXys (94:955)
+                                      margin: EdgeInsets.fromLTRB(0 * fem,
+                                          0 * fem, 170.41 * fem, 0.6 * fem),
+                                      child: Text(
+                                        'Voice to text',
+                                        style: SafeGoogleFont(
+                                          'Poppins',
+                                          fontSize: 12 * ffem,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.5 * ffem / fem,
+                                          letterSpacing: 0.36 * fem,
+                                          color: Color(0xff000000),
                                         ),
                                       ),
-                                      Container(
-                                        // myaddressXys (94:955)
-                                        margin: EdgeInsets.fromLTRB(0 * fem,
-                                            0 * fem, 0.41 * fem, 0.6 * fem),
-                                        child: Text(
-                                          'Voice to text',
-                                          style: SafeGoogleFont(
-                                            'Poppins',
-                                            fontSize: 12 * ffem,
-                                            fontWeight: FontWeight.w600,
-                                            height: 1.5 * ffem / fem,
-                                            letterSpacing: 0.36 * fem,
-                                            color: Color(0xff000000),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                    Switch(
+                                      value: Provider.of<VoiceToTextProvider>(
+                                              context)
+                                          .isVoiceToTextEnabled,
+                                      onChanged: (value) {
+                                        Provider.of<VoiceToTextProvider>(
+                                                context,
+                                                listen: false)
+                                            .setVoiceToTextEnabled(value);
+                                      },
+                                    ),
+                                  ],
                                 ),
                               ),
                             ),

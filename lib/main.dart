@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:myapp/utils.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'Garden/garden.dart';
@@ -16,6 +17,7 @@ import 'GetX/GardenGetX.dart';
 import 'Notification/firebaseconfig.dart';
 import 'Notification/notification.dart';
 import 'Notification/pushnotification_provider.dart';
+import 'Personal/voice_to_text_provider.dart';
 import 'SignIn/SignIn.dart';
 
 PushNotificationsProvider pushNotificationsProvider =
@@ -116,7 +118,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
+     return ChangeNotifierProvider(
+      create: (context) => VoiceToTextProvider(),
+      child: MaterialApp(
       title: 'Flutter',
       debugShowCheckedModeBanner: false,
       scrollBehavior: MyCustomScrollBehavior(),
@@ -124,6 +128,7 @@ class _MyAppState extends State<MyApp> {
         primarySwatch: Colors.blue,
       ),
       home: Login(),
+      )
     );
   }
 }

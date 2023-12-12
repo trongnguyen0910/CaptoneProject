@@ -99,6 +99,7 @@ class _LoginState extends State<Login> {
       var accountID = jsonResponse['data']['userId'];
       var accessToken = jsonResponse['data']['accessToken'];
       var emailuser = jsonResponse['data']['email'];
+      var fullName = jsonResponse['data']['fullName'];
       refreshToken = jsonResponse['data']['refreshToken'];
 
       print('$accountID');
@@ -112,6 +113,10 @@ class _LoginState extends State<Login> {
       if (emailuser != null) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.setString('email', emailuser);
+      }
+       if (fullName != null) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('fullName', fullName);
       }
 
       if (accessToken != null) {

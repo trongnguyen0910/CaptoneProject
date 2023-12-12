@@ -1,39 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:myapp/Personal/voice_to_text_provider.dart';
+import 'package:provider/provider.dart';
 
-class SettingsPage extends StatefulWidget {
-  @override
-  _SettingsPageState createState() => _SettingsPageState();
-}
-
-class _SettingsPageState extends State<SettingsPage> {
-  bool _voiceToTextEnabled = false;
-
+class SettingsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Settings'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Voice-to-Text'),
-            Switch(
-              value: _voiceToTextEnabled,
-              onChanged: (value) async {
-                // Save the setting to SharedPreferences
-                final prefs = await SharedPreferences.getInstance();
-                prefs.setBool('voiceToTextEnabled', value);
-
-                setState(() {
-                  _voiceToTextEnabled = value;
-                });
+      body: Center(
+        child: Consumer<VoiceToTextProvider>(
+          builder: (context, provider, _) {
+            return Switch(
+              value: provider.isVoiceToTextEnabled,
+              onChanged: (value) {
+                provider.setVoiceToTextEnabled(value);
               },
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

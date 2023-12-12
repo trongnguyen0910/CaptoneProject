@@ -10,12 +10,15 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:http/http.dart' as http;
+import 'package:myapp/Personal/voice_to_text_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
+import '../Expert/ViewPostExpert.dart';
 import '../utils.dart';
-import 'create.dart';
+import 'package:myapp/Create/create.dart' as CustomCreate;
 
 
 
@@ -34,6 +37,7 @@ class _CreateGardenState extends State<CreateGarden> {
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
+  
   
 
   _creategarden() async {
@@ -95,7 +99,7 @@ class _CreateGardenState extends State<CreateGarden> {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Create()),
+            MaterialPageRoute(builder: (context) => CustomCreate.Create()),
           );
         });
       } else if (response.statusCode != 200) {
@@ -209,30 +213,46 @@ class _CreateGardenState extends State<CreateGarden> {
 
   @override
   Widget build(BuildContext context) {
+     VoiceToTextProvider voiceToTextProvider =
+        Provider.of<VoiceToTextProvider>(context);
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
-        appBar: AppBar(
-          title:
-              const Text('Tạo mới khu vườn', style: TextStyle(color: Colors.black)),
-          backgroundColor: Colors.white,
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.black),
-            onPressed: () async {
-              Navigator.of(context).pop();
+       appBar: AppBar(
+        title: const Text('Tạo mới khu vườn', style: TextStyle(color: Colors.black)),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () async {
+            Navigator.of(context).pop();
+          },
+        ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline, color: Colors.black), // Add your question mark icon here
+            onPressed: () {
+             Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewPost(type: 'Khu Vườn'), // Specify the type here
+                ),
+             );
             },
           ),
-        ),
+        ],
+      ),
 
-      //    floatingActionButton: FloatingActionButton(
-      //   onPressed:
-      //       // If not yet listening for speech start, otherwise stop
-      //       _toggleListening,
-      //   tooltip: 'Listen',
-      //   child: Icon(_speechToText.isNotListening ? Icons.mic_off : Icons.mic),
-      // ),
+          floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
+          ? FloatingActionButton(
+              onPressed: _toggleListening,
+              tooltip: 'Listen',
+              child: Icon(
+                _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+              ),
+            )
+          : null,
         body: SingleChildScrollView(
           child: Container(
             // creategardenne4 (3152:2961)

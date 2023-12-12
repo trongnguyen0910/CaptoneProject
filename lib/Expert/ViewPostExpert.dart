@@ -9,6 +9,8 @@ import '../model/GardenModel.dart';
 import '../HomeScreen/Home.dart';
 
 class ViewPost extends StatefulWidget {
+  final String? type;
+  ViewPost({this.type});
   @override
   State<ViewPost> createState() => _ViewPostState();
 }
@@ -24,10 +26,15 @@ class _ViewPostState extends State<ViewPost> {
   }
 
    Future<void> getPost() async {
+     print('type: ${widget.type}');
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-    final url =
-        'https://fruitseasonms.azurewebsites.net/api/posts?activeOnly=true';
+    String url = 'https://fruitseasonms.azurewebsites.net/api/posts?activeOnly=true';
+
+    if (widget.type != null) {
+      url += '&type=${widget.type}';
+    }
+
     Map<String, String> headers = {
       'accept': '*/*',
       'Authorization': 'Bearer $accessToken',
@@ -35,7 +42,8 @@ class _ViewPostState extends State<ViewPost> {
     final response = await http.get(Uri.parse(url), headers: headers);
     final responseTrans = json.decode(response.body)['data'];
     var statusCode = response.statusCode;
-    print('Status code Fruit: $statusCode');
+    print('Status code Post: $statusCode');
+    print('responseTrans: $responseTrans');
     if (responseTrans != null) {
       if (responseTrans is List) {
         setState(() {

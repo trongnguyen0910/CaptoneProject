@@ -171,7 +171,8 @@ class _OrderObjectState extends State<OrderObject> {
                                                 ? Color.fromARGB(
                                                     255, 54, 171, 244)
                                                 : widget.status == "UserRefused"
-                                                    ? Color.fromARGB(255, 164, 0, 0)
+                                                    ? Color.fromARGB(
+                                                        255, 164, 0, 0)
                                                     : Colors.orange,
                                   ),
                                 ),
@@ -198,13 +199,16 @@ class _OrderObjectState extends State<OrderObject> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (widget.status == "Pending") {
-                              UpdateOrder(widget.orderId!, "Shipping");
+                              await UpdateOrder(widget.orderId!, "Shipping");
                             } else {
-                              UpdateOrder(widget.orderId!, "Accepted");
+                              await UpdateOrder(widget.orderId!, "Accepted");
                             }
-                            Navigator.of(context).pop();
+                           
+
+                            // Sử dụng setState để rebuild lại widget và cập nhật giao diện ngay lập tức
+                            setState(() {});
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (BuildContext context) => ListOrder(),
@@ -220,13 +224,13 @@ class _OrderObjectState extends State<OrderObject> {
                           child: Text("Yes"),
                         ),
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (widget.status == "Pending") {
-                              UpdateOrder(widget.orderId!, "Rejected");
+                              await UpdateOrder(widget.orderId!, "Rejected");
                             } else {
-                              UpdateOrder(widget.orderId!, "UserRefused");
+                              await UpdateOrder(widget.orderId!, "UserRefused");
                             }
-                            Navigator.of(context).pop();
+                             setState(() {});
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (BuildContext context) => ListOrder(),

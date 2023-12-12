@@ -76,6 +76,7 @@ dependencies:
   material_design_icons_flutter:
   dash_chat_2:
   speech_to_text: ^5.0.4
+  provider: ^6.1.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

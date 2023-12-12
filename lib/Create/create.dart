@@ -12,7 +12,12 @@ import 'create-garden.dart';
 import 'create-plant.dart';
 import 'create-season.dart';
 
-class Create extends StatelessWidget {
+class Create extends StatefulWidget {
+  @override
+  State<Create> createState() => _CreateState();
+}
+
+class _CreateState extends State<Create> {
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -395,11 +400,7 @@ class Create extends StatelessWidget {
                           0 * fem, 0.42 * fem, 140.16 * fem, 0 * fem),
                       width: 24.58 * fem,
                       height: 17.09 * fem,
-                      child: Image.asset(
-                        'assets/mobile/images/backarrow.png',
-                        width: 24.58 * fem,
-                        height: 17.09 * fem,
-                      ),
+                   
                     ),
                     Text(
                       // createzji (3143:2466)

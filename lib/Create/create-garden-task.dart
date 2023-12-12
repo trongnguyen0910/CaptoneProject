@@ -17,6 +17,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
+import '../Expert/ViewPostExpert.dart';
 import '../GetX/GardenGetX.dart';
 import 'create.dart';
 
@@ -243,6 +244,19 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
               Navigator.of(context).pop();
             },
           ),
+          actions: [
+          IconButton(
+            icon: const Icon(Icons.help_outline, color: Colors.black), // Add your question mark icon here
+            onPressed: () {
+             Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ViewPost(type: 'Cách chăm sóc cây'), // Specify the type here
+                ),
+             );
+            },
+          ),
+        ],
         ),
         body: SingleChildScrollView(
           child: Container(
