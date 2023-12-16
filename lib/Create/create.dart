@@ -58,7 +58,7 @@ class _CreateState extends State<Create> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: AssetImage(
-                        'assets/mobile/images/cropvariety.png',
+                        'assets/mobile/images/growthtask.jpg',
                       ),
                       colorFilter: ColorFilter.mode(
                         Colors.black.withOpacity(
@@ -106,7 +106,7 @@ class _CreateState extends State<Create> {
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: AssetImage(
-                        'assets/mobile/images/cropvariety.png',
+                        'assets/mobile/images/stage.jpg',
                       ),
                       colorFilter: ColorFilter.mode(
                         Colors.black.withOpacity(

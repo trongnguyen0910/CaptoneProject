@@ -201,7 +201,7 @@ class _FruitDetailState extends State<FruitDetail> {
                         ),
                       ),
                       Text(
-                        '${widget.fruit.price}',
+                        '${widget.fruit.price!.toStringAsFixed(3)}',
                         style: SafeGoogleFont(
                           'Inter',
                           fontSize: 15 * ffem,
@@ -247,7 +247,7 @@ class _FruitDetailState extends State<FruitDetail> {
                         ),
                       ),
                       Text(
-                        '${widget.fruit.quantityAvailable}',
+                        '${widget.fruit.quantityAvailable!.toStringAsFixed(0)}kg',
                         style: SafeGoogleFont(
                           'Inter',
                           fontSize: 15 * ffem,

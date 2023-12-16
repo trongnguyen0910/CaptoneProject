@@ -20,7 +20,7 @@ class TaskDetail extends StatefulWidget {
 }
 
 class _TaskDetailState extends State<TaskDetail> {
-  String updateDate = ''; 
+  String updateDate = '';
   Future<void> finishTask(int taskID) async {
     print('fruitId: $taskID');
     final prefs = await SharedPreferences.getInstance();
@@ -46,8 +46,7 @@ class _TaskDetailState extends State<TaskDetail> {
     var updateDate = this.updateDate;
     var userId = accountID;
     print('date: $updateDate');
-    var url =
-        'https://fruitseasonms.azurewebsites.net/api/notifications';
+    var url = 'https://fruitseasonms.azurewebsites.net/api/notifications';
 
     var headers = {
       'Content-Type': 'application/json',
@@ -184,13 +183,16 @@ class _TaskDetailState extends State<TaskDetail> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                '${widget.datagardentask.gardenTaskName}',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 20 * ffem,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.18 * fem,
-                                  color: Color(0xff000000),
+                              Expanded(
+                                child: Text(
+                                  'Công việc: ${widget.datagardentask.gardenTaskName}',
+                                  style: GoogleFonts.poppins(
+                                    fontSize: 20 * ffem,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.18 * fem,
+                                    color: Color(0xff000000),
+                                  ),
+                                  softWrap: true,
                                 ),
                               ),
                               IconButton(
@@ -201,6 +203,15 @@ class _TaskDetailState extends State<TaskDetail> {
                                 },
                               ),
                             ],
+                          ),
+                          Text(
+                            'Cây trồng: ${widget.datagardentask.plantName}',
+                            style: GoogleFonts.poppins(
+                              fontSize: 20 * ffem,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.18 * fem,
+                              color: Color(0xff000000),
+                            ),
                           ),
                           SizedBox(height: 12.0),
                           Text(
@@ -241,7 +252,8 @@ class _TaskDetailState extends State<TaskDetail> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: Text('Xác nhận kết thúc'),
-                    content: Text('Bạn có chắc chắn kết thúc công việc này không?'),
+                    content:
+                        Text('Bạn có chắc chắn kết thúc công việc này không?'),
                     actions: [
                       TextButton(
                         onPressed: () {

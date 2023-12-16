@@ -278,6 +278,7 @@ class _CreatePostState extends State<CreatePost> {
   var categoryList = Get.find<GardenController>().categoryList;
   String? selectedGardenName;
   String? selectedvarietyName;
+  String displayedValue = '';
 
   @override
   Widget build(BuildContext context) {
@@ -301,7 +302,7 @@ class _CreatePostState extends State<CreatePost> {
           child: Container(
             // creategardentask5rx (3154:3128)
             width: double.infinity,
-            height: 1400 * fem,
+            height: 1480 * fem,
             decoration: BoxDecoration(
               color: Color(0xfff4f5f9),
             ),
@@ -313,7 +314,7 @@ class _CreatePostState extends State<CreatePost> {
                   top: 20 * fem,
                   child: Container(
                     width: 392.88 * fem,
-                    height: 1382.71 * fem,
+                    height: 1482.71 * fem,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
@@ -430,7 +431,7 @@ class _CreatePostState extends State<CreatePost> {
                                   ],
                                 ),
                               ),
-                                SizedBox(
+                              SizedBox(
                                 height: 25 * fem,
                               ),
                               Container(
@@ -457,8 +458,7 @@ class _CreatePostState extends State<CreatePost> {
                                           Expanded(
                                             child: TextField(
                                                 decoration: InputDecoration(
-                                                  labelText:
-                                                      'Quy cách/kg',
+                                                  labelText: 'Quy cách/kg',
                                                   labelStyle: TextStyle(
                                                     color: Color.fromARGB(
                                                         255, 0, 0, 0),
@@ -476,8 +476,7 @@ class _CreatePostState extends State<CreatePost> {
                                                 ),
                                                 keyboardType:
                                                     TextInputType.number,
-                                                controller:
-                                                    _quantityInTransit),
+                                                controller: _quantityInTransit),
                                           ),
                                         ],
                                       ),
@@ -601,6 +600,15 @@ class _CreatePostState extends State<CreatePost> {
                                                         TextInputType.number,
                                                     controller:
                                                         _priceController,
+                                                    onChanged: (value) {
+                                                      // Update the displayed value with additional zeros
+                                                      setState(() {
+                                                        displayedValue = value
+                                                                .isEmpty
+                                                            ? ''
+                                                            : '${double.parse(value)}';
+                                                      });
+                                                    },
                                                     onTap: () {
                                                       // Show options when the user taps on the price field
                                                       setState(() {
@@ -612,6 +620,34 @@ class _CreatePostState extends State<CreatePost> {
                                                   ),
                                                 ),
                                               ],
+                                            ),
+                                          ),
+                                           if (showCompareOption)
+                                          ElevatedButton(
+                                            onPressed: () {
+                                              // Add three zeros when the button is pressed
+                                              setState(() {
+                                                displayedValue += '00';
+                                                _priceController.text =
+                                                    displayedValue;
+                                              });
+                                            },
+                                            style: ElevatedButton.styleFrom(
+                                              primary: Colors
+                                                  .white, // Button background color
+                                              elevation: 5,
+                                              side: BorderSide(
+                                                  color: Color.fromARGB(
+                                                      255,
+                                                      77,
+                                                      77,
+                                                      77)), // Elevation for a raised appearance
+                                            ),
+                                            child: Text(
+                                              '.000',
+                                              style: TextStyle(
+                                                  color: Colors
+                                                      .black), // Text color
                                             ),
                                           ),
                                           if (averagePrice != null)
@@ -637,6 +673,7 @@ class _CreatePostState extends State<CreatePost> {
                                                           FontWeight.w500)),
                                             ),
                                           // Show options based on the state
+
                                           if (showCompareOption)
                                             ElevatedButton(
                                               onPressed: () {

@@ -1,13 +1,11 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'dart:ui';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:myapp/utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 import '../Controller/GardenController.dart';
 import '../GetX/GardenGetX.dart';
@@ -15,7 +13,6 @@ import '../HomeScreen/Home.dart';
 import '../model/GardenModel.dart';
 import 'GardenObject.dart';
 import 'garden-detail-task.dart';
-import 'package:http/http.dart' as http;
 
 class Garden extends StatefulWidget {
   @override
@@ -56,6 +53,21 @@ class _GardenState extends State<Garden> {
         Get.find<GardenController>().updateGardenList(datagarden);
       }
     }
+  }
+
+ Future<void> _deleteGarden(int gardenId) async {
+    print('gardenId: $gardenId');
+    final prefs = await SharedPreferences.getInstance();
+    final accessToken = prefs.getString('accessToken');
+    final url =
+        'https://fruitseasonms.azurewebsites.net/api/gardens/$gardenId';
+    Map<String, String> headers = {
+      'accept': '*/*',
+      'Authorization': 'Bearer $accessToken',
+    };
+    final response = await http.delete(Uri.parse(url), headers: headers);
+    var statusCode = response.statusCode;
+    print('Status: $statusCode');
   }
 
   @override
@@ -108,36 +120,87 @@ class _GardenState extends State<Garden> {
             ),
           ),
           Expanded(
-            child: filteredTrans.isNotEmpty
-                ? ListView.builder(
-                    itemCount: filteredTrans.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => GardenDetailTask(
-                                  id: filteredTrans[index].gardenId!),
-                            ),
+  child: filteredTrans.isNotEmpty
+      ? ListView.builder(
+          itemCount: filteredTrans.length,
+          itemBuilder: (BuildContext context, int index) {
+            return ClipRRect(
+              borderRadius: BorderRadius.circular(25.0), 
+              child: Slidable(
+                actionPane: SlidableDrawerActionPane(),
+                actionExtentRatio: 0.15,
+                secondaryActions: [
+                  IconSlideAction(
+                    caption: 'Delete',
+                    color: Colors.red,
+                    icon: Icons.delete,
+                    onTap: () async {
+                      // Show a confirmation dialog
+                      bool confirm = await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Text('Confirm Deletion'),
+                            content:
+                                Text('Are you sure you want to delete this garden?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(false);
+                                },
+                                child: Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(true);
+                                },
+                                child: Text('Delete'),
+                              ),
+                            ],
                           );
                         },
-                        child: GardenObject(
-                          gardenName: filteredTrans[index].gardenName,
-                          description: filteredTrans[index].description,
-                          fullName: filteredTrans[index].fullName,
-                          region: filteredTrans[index].region,
-                          image: filteredTrans[index].image,
-                          quantityplant: filteredTrans[index].quantityPlanted,
-                          press: () {},
-                        ),
                       );
+                      if (confirm == true) {
+                        _deleteGarden(filteredTrans[index].gardenId!);
+                        await getGarden();
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                              builder: (BuildContext context) => Garden()),
+                        );
+                      }
                     },
-                  )
-                : Center(
-                    child: CircularProgressIndicator(),
                   ),
-          ),
+                ],
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GardenDetailTask(
+                          id: filteredTrans[index].gardenId!,
+                        ),
+                      ),
+                    );
+                  },
+                  child: GardenObject(
+                    gardenName: filteredTrans[index].gardenName,
+                    description: filteredTrans[index].description,
+                    fullName: filteredTrans[index].fullName,
+                    region: filteredTrans[index].region,
+                    image: filteredTrans[index].image,
+                    quantityplant: filteredTrans[index].quantityPlanted,
+                    press: () {},
+                  ),
+                ),
+              ),
+            );
+          },
+        )
+      : Center(
+          child: CircularProgressIndicator(),
+        ),
+),
+
         ],
       ),
     );

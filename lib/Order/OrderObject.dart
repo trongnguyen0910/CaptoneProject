@@ -205,7 +205,6 @@ class _OrderObjectState extends State<OrderObject> {
                             } else {
                               await UpdateOrder(widget.orderId!, "Accepted");
                             }
-                           
 
                             // Sử dụng setState để rebuild lại widget và cập nhật giao diện ngay lập tức
                             setState(() {});
@@ -221,7 +220,7 @@ class _OrderObjectState extends State<OrderObject> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text("Yes"),
+                          child: Text("Xác nhận"),
                         ),
                         ElevatedButton(
                           onPressed: () async {
@@ -230,7 +229,7 @@ class _OrderObjectState extends State<OrderObject> {
                             } else {
                               await UpdateOrder(widget.orderId!, "UserRefused");
                             }
-                             setState(() {});
+                            setState(() {});
                             Navigator.of(context).pushReplacement(
                               MaterialPageRoute(
                                 builder: (BuildContext context) => ListOrder(),
@@ -243,7 +242,7 @@ class _OrderObjectState extends State<OrderObject> {
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
-                          child: Text("No"),
+                          child: Text("Từ chối"),
                         ),
                       ],
                     ),

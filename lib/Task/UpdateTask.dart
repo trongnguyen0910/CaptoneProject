@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'dart:io';
 
@@ -38,7 +37,7 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
   late TextEditingController _date;
   late TextEditingController _image;
   late TextEditingController _statusController;
-  String? _selectedStatus; 
+  String? _selectedStatus;
   @override
   void initState() {
     super.initState();
@@ -47,10 +46,10 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
         TextEditingController(text: widget.datagardentask.gardenTaskName);
     _taskDescriptionController =
         TextEditingController(text: widget.datagardentask.description);
-     _image = TextEditingController(text: widget.datagardentask.image ?? '');
+    _image = TextEditingController(text: widget.datagardentask.image ?? '');
     _statusController =
         TextEditingController(text: widget.datagardentask.status!);
-     _selectedStatus = _statusController.text;
+    _selectedStatus = _statusController.text;
     _date = TextEditingController(
         text: DateFormat('yyyy-MM-dd')
             .format(widget.datagardentask.gardenTaskDate!));
@@ -58,30 +57,30 @@ class _UpdateTaskScreenState extends State<UpdateTaskScreen> {
 
   File? image;
 
- Future pickImage() async {
-  try {
-    final imagePicker = ImagePicker();
-    final pickedImage = await imagePicker.pickImage(source: ImageSource.gallery);
+  Future pickImage() async {
+    try {
+      final imagePicker = ImagePicker();
+      final pickedImage =
+          await imagePicker.pickImage(source: ImageSource.gallery);
 
-    if (pickedImage != null) {
-      final imageFile = File(pickedImage.path);
-      setState(() {
-        image = imageFile;
-      });
-    } else {
-      print('No image selected');
-      setState(() {
-        image = null;
-        _image.text = widget.datagardentask.image ?? '';
-      });
+      if (pickedImage != null) {
+        final imageFile = File(pickedImage.path);
+        setState(() {
+          image = imageFile;
+        });
+      } else {
+        print('No image selected');
+        setState(() {
+          image = null;
+          _image.text = widget.datagardentask.image ?? '';
+        });
+      }
+    } on PlatformException catch (e) {
+      print('Failed to pick image: $e');
     }
-  } on PlatformException catch (e) {
-    print('Failed to pick image: $e');
   }
-}
 
-
-Future<void> updatetask(int taskId) async {
+  Future<void> updatetask(int taskId) async {
     final prefs = await SharedPreferences.getInstance();
     final accountID = prefs.getInt('accountID');
     final accessToken = prefs.getString('accessToken');
@@ -92,7 +91,7 @@ Future<void> updatetask(int taskId) async {
     var date = _date.text;
     print('status: $status');
 
-   var request = http.MultipartRequest(
+    var request = http.MultipartRequest(
       'PUT',
       Uri.parse(
           'https://fruitseasonms.azurewebsites.net/api/garden-tasks/$taskId'),
@@ -111,30 +110,28 @@ Future<void> updatetask(int taskId) async {
     //   "image": imageURL,
     // };
     // request.body = jsonEncode(data);
-  String imageURL = image != null ? image!.path : _image.text;
+    String imageURL = image != null ? image!.path : _image.text;
 
+    if (imageURL.isEmpty && image == null) {
+      // No image selected, use the API image
+      print('No image selected, using API image');
+      imageURL = _image.text;
+    }
 
-  if (imageURL.isEmpty && image == null) {
-    // No image selected, use the API image
-    print('No image selected, using API image');
-    imageURL = _image.text;
-  }
+    if (image != null) {
+      var imageFile = File(image!.path);
+      var imageStream = http.ByteStream(imageFile.openRead());
+      var imageLength = await imageFile.length();
 
-     if (image != null) {
-    var imageFile = File(image!.path);
-    var imageStream = http.ByteStream(imageFile.openRead());
-    var imageLength = await imageFile.length();
-
-    var multipartFile = http.MultipartFile(
-      'UploadFile',
-      imageStream,
-      imageLength,
-      filename: imageFile.path,
-      contentType: MediaType('image', 'png'),
-    );
-    request.files.add(multipartFile);
-  }
-
+      var multipartFile = http.MultipartFile(
+        'UploadFile',
+        imageStream,
+        imageLength,
+        filename: imageFile.path,
+        contentType: MediaType('image', 'png'),
+      );
+      request.files.add(multipartFile);
+    }
 
     try {
       var response = await request.send();
@@ -165,25 +162,25 @@ Future<void> updatetask(int taskId) async {
         });
       } else if (response.statusCode != 200) {
         var responseString = await response.stream.bytesToString();
-          var responseBody = json.decode(responseString);
-          var errorMessage = responseBody['errors'];
-          String errorContent = errorMessage.toString(); 
-          final snackBar = SnackBar(
-            elevation: 0,
-            behavior: SnackBarBehavior.floating,
-            backgroundColor: Colors.transparent,
-            content: AwesomeSnackbarContent(
-              title: 'Error',
-              message: errorContent,
-              contentType: ContentType.failure,
-            ),
-          );
+        var responseBody = json.decode(responseString);
+        var errorMessage = responseBody['errors'];
+        String errorContent = errorMessage.toString();
+        final snackBar = SnackBar(
+          elevation: 0,
+          behavior: SnackBarBehavior.floating,
+          backgroundColor: Colors.transparent,
+          content: AwesomeSnackbarContent(
+            title: 'Error',
+            message: errorContent,
+            contentType: ContentType.failure,
+          ),
+        );
 
-          ScaffoldMessenger.of(context)
-            ..hideCurrentSnackBar()
-            ..showSnackBar(snackBar);
-          print('Response body: $responseString');
-          print('Error 400: $errorMessage');
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(snackBar);
+        print('Response body: $responseString');
+        print('Error 400: $errorMessage');
       } else {
         print('Error: ${response.statusCode}');
       }
@@ -192,6 +189,13 @@ Future<void> updatetask(int taskId) async {
     }
   }
 
+  Map<String, String> valueMappings = {
+    'Pending': 'Chưa hoàn thành',
+    'InProgress': 'Đang thực hiện',
+    'Completed': 'Hoàn thành',
+    'Cancelled': 'Hủy bỏ',
+  };
+
   @override
   Widget build(BuildContext context) {
     double baseWidth = 428;
@@ -199,7 +203,8 @@ Future<void> updatetask(int taskId) async {
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Update Task', style: TextStyle(color: Colors.black)),
+          title:
+              Text('Cập nhật công việc', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
           leading: IconButton(
@@ -264,7 +269,7 @@ Future<void> updatetask(int taskId) async {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Task name',
+                                                labelText: 'Tên công việc',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -316,7 +321,7 @@ Future<void> updatetask(int taskId) async {
                                           Expanded(
                                             child: TextField(
                                               decoration: InputDecoration(
-                                                labelText: 'Description',
+                                                labelText: 'Mô tả',
                                                 labelStyle: TextStyle(
                                                   color: Color.fromARGB(
                                                       255, 0, 0, 0),
@@ -346,62 +351,61 @@ Future<void> updatetask(int taskId) async {
                                 height: 25 * fem,
                               ),
                               Container(
-                            // descriptionFD2 (3154:3138)
-                            padding: EdgeInsets.fromLTRB(
-                                15 * fem, 15 * fem, 14 * fem, 12 * fem),
-                            width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Color(0xffffffff),
-                              borderRadius: BorderRadius.circular(5 * fem),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Container(
-                                  // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
-                                  margin: EdgeInsets.fromLTRB(
-                                      0 * fem, 0 * fem, 0 * fem, 12 * fem),
-                                  width: double.infinity,
-                                  child: Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: DropdownButtonFormField<String>(
-                                          isExpanded: true,
-                                          value: _selectedStatus,
-                                          decoration: InputDecoration(
-                                            labelText: 'Status',
-                                            labelStyle: TextStyle(
-                                                color: Colors.black,
-                                                fontSize: 15),
-                                          ),
-                                          items: [
-                                            'Pending',
-                                            'InProgress',
-                                            'Completed',
-                                            'Cancelled',
-                                          ].map((String value) {
-                                            return DropdownMenuItem<String>(
-                                              value: value,
-                                              child: Text(value),
-                                            );
-                                          }).toList(),
-                                          onChanged: (newValue) {
-                                            // Set the new selected value
-                                            setState(() {
-                                              _selectedStatus = newValue;
-                                               _statusController.text = newValue!;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                // descriptionFD2 (3154:3138)
+                                padding: EdgeInsets.fromLTRB(
+                                    15 * fem, 15 * fem, 14 * fem, 12 * fem),
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  color: Color(0xffffffff),
+                                  borderRadius: BorderRadius.circular(5 * fem),
                                 ),
-                              ],
-                            ),
-                          ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Container(
+                                      // autogrouprualwbe (LtKo124tzte1199DWYRUAL)
+                                      margin: EdgeInsets.fromLTRB(
+                                          0 * fem, 0 * fem, 0 * fem, 12 * fem),
+                                      width: double.infinity,
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: [
+                                          Expanded(
+                                            child:
+                                                DropdownButtonFormField<String>(
+                                              isExpanded: true,
+                                              value: _selectedStatus,
+                                              decoration: InputDecoration(
+                                                labelText: 'Trạng thái',
+                                                labelStyle: TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 15),
+                                              ),
+                                              items: valueMappings.keys
+                                                  .map((String value) {
+                                                return DropdownMenuItem<String>(
+                                                  value: value,
+                                                  child: Text(valueMappings[
+                                                      value]!), // Hiển thị giá trị tiếng Việt
+                                                );
+                                              }).toList(),
+                                              onChanged: (newValue) {
+                                                // Set the new selected value
+                                                setState(() {
+                                                  _selectedStatus = newValue;
+                                                  _statusController.text =
+                                                      newValue!;
+                                                });
+                                              },
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                               SizedBox(
                                 height: 25 * fem,
                               ),
@@ -438,7 +442,7 @@ Future<void> updatetask(int taskId) async {
                                         },
                                         controller: _date,
                                         decoration: InputDecoration(
-                                          labelText: 'Start Date',
+                                          labelText: 'Ngày bắt đầu',
                                           labelStyle: TextStyle(
                                             fontFamily: 'Satoshi',
                                             fontSize: 15 * ffem,
@@ -485,7 +489,7 @@ Future<void> updatetask(int taskId) async {
                             ),
                             child: Center(
                               child: Text(
-                                'Save change',
+                                'Lưu',
                                 textAlign: TextAlign.center,
                                 style: SafeGoogleFont(
                                   'Poppins',

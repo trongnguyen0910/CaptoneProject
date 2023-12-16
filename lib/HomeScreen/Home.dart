@@ -87,7 +87,7 @@ class _HomeState extends State<Home> {
           task.gardenTaskDate!.month, task.gardenTaskDate!.day);
       // Kiểm tra nếu công việc không ở trạng thái "complete" thì mới đánh dấu
       if (formattedDay.isAtSameMomentAs(taskDate) &&
-          task.status != "Completed") {
+          task.status != "Completed" && task.status != "Cancelled") {
         return true;
       }
       return false;
@@ -187,13 +187,20 @@ class _HomeState extends State<Home> {
     "https://images.unsplash.com/photo-1670768170262-f8606bbcbbac?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2069&q=80",
     "https://images.unsplash.com/photo-1678988764041-7989a86ee351?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80",
   ];
+  final List<String> imagePost = [
+    "https://images.unsplash.com/photo-1610832958506-aa56368176cf?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "https://images.unsplash.com/photo-1631209121750-a9f656d28f46?q=80&w=2071&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  ];
+  
+
   final List<String> imageNews = [
     "https://i.makeagif.com/media/12-03-2017/Bx_HKp.gif",
-    "https://nongnghiephuucovn.vn/uploads/tin-tuc/xkns11.jpg",
+    // "https://nongnghiephuucovn.vn/uploads/tin-tuc/xkns11.jpg",
     "https://congthuong-cdn.mastercms.vn/stores/news_dataimages/2022/122022/16/17/420221216174031.png?rt=20221216175008",
     "https://img.cand.com.vn/resize/800x800/NewFiles/Images/2021/09/22/1519360048news10736_MGNA-1632275748602.jpg",
     "https://vtv1.mediacdn.vn/thumb_w/640/2023/1/13/nong-san-xuat-trung-quoc-1-1673584638583165452091.jpg",
-    "https://ngkt.mofa.gov.vn/wp-content/uploads/2020/03/4-1.jpg",
+    // "https://ngkt.mofa.gov.vn/wp-content/uploads/2020/03/4-1.jpg",
   ];
   final List<String> comparePrice = [
     "https://images.unsplash.com/photo-1695199481826-b7e467746bff?auto=format&fit=crop&q=80&w=1932&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
@@ -320,7 +327,7 @@ class _HomeState extends State<Home> {
                               enableInfiniteScroll: false,
                               autoPlay: true,
                             ),
-                            items: imageList
+                            items: imagePost
                                 .map((e) => ClipRRect(
                                       borderRadius: BorderRadius.circular(8),
                                       child: Stack(

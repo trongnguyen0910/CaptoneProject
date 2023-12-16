@@ -14,12 +14,16 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
 import '../Expert/ViewPostExpert.dart';
 import '../GetX/GardenGetX.dart';
-import 'create.dart';
+import '../Personal/voice_to_text_provider.dart';
+import 'package:myapp/Create/create.dart' as CustomCreate;
 
 class CreateGardenTask extends StatefulWidget {
   @override
@@ -30,9 +34,14 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   final _tasknameController = TextEditingController();
   final _taskdescriptionController = TextEditingController();
   final TextEditingController _date = TextEditingController();
+  late TextEditingController _currentController;
+  bool _isListening = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
   @override
   void initState() {
     super.initState();
+    _initSpeech();
     getGarden();
   }
 
@@ -41,6 +50,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   List<DataPlant> dataplant = [];
   int? selectedGardenId;
   int? selectedPlantId;
+
   Future<void> getGarden() async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
@@ -69,7 +79,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
   Future<void> getPlant(int selectedGardenId) async {
     final prefs = await SharedPreferences.getInstance();
     final accessToken = prefs.getString('accessToken');
-     final accountID = prefs.getInt('accountID');
+    final accountID = prefs.getInt('accountID');
     print('id: $selectedGardenId');
     final url =
         'https://fruitseasonms.azurewebsites.net/api/plants/plants?activeOnly=true&gardenId=$selectedGardenId&userId=$accountID';
@@ -120,15 +130,6 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
     request.fields['GardenId'] = selectedGardenId.toString();
     request.fields['PlantId'] = selectedPlantId.toString();
 
-    // var data = {
-    //   "taskName": taskname,
-    //   "description": taskdescription,
-    //   "region": garden,
-    //   "userId": accountID,
-    //   "image": imageURL,
-    // };
-    // request.body = jsonEncode(data);
-
     var imageFile = File(image!.path);
     var imageStream = http.ByteStream(imageFile.openRead());
     var imageLength = await imageFile.length();
@@ -166,7 +167,7 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
         Future.delayed(Duration(seconds: 2), () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Create()),
+            MaterialPageRoute(builder: (context) => CustomCreate.Create()),
           );
         });
       } else if (response.statusCode != 200) {
@@ -228,14 +229,63 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
     }
   }
 
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      // Cập nhật kết quả nhận diện giọng nói vào TextField hiện tại được chọn
+      _currentController.text = result.recognizedWords;
+    });
+  }
+
+  void _onTextFieldTapped(TextEditingController controller) {
+    // Cập nhật biến theo dõi TextField hiện tại được chọn
+    _currentController = controller;
+    // Bắt đầu hoặc dừng nhận diện giọng nói tùy thuộc vào trạng thái
+    if (_speechEnabled) {
+      _stopListening();
+    } else if (_speechEnabled) {
+      _startListening();
+    }
+  }
+
+  void _toggleListening() {
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+
+    setState(() {
+      _isListening = !_isListening;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    VoiceToTextProvider voiceToTextProvider =
+        Provider.of<VoiceToTextProvider>(context);
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
         appBar: AppBar(
-          title: Text('Tạo mới công việc', style: TextStyle(color: Colors.black)),
+          title:
+              Text('Tạo mới công việc', style: TextStyle(color: Colors.black)),
           backgroundColor: Colors.white,
           centerTitle: true,
           leading: IconButton(
@@ -245,19 +295,31 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
             },
           ),
           actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.black), // Add your question mark icon here
-            onPressed: () {
-             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ViewPost(type: 'Cách chăm sóc cây'), // Specify the type here
-                ),
-             );
-            },
-          ),
-        ],
+            IconButton(
+              icon: const Icon(Icons.help_outline,
+                  color: Colors.black), // Add your question mark icon here
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewPost(
+                        type:
+                            'C%C3%A1ch%20ch%C4%83m%20s%C3%B3c%20c%C3%A2y'), // Specify the type here
+                  ),
+                );
+              },
+            ),
+          ],
         ),
+        floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
+            ? FloatingActionButton(
+                onPressed: _toggleListening,
+                tooltip: 'Listen',
+                child: Icon(
+                  _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                ),
+              )
+            : null,
         body: SingleChildScrollView(
           child: Container(
             // creategardentask5rx (3154:3128)
@@ -330,6 +392,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                                 ),
                                               ),
                                               controller: _tasknameController,
+                                              onTap: () => _onTextFieldTapped(
+                                                  _tasknameController),
                                             ),
                                           ),
                                         ],
@@ -383,6 +447,8 @@ class _CreateGardenTaskState extends State<CreateGardenTask> {
                                               ),
                                               controller:
                                                   _taskdescriptionController,
+                                              onTap: () => _onTextFieldTapped(
+                                                  _taskdescriptionController),
                                             ),
                                           ),
                                         ],

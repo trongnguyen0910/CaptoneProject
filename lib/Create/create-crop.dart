@@ -11,9 +11,12 @@ import 'package:http_parser/http_parser.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:myapp/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'create.dart';
-
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
+import '../Personal/voice_to_text_provider.dart';
+import 'package:myapp/Create/create.dart' as CustomCreate;
 class CreateCrop extends StatefulWidget {
   @override
   State<CreateCrop> createState() => _CreateCropState();
@@ -22,8 +25,11 @@ class CreateCrop extends StatefulWidget {
 class _CreateCropState extends State<CreateCrop> {
   final _varietynameController = TextEditingController();
   final _descriptionController = TextEditingController();
-
   File? image;
+  late TextEditingController _currentController;
+  bool _isListening = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
 
   _createcrop() async {
     var varietyname = _varietynameController.text;
@@ -85,9 +91,9 @@ print('Request data - Variety Name: $varietyname, Description: $description');
           ..hideCurrentSnackBar()
           ..showSnackBar(snackBar);
         Future.delayed(Duration(seconds: 2), () {
-          Navigator.push(
+           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Create()),
+            MaterialPageRoute(builder: (context) => CustomCreate.Create()),
           );
         });
       } else if (response.statusCode != 200) {
@@ -128,9 +134,63 @@ print('Request data - Variety Name: $varietyname, Description: $description');
       print('Failed to pick image: $e');
     }
   }
+   @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+  }
+
+  /// This has to happen only once per app
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      // Cập nhật kết quả nhận diện giọng nói vào TextField hiện tại được chọn
+      _currentController.text = result.recognizedWords;
+    });
+  }
+
+  void _onTextFieldTapped(TextEditingController controller) {
+    // Cập nhật biến theo dõi TextField hiện tại được chọn
+    _currentController = controller;
+    // Bắt đầu hoặc dừng nhận diện giọng nói tùy thuộc vào trạng thái
+    if (_speechEnabled) {
+      _stopListening();
+    } else if (_speechEnabled) {
+      _startListening();
+    }
+  }
+
+  void _toggleListening() {
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+
+    setState(() {
+      _isListening = !_isListening;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    VoiceToTextProvider voiceToTextProvider =
+        Provider.of<VoiceToTextProvider>(context);
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
@@ -146,6 +206,15 @@ print('Request data - Variety Name: $varietyname, Description: $description');
             },
           ),
         ),
+         floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
+            ? FloatingActionButton(
+                onPressed: _toggleListening,
+                tooltip: 'Listen',
+                child: Icon(
+                  _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                ),
+              )
+            : null,
         body: SingleChildScrollView(
       child: Container(
         // createcroppfz (3154:3209)
@@ -220,6 +289,8 @@ print('Request data - Variety Name: $varietyname, Description: $description');
                                             ),
                                           ),
                                           controller: _varietynameController,
+                                            onTap: () => _onTextFieldTapped(
+                                                    _varietynameController),
                                         ),
                                       ),
                                     ],
@@ -269,6 +340,8 @@ print('Request data - Variety Name: $varietyname, Description: $description');
                                             ),
                                           ),
                                           controller: _descriptionController,
+                                            onTap: () => _onTextFieldTapped(
+                                                    _descriptionController),
                                         ),
                                       ),
                                     ],

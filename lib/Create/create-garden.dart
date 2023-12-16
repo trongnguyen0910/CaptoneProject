@@ -20,8 +20,6 @@ import '../Expert/ViewPostExpert.dart';
 import '../utils.dart';
 import 'package:myapp/Create/create.dart' as CustomCreate;
 
-
-
 class CreateGarden extends StatefulWidget {
   @override
   State<CreateGarden> createState() => _CreateGardenState();
@@ -32,13 +30,11 @@ class _CreateGardenState extends State<CreateGarden> {
   final _descriptionController = TextEditingController();
   final _regionController = TextEditingController();
   File? image;
-   late TextEditingController _currentController;
+  late TextEditingController _currentController;
   bool _isListening = false;
   SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _lastWords = '';
-  
-  
 
   _creategarden() async {
     final prefs = await SharedPreferences.getInstance();
@@ -156,7 +152,6 @@ class _CreateGardenState extends State<CreateGarden> {
     }
   }
 
-
   @override
   void initState() {
     super.initState();
@@ -179,26 +174,26 @@ class _CreateGardenState extends State<CreateGarden> {
     await _speechToText.stop();
     setState(() {});
   }
-    void _onSpeechResult(SpeechRecognitionResult result) {
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
     setState(() {
       // Cập nhật kết quả nhận diện giọng nói vào TextField hiện tại được chọn
       _currentController.text = result.recognizedWords;
     });
   }
+
   void _onTextFieldTapped(TextEditingController controller) {
-  // Cập nhật biến theo dõi TextField hiện tại được chọn
-  _currentController = controller;
-
-  // Bắt đầu hoặc dừng nhận diện giọng nói tùy thuộc vào trạng thái
-  if (_isListening && _speechEnabled) {
-    _stopListening();
-  } else if (_speechEnabled) {
-    _startListening();
+    // Cập nhật biến theo dõi TextField hiện tại được chọn
+    _currentController = controller;
+    // Bắt đầu hoặc dừng nhận diện giọng nói tùy thuộc vào trạng thái
+    if (_speechEnabled) {
+      _stopListening();
+    } else if (_speechEnabled) {
+      _startListening();
+    }
   }
-}
 
-
-   void _toggleListening() {
+  void _toggleListening() {
     if (_isListening) {
       _stopListening();
     } else {
@@ -210,49 +205,51 @@ class _CreateGardenState extends State<CreateGarden> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
-     VoiceToTextProvider voiceToTextProvider =
+    VoiceToTextProvider voiceToTextProvider =
         Provider.of<VoiceToTextProvider>(context);
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
     return Scaffold(
-       appBar: AppBar(
-        title: const Text('Tạo mới khu vườn', style: TextStyle(color: Colors.black)),
-        backgroundColor: Colors.white,
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () async {
-            Navigator.of(context).pop();
-          },
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.help_outline, color: Colors.black), // Add your question mark icon here
-            onPressed: () {
-             Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ViewPost(type: 'Khu Vườn'), // Specify the type here
-                ),
-             );
+        appBar: AppBar(
+          title: const Text('Tạo mới khu vườn',
+              style: TextStyle(color: Colors.black)),
+          backgroundColor: Colors.white,
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.black),
+            onPressed: () async {
+              Navigator.of(context).pop();
             },
           ),
-        ],
-      ),
-
-          floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
-          ? FloatingActionButton(
-              onPressed: _toggleListening,
-              tooltip: 'Listen',
-              child: Icon(
-                _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-              ),
-            )
-          : null,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.help_outline,
+                  color: Colors.black), // Add your question mark icon here
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewPost(
+                        type:
+                            'Khu%20v%C6%B0%E1%BB%9Dn'), // Specify the type here
+                  ),
+                );
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
+            ? FloatingActionButton(
+                onPressed: _toggleListening,
+                tooltip: 'Listen',
+                child: Icon(
+                  _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                ),
+              )
+            : null,
         body: SingleChildScrollView(
           child: Container(
             // creategardenne4 (3152:2961)
@@ -303,7 +300,6 @@ class _CreateGardenState extends State<CreateGarden> {
                                         width: double.infinity,
                                         child: Row(
                                           children: [
-                                            
                                             Expanded(
                                               child: TextField(
                                                 decoration: InputDecoration(
@@ -317,7 +313,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                                   ),
                                                   suffixText: '*',
                                                   suffixStyle: TextStyle(
-                                                    color: const Color(0xffe74c3c),
+                                                    color:
+                                                        const Color(0xffe74c3c),
                                                     fontSize: 15 * ffem,
                                                     fontWeight: FontWeight.w500,
                                                     letterSpacing: 0.45 * fem,
@@ -325,7 +322,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                                 ),
                                                 controller:
                                                     _gardennameController,
-                                                onTap: () => _onTextFieldTapped(_gardennameController),
+                                                onTap: () => _onTextFieldTapped(
+                                                    _gardennameController),
                                               ),
                                             ),
                                           ],
@@ -370,7 +368,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                                 ),
                                                 suffixText: '*',
                                                 suffixStyle: TextStyle(
-                                                  color: const Color(0xffe74c3c),
+                                                  color:
+                                                      const Color(0xffe74c3c),
                                                   fontSize: 15 * ffem,
                                                   fontWeight: FontWeight.w500,
                                                   letterSpacing: 0.45 * fem,
@@ -378,7 +377,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                               ),
                                               controller:
                                                   _descriptionController,
-                                                   onTap: () => _onTextFieldTapped(_descriptionController),
+                                              onTap: () => _onTextFieldTapped(
+                                                  _descriptionController),
                                             ),
                                           ),
                                         ],
@@ -413,7 +413,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                         children: [
                                           Expanded(
                                             child: TextField(
-                                              onTap: () => _onTextFieldTapped(_regionController),
+                                              onTap: () => _onTextFieldTapped(
+                                                  _regionController),
                                               controller: _regionController,
                                               decoration: InputDecoration(
                                                 labelText: 'Vị trí',
@@ -426,7 +427,8 @@ class _CreateGardenState extends State<CreateGarden> {
                                                 ),
                                                 suffixText: '*',
                                                 suffixStyle: TextStyle(
-                                                  color: const Color(0xffe74c3c),
+                                                  color:
+                                                      const Color(0xffe74c3c),
                                                   fontSize: 15 * ffem,
                                                   fontWeight: FontWeight.w500,
                                                   letterSpacing: 0.45 * fem,

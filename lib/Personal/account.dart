@@ -303,7 +303,7 @@ class _PersonalState extends State<Personal> {
                             GestureDetector(
                               onTap: () async {
                                 await _signout();
-                                Navigator.push(
+                                Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => Login()));

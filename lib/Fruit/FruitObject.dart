@@ -159,7 +159,7 @@ class _FruitObjectState extends State<FruitObject> {
                   );
                   if (confirm == true) {
                     deleteFruit(widget.fruitId!);
-                    Navigator.of(context).pop();
+                    setState(() {});
                     Navigator.of(context).pushReplacement(
                       MaterialPageRoute(
                           builder: (BuildContext context) => ViewFruit()),

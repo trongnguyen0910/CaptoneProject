@@ -14,12 +14,17 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:myapp/utils.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 import '../Controller/GardenController.dart';
 import '../Controller/PlantController.dart';
 import '../Controller/VarietyController.dart';
 import '../GetX/GardenGetX.dart';
-import 'create.dart';
+import '../Personal/voice_to_text_provider.dart';
+import 'package:myapp/Create/create.dart' as CustomCreate;
+import '../Expert/ViewPostExpert.dart';
 
 class CreatePlant extends StatefulWidget {
   @override
@@ -35,6 +40,7 @@ class _CreatePlantState extends State<CreatePlant> {
   @override
   void initState() {
     super.initState();
+    _initSpeech();
     getGarden();
     getVariety();
   }
@@ -45,6 +51,10 @@ class _CreatePlantState extends State<CreatePlant> {
   int? selectedGardenId;
   int? selectedVarietyId;
   String? _selectedValue;
+  late TextEditingController _currentController;
+  bool _isListening = false;
+  SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
 
   Future<void> getGarden() async {
     final prefs = await SharedPreferences.getInstance();
@@ -129,15 +139,6 @@ class _CreatePlantState extends State<CreatePlant> {
     request.fields['Status'] = status.toString();
     request.fields['QuantityPlanted'] = estimatedHarvestQuantity;
 
-    // var data = {
-    //   "taskName": taskname,
-    //   "description": taskdescription,
-    //   "region": garden,
-    //   "userId": accountID,
-    //   "image": imageURL,
-    // };
-    // request.body = jsonEncode(data);
-
     var imageFile = File(image!.path);
     var imageStream = http.ByteStream(imageFile.openRead());
     var imageLength = await imageFile.length();
@@ -175,7 +176,7 @@ class _CreatePlantState extends State<CreatePlant> {
         Future.delayed(Duration(seconds: 2), () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Create()),
+            MaterialPageRoute(builder: (context) => CustomCreate.Create()),
           );
         });
       } else if (response.statusCode != 200) {
@@ -241,9 +242,56 @@ class _CreatePlantState extends State<CreatePlant> {
   var varietyList = Get.find<GardenController>().varietyList;
   String? selectedGardenName;
   String? selectedvarietyName;
+  void _initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {});
+  }
+
+  /// Each time to start a speech recognition session
+  void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(SpeechRecognitionResult result) {
+    setState(() {
+      // Cập nhật kết quả nhận diện giọng nói vào TextField hiện tại được chọn
+      _currentController.text = result.recognizedWords;
+    });
+  }
+
+  void _onTextFieldTapped(TextEditingController controller) {
+    // Cập nhật biến theo dõi TextField hiện tại được chọn
+    _currentController = controller;
+    // Bắt đầu hoặc dừng nhận diện giọng nói tùy thuộc vào trạng thái
+    if (_speechEnabled) {
+      _stopListening();
+    } else if (_speechEnabled) {
+      _startListening();
+    }
+  }
+
+  void _toggleListening() {
+    if (_isListening) {
+      _stopListening();
+    } else {
+      _startListening();
+    }
+
+    setState(() {
+      _isListening = !_isListening;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    VoiceToTextProvider voiceToTextProvider =
+        Provider.of<VoiceToTextProvider>(context);
     double baseWidth = 428;
     double fem = MediaQuery.of(context).size.width / baseWidth;
     double ffem = fem * 0.97;
@@ -258,7 +306,32 @@ class _CreatePlantState extends State<CreatePlant> {
               Navigator.of(context).pop();
             },
           ),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.help_outline,
+                  color: Colors.black), // Add your question mark icon here
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ViewPost(
+                        type:
+                            'Khu%20v%C6%B0%E1%BB%9Dn'), // Specify the type here
+                  ),
+                );
+              },
+            ),
+          ],
         ),
+        floatingActionButton: voiceToTextProvider.isVoiceToTextEnabled
+            ? FloatingActionButton(
+                onPressed: _toggleListening,
+                tooltip: 'Listen',
+                child: Icon(
+                  _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                ),
+              )
+            : null,
         body: SingleChildScrollView(
           child: Container(
             // creategardentask5rx (3154:3128)
@@ -331,6 +404,8 @@ class _CreatePlantState extends State<CreatePlant> {
                                                 ),
                                               ),
                                               controller: _plantnameController,
+                                              onTap: () => _onTextFieldTapped(
+                                                  _plantnameController),
                                             ),
                                           ),
                                         ],
@@ -384,6 +459,8 @@ class _CreatePlantState extends State<CreatePlant> {
                                               ),
                                               controller:
                                                   _plantdescriptionController,
+                                              onTap: () => _onTextFieldTapped(
+                                                  _plantdescriptionController),
                                             ),
                                           ),
                                         ],
@@ -431,8 +508,8 @@ class _CreatePlantState extends State<CreatePlant> {
                                                   .map((String value) {
                                                 return DropdownMenuItem<String>(
                                                   value: value,
-                                                  child: Text(valueMappings[
-                                                      value]!), 
+                                                  child: Text(
+                                                      valueMappings[value]!),
                                                 );
                                               }).toList(),
                                               onChanged: (newValue) {
